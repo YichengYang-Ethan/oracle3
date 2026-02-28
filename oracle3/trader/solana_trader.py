@@ -9,11 +9,17 @@ from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 import httpx
+from tenacity import (
+    retry,
+    retry_if_exception,
+    stop_after_attempt,
+    wait_exponential,
+)
 
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.position.position_manager import PositionManager
 from oracle3.risk.risk_manager import RiskManager
-from oracle3.ticker.ticker import SolanaTicker, Ticker
+from oracle3.ticker.ticker import CashTicker, SolanaTicker, Ticker
 from oracle3.trader.trader import Trader
 from oracle3.trader.types import (
     Order,
@@ -28,6 +34,20 @@ if TYPE_CHECKING:
     from oracle3.alerts.alerter import Alerter
 
 logger = logging.getLogger(__name__)
+
+# Solana mainnet USDC mint address
+USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'
+
+DEFAULT_TRADE_API_BASE = 'https://dev-quote-api.dflow.net'
+
+
+def _is_retryable_http_error(exc: BaseException) -> bool:
+    """Return True for transient HTTP errors (5xx, timeouts)."""
+    if isinstance(exc, httpx.TimeoutException):
+        return True
+    if isinstance(exc, httpx.HTTPStatusError):
+        return exc.response.status_code >= 500
+    return False
 
 
 def _load_keypair(
@@ -65,8 +85,6 @@ def _load_keypair(
 class SolanaTrader(Trader):
     """Trader that executes on Solana via DFlow Trade API."""
 
-    TRADE_API_BASE = 'https://dev-quote-api.dflow.net'
-
     def __init__(
         self,
         market_data: MarketDataManager,
@@ -77,10 +95,12 @@ class SolanaTrader(Trader):
         rpc_url: str = 'https://api.mainnet-beta.solana.com',
         commission_rate: Decimal = Decimal('0.0'),
         alerter: Alerter | None = None,
+        trade_api_base: str = DEFAULT_TRADE_API_BASE,
     ):
         super().__init__(market_data, risk_manager, position_manager, alerter=alerter)
         self.commission_rate = commission_rate
         self.rpc_url = rpc_url
+        self.trade_api_base = trade_api_base
         self._keypair = _load_keypair(keypair, keypair_path)
         self.orders: list[Order] = []
 
@@ -88,24 +108,32 @@ class SolanaTrader(Trader):
     def public_key(self) -> str:
         return str(self._keypair.pubkey())
 
+    @retry(
+        retry=retry_if_exception(_is_retryable_http_error),
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=1, min=1, max=10),
+        reraise=True,
+    )
     async def _request_trade_tx(
         self,
         side: str,
         ticker: SolanaTicker,
         price_cents: int,
         quantity: int,
+        action: str = 'buy',
     ) -> bytes:
         """Request a ready-to-sign transaction from DFlow Trade API."""
         payload = {
             'marketTicker': ticker.market_ticker,
             'side': side,
+            'action': action,
             'price': price_cents,
             'count': quantity,
             'owner': self.public_key,
         }
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                f'{self.TRADE_API_BASE}/api/v1/order',
+                f'{self.trade_api_base}/api/v1/order',
                 json=payload,
             )
             resp.raise_for_status()
@@ -151,8 +179,9 @@ class SolanaTrader(Trader):
 
     async def _confirm_transaction(self, signature: str, timeout: float = 30.0) -> bool:
         """Poll Solana RPC for transaction confirmation."""
-        deadline = asyncio.get_event_loop().time() + timeout
-        while asyncio.get_event_loop().time() < deadline:
+        loop = asyncio.get_running_loop()
+        deadline = loop.time() + timeout
+        while loop.time() < deadline:
             rpc_payload = {
                 'jsonrpc': '2.0',
                 'id': 1,
@@ -201,6 +230,26 @@ class SolanaTrader(Trader):
             amount = info.get('tokenAmount', {}).get('uiAmountString', '0')
             total += Decimal(amount)
         return total
+
+    async def reconcile_balance(self) -> Decimal:
+        """Fetch on-chain USDC balance and update the cash position.
+
+        Returns the reconciled balance. Intended to be called on startup
+        by live_trader.py to sync with actual wallet state.
+        """
+        from oracle3.position.position_manager import Position
+
+        balance = await self._get_spl_balance(USDC_MINT)
+        self.position_manager.update_position(
+            Position(
+                ticker=CashTicker.DFLOW_USDC,
+                quantity=balance,
+                average_cost=Decimal('0'),
+                realized_pnl=Decimal('0'),
+            )
+        )
+        logger.info('Reconciled USDC balance: %s', balance)
+        return balance
 
     async def _alert_rejected(self, reason: OrderFailureReason, ticker: Ticker) -> None:
         if self.alerter:
@@ -268,15 +317,22 @@ class SolanaTrader(Trader):
 
         try:
             price_cents = int(limit_price * 100)
+            if quantity != int(quantity):
+                raise ValueError(
+                    f'Fractional quantity {quantity} not supported; '
+                    f'must be a whole number'
+                )
             count = int(quantity)
 
             api_side = 'no' if ticker.is_no_side else 'yes'
+            action = 'buy' if side == TradeSide.BUY else 'sell'
 
             tx_bytes = await self._request_trade_tx(
                 side=api_side,
                 ticker=ticker,
                 price_cents=price_cents,
                 quantity=count,
+                action=action,
             )
 
             signature = await self._sign_and_submit(tx_bytes)

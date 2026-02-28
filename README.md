@@ -91,7 +91,7 @@ oracle3 paper run --exchange polymarket --monitor
 # Requires a Solana keypair
 oracle3 live run \
   --exchange solana \
-  --strategy-ref oracle3.strategy.contrib.solana_agent_strategy:SolanAgentStrategy \
+  --strategy-ref oracle3.strategy.contrib.solana_agent_strategy:SolanaAgentStrategy \
   --solana-keypair-path ./keypair.json \
   --monitor
 ```

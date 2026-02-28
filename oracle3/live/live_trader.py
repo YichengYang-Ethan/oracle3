@@ -130,7 +130,7 @@ async def run_live_trading(
 
 
 async def run_live_paper_trading(
-    data_source: LivePolyMarketDataSource | LiveNewsDataSource | LiveRSSNewsDataSource,
+    data_source: LivePolyMarketDataSource | LiveNewsDataSource | LiveRSSNewsDataSource | DFlowDataSource,
     strategy: Strategy,
     initial_capital: Decimal,
     risk_manager: RiskManager | None = None,
@@ -660,6 +660,7 @@ async def run_live_solana_trading(
     monitor: bool = False,
     exchange_name: str = '',
     initial_capital: Decimal = Decimal('1000'),
+    emit_text: bool = True,
 ) -> None:
     """Run live trading on Solana/DFlow with real orders."""
     market_data = MarketDataManager()
@@ -684,24 +685,59 @@ async def run_live_solana_trading(
         alerter=alerter,
     )
 
+    # Reconcile on-chain USDC balance with internal position manager.
+    live_balance = await trader.reconcile_balance()
+
     # Initialize USDC position
     saved_positions = state_store.load_positions() if state_store else []
     if saved_positions:
         logger.info('Restoring %d positions from state store', len(saved_positions))
         for pos in saved_positions:
             position_manager.update_position(pos)
+        # Reconcile cash position against live on-chain balance.
+        saved_cash = position_manager.get_position(CashTicker.DFLOW_USDC)
+        if saved_cash is not None:
+            diff_pct = abs(live_balance - saved_cash.quantity) / max(
+                live_balance, Decimal('1')
+            )
+            if diff_pct > Decimal('0.01'):
+                logger.warning(
+                    'Saved cash %.4f differs from live balance %.4f by %.1f%% — using live value',
+                    saved_cash.quantity,
+                    live_balance,
+                    float(diff_pct) * 100,
+                )
+                position_manager.update_position(
+                    Position(
+                        ticker=CashTicker.DFLOW_USDC,
+                        quantity=live_balance,
+                        average_cost=Decimal('0'),
+                        realized_pnl=saved_cash.realized_pnl,
+                    )
+                )
+        else:
+            position_manager.update_position(
+                Position(
+                    ticker=CashTicker.DFLOW_USDC,
+                    quantity=live_balance,
+                    average_cost=Decimal('0'),
+                    realized_pnl=Decimal('0'),
+                )
+            )
     else:
         position_manager.update_position(
             Position(
                 ticker=CashTicker.DFLOW_USDC,
-                quantity=initial_capital,
+                quantity=live_balance,
                 average_cost=Decimal('0'),
                 realized_pnl=Decimal('0'),
             )
         )
 
     logger.info(
-        'Starting live Solana trading with wallet: %s', trader.public_key
+        'Starting live Solana trading with wallet: %s (balance: %s USDC)',
+        trader.public_key,
+        live_balance,
     )
 
     await run_live_trading(
@@ -715,12 +751,22 @@ async def run_live_solana_trading(
         drawdown_alert_pct,
         monitor=monitor,
         exchange_name=exchange_name,
+        emit_text=emit_text,
     )
 
-    logger.info('--- Final Portfolio Status ---')
-    logger.info('Cash positions: %s', position_manager.get_cash_positions())
-    logger.info('Non-cash positions: %s', position_manager.get_non_cash_positions())
-    logger.info('Total realized PnL: %s', position_manager.get_total_realized_pnl())
+    _emit_stdout('\n--- Final Portfolio Status ---', emit_text=emit_text)
+    _emit_stdout(
+        f'Cash positions: {position_manager.get_cash_positions()}',
+        emit_text=emit_text,
+    )
+    _emit_stdout(
+        f'Non-cash positions: {position_manager.get_non_cash_positions()}',
+        emit_text=emit_text,
+    )
+    _emit_stdout(
+        f'Total realized PnL: {position_manager.get_total_realized_pnl()}',
+        emit_text=emit_text,
+    )
 
 
 if __name__ == '__main__':

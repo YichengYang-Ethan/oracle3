@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import asdict
+from dataclasses import asdict, dataclass
 from typing import Any
 
 from oracle3.strategy.strategy import Strategy, StrategyContext
@@ -15,6 +15,21 @@ def _import_agents_sdk():
             'or `poetry add openai-agents` to enable tool-using AgentStrategy runs.'
         ) from exc
     return Agent, Runner, function_tool
+
+
+@dataclass
+class TradeRequest:
+    """A trade request queued by the agent's place_trade tool.
+
+    Stored during the agent run and executed by the strategy after the run
+    completes, since ``trader.place_order`` is async and cannot be called
+    from inside a synchronous ``function_tool``.
+    """
+
+    symbol: str
+    side: str  # 'buy' or 'sell'
+    quantity: float
+    limit_price: float
 
 
 class AgentStrategy(Strategy):
@@ -117,6 +132,48 @@ class AgentStrategy(Strategy):
         ctx = context or self.require_context()
         _Agent, _Runner, function_tool = _import_agents_sdk()
 
+        # Mutable list shared with the place_trade tool; the strategy reads
+        # it after the agent run completes and executes the queued trades.
+        pending_trades: list[TradeRequest] = []
+        self._pending_trades = pending_trades
+
+        @function_tool
+        def place_trade(
+            symbol: str,
+            side: str,
+            quantity: float,
+            limit_price: float,
+        ) -> str:
+            """Queue a trade to be executed after the agent run completes.
+
+            Args:
+                symbol: Ticker symbol to trade (e.g. 'BTC-YES').
+                side: Trade direction - 'buy' or 'sell'.
+                quantity: Number of shares/contracts to trade.
+                limit_price: Limit price for the order.
+
+            Returns:
+                Confirmation that the trade has been queued.
+            """
+            side_lower = side.strip().lower()
+            if side_lower not in ('buy', 'sell'):
+                return f'Invalid side "{side}". Must be "buy" or "sell".'
+            if quantity <= 0:
+                return f'Invalid quantity {quantity}. Must be > 0.'
+            if limit_price <= 0:
+                return f'Invalid limit_price {limit_price}. Must be > 0.'
+            request = TradeRequest(
+                symbol=symbol,
+                side=side_lower,
+                quantity=quantity,
+                limit_price=limit_price,
+            )
+            pending_trades.append(request)
+            return (
+                f'Trade queued: {side_lower} {quantity} of {symbol} '
+                f'@ {limit_price}. Will execute after analysis completes.'
+            )
+
         @function_tool
         def list_available_tickers() -> list[dict[str, object]]:
             """List currently visible tradable tickers."""
@@ -188,6 +245,7 @@ class AgentStrategy(Strategy):
             get_order_books,
             get_positions,
             get_recent_news,
+            place_trade,
         ]
 
     def create_openai_agent(self, context: StrategyContext | None = None) -> Any:
