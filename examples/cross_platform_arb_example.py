@@ -37,6 +37,11 @@ import asyncio
 import logging
 from decimal import Decimal
 
+from examples.strategies.cross_platform_arb_strategy import (
+    CompositeTrader,
+    CrossPlatformArbStrategy,
+    MarketMatcher,
+)
 from oracle3.core.trading_engine import TradingEngine
 from oracle3.data.composite_data_source import CompositeDataSource
 from oracle3.data.live.kalshi_data_source import LiveKalshiDataSource
@@ -46,12 +51,6 @@ from oracle3.position.position_manager import Position, PositionManager
 from oracle3.risk.risk_manager import NoRiskManager
 from oracle3.ticker.ticker import CashTicker
 from oracle3.trader.paper_trader import PaperTrader
-
-from examples.strategies.cross_platform_arb_strategy import (
-    CompositeTrader,
-    CrossPlatformArbStrategy,
-    MarketMatcher,
-)
 
 logging.basicConfig(
     level=logging.INFO,

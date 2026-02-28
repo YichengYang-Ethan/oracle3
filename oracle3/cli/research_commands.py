@@ -19,12 +19,10 @@ import click
 from oracle3.cli.utils import _emit
 from oracle3.core.trading_engine import TradingEngine
 from oracle3.data.backtest.historical_data_source import HistoricalDataSource
-from oracle3.data.backtest.history_reader import iter_history_rows
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.live.live_trader import run_live_paper_trading
 from oracle3.position.position_manager import Position, PositionManager
 from oracle3.risk.risk_manager import NoRiskManager, StandardRiskManager
-from oracle3.strategy.loader import load_strategy_class
 from oracle3.strategy.strategy import Strategy
 from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
 from oracle3.trader.paper_trader import PaperTrader

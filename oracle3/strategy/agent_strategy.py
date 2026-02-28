@@ -110,7 +110,7 @@ class AgentStrategy(Strategy):
         if news:
             fragments.append(f'event_text={news[:300]}')
         if hasattr(event, 'price'):
-            fragments.append(f'event_price={getattr(event, "price")}')
+            fragments.append(f'event_price={event.price}')
         return '\n'.join(fragments)
 
     def build_openai_tools(self, context: StrategyContext | None = None) -> list[Any]:

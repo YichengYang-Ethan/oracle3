@@ -2,7 +2,6 @@
 
 import json
 from decimal import Decimal
-from pathlib import Path
 
 import pytest
 
@@ -10,12 +9,10 @@ from oracle3.position.position_manager import Position
 from oracle3.storage.serializers import (
     deserialize_equity_point,
     deserialize_order,
-    deserialize_position,
     deserialize_ticker,
     deserialize_trade,
     serialize_equity_point,
     serialize_order,
-    serialize_position,
     serialize_ticker,
     serialize_trade,
 )

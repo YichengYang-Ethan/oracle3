@@ -163,7 +163,7 @@ select = [
     "B",  # flake8-bugbear
     "UP",  # pyupgrade
 ]
-ignore = ["E203", "E266", "E501"]
+ignore = ["E203", "E266", "E501", "UP038", "B905"]
 
 [tool.ruff.format]
 quote-style = "single"
@@ -176,7 +176,7 @@ max-complexity = 10
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
-"tests/*" = ["S101"]
+"tests/*" = ["S101", "B011"]
 "oracle3/strategy/simple_strategy.py" = ["C901"]
 "oracle3/data/live/live_data_source.py" = ["C901"]
 "oracle3/data/live/dflow_data_source.py" = ["C901"]
@@ -184,7 +184,19 @@ max-complexity = 10
 "oracle3/blinks/server.py" = ["C901"]
 "oracle3/cli/market_commands.py" = ["C901"]
 "oracle3/cli/monitor.py" = ["C901"]
-"scripts/*" = ["C901"]
+"oracle3/cli/research_commands.py" = ["C901"]
+"oracle3/core/trading_engine.py" = ["C901"]
+"oracle3/trader/polymarket_trader.py" = ["C901"]
+"oracle3/backtest/backtester.py" = ["C901"]
+"scripts/*" = ["C901", "F841", "B007"]
+"examples/*" = ["C901", "F841"]
+"oracle3/data/live/polymarket_orderflow.py" = ["C901"]
+"oracle3/data/preprocessing/news_processor.py" = ["F841", "C901"]
+"oracle3/strategy/strategy.py" = ["C901", "F841", "B027"]
+"oracle3/strategy/agent_strategy.py" = ["C901"]
+"oracle3/strategy/market_making_strategy.py" = ["C901"]
+"oracle3/strategy/orderbook_imbalance_strategy.py" = ["C901"]
+"oracle3/strategy/contrib/debate_strategy.py" = ["C901"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"

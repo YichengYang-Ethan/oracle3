@@ -48,7 +48,7 @@ class TradingMonitor:
         # Keyboard interaction state
         self.PANELS: list[str] = ['decisions', 'orderbooks', 'news', 'activity_log']
         self.focused_panel: str = 'decisions'
-        self.scroll_offsets: dict[str, int] = {p: 0 for p in self.PANELS}
+        self.scroll_offsets: dict[str, int] = dict.fromkeys(self.PANELS, 0)
         self.paused: bool = False
 
     def _next_panel(self) -> None:

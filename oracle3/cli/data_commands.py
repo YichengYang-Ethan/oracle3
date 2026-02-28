@@ -4,10 +4,8 @@ from __future__ import annotations
 
 import asyncio
 import json
-import signal
 import time
 from datetime import datetime, timezone
-from decimal import Decimal
 from pathlib import Path
 
 import click

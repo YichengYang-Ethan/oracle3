@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import random
 import textwrap
-from datetime import datetime
 
 
 def build_system_prompt() -> str:

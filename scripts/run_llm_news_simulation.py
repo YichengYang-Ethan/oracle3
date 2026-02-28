@@ -17,7 +17,7 @@ import random
 import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal
 from typing import Any
 
 import httpx
@@ -679,7 +679,7 @@ def print_report(
         print(f"  Timeframe:            {start:%Y-%m-%d %H:%M} -> {end:%Y-%m-%d %H:%M} UTC")
 
     # -- Markets Summary --
-    print(f"\n--- Markets ---")
+    print("\n--- Markets ---")
     for m in markets:
         mid = (m.best_bid + m.best_ask) / 2
         hist_len = len(m.price_history)
@@ -689,7 +689,7 @@ def print_report(
         )
 
     # -- Per-Market Trade Summary --
-    print(f"\n--- Per-Market Trade Summary ---")
+    print("\n--- Per-Market Trade Summary ---")
     market_trades: dict[str, list[TradeRecord]] = {}
     for t in trade_log:
         market_trades.setdefault(t.ticker_symbol, []).append(t)
@@ -743,7 +743,7 @@ def print_report(
             )
 
     # -- Overall Summary --
-    print(f"\n--- Overall Performance ---")
+    print("\n--- Overall Performance ---")
     final_value = snapshots[-1].total_value if snapshots else INITIAL_CAPITAL
     total_return = (
         ((final_value - INITIAL_CAPITAL) / INITIAL_CAPITAL * 100)
@@ -774,7 +774,7 @@ def print_report(
     non_cash = position_manager.get_non_cash_positions()
     open_positions = [p for p in non_cash if p.quantity > Decimal("0")]
     if open_positions:
-        print(f"\n--- Open Positions at End ---")
+        print("\n--- Open Positions at End ---")
         print(f"  {'Symbol':<10} {'Qty':>8} {'Avg Cost':>10} {'Realized':>12}")
         print("  " + "-" * 44)
         for pos in open_positions:

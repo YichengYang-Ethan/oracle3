@@ -13,7 +13,6 @@ from oracle3.config.config import (
     RiskConfig,
     StorageConfig,
     StrategyConfig,
-    TelegramConfig,
 )
 
 # ---------------------------------------------------------------------------

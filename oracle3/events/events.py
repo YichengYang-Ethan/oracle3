@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 from oracle3.ticker.ticker import Ticker
 
 if TYPE_CHECKING:
-    from oracle3.order.order_book import OrderBook
+    pass
 
 
 class Event(ABC):

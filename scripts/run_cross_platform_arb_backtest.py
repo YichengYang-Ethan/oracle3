@@ -29,23 +29,20 @@ from pathlib import Path
 # Ensure project root is importable
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from oracle3.core.trading_engine import TradingEngine
-from oracle3.data.data_source import DataSource
-from oracle3.data.market_data_manager import MarketDataManager
-from oracle3.events.events import Event, PriceChangeEvent
-from oracle3.position.position_manager import Position, PositionManager
-from oracle3.risk.risk_manager import NoRiskManager
-from oracle3.ticker.ticker import CashTicker, KalshiTicker, PolyMarketTicker, Ticker
-from oracle3.trader.paper_trader import PaperTrader
-from oracle3.trader.trader import Trader
-from oracle3.trader.types import TradeSide
-
 from examples.strategies.cross_platform_arb_strategy import (
     CompositeTrader,
     CrossPlatformArbStrategy,
     MarketMatcher,
     MatchedMarket,
 )
+from oracle3.core.trading_engine import TradingEngine
+from oracle3.data.data_source import DataSource
+from oracle3.data.market_data_manager import MarketDataManager
+from oracle3.events.events import Event, PriceChangeEvent
+from oracle3.position.position_manager import Position, PositionManager
+from oracle3.risk.risk_manager import NoRiskManager
+from oracle3.ticker.ticker import CashTicker, KalshiTicker, PolyMarketTicker
+from oracle3.trader.paper_trader import PaperTrader
 
 logging.basicConfig(
     level=logging.INFO,

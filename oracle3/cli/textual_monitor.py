@@ -17,7 +17,6 @@ from decimal import Decimal
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from rich.table import Table
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding

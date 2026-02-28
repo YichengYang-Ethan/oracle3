@@ -245,7 +245,7 @@ class Strategy(ABC):
     def bind_context(self, event: Event, trader: Trader) -> StrategyContext:
         """Bind the shared strategy context for this timestep."""
         context = StrategyContext(event=event, trader=trader)
-        setattr(self, '_runtime_context', context)
+        self._runtime_context = context
         return context
 
     def get_context(self) -> StrategyContext | None:

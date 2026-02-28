@@ -44,7 +44,7 @@ from swm_agent.position.position_manager import Position, PositionManager
 from swm_agent.risk.risk_manager import StandardRiskManager
 from swm_agent.ticker.ticker import CashTicker, PolyMarketTicker
 from swm_agent.trader.paper_trader import PaperTrader
-from swm_agent.trader.types import OrderStatus, TradeSide
+from swm_agent.trader.types import TradeSide
 
 # ---------------------------------------------------------------------------
 # Config
@@ -820,13 +820,13 @@ def print_report(
     print("  MULTI-STRATEGY BACKTEST REPORT — REAL POLYMARKET DATA")
     print(sep)
 
-    print(f"\n--- Parameters ---")
+    print("\n--- Parameters ---")
     print(f"  Initial Capital:  ${INITIAL_CAPITAL:,.2f}")
     print(f"  Commission:       {COMMISSION_RATE}")
     print(f"  Markets:          {len(markets)}")
     print(f"  Timeframe:        {timeframe}")
 
-    print(f"\n--- Markets ---")
+    print("\n--- Markets ---")
     for m in markets:
         mid = (m.best_bid + m.best_ask) / 2
         print(
@@ -835,7 +835,7 @@ def print_report(
         )
 
     # --- Comparison table ---
-    print(f"\n--- Strategy Comparison ---")
+    print("\n--- Strategy Comparison ---")
     header = (
         f"  {'Strategy':<22} {'Return%':>9} {'Sharpe':>8} "
         f"{'MaxDD%':>8} {'WinRate':>8} {'PF':>6} "
