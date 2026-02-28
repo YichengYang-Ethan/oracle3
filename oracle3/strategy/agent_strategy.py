@@ -258,7 +258,9 @@ class AgentStrategy(Strategy):
         # If using a non-OpenAI provider (DeepSeek, etc.), use chat completions
         if base_url and 'api.openai.com' not in base_url:
             try:
-                from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+                from agents.models.openai_chatcompletions import (
+                    OpenAIChatCompletionsModel,
+                )
                 from openai import AsyncOpenAI
 
                 client = AsyncOpenAI(base_url=base_url)
