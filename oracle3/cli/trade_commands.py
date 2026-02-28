@@ -119,6 +119,24 @@ def stop_cmd(socket: str | None, as_json: bool) -> None:
         raise SystemExit(1)
 
 
+@trade.command('estop')
+@click.option(
+    '--socket', '-s', default=None, type=click.Path(), help='Control socket path'
+)
+@click.option(
+    '--json', 'as_json', is_flag=True, default=False, help='Emit JSON response'
+)
+def estop_cmd(socket: str | None, as_json: bool) -> None:
+    """EMERGENCY STOP: immediately halt the engine."""
+    sock = _resolve_socket(socket)
+    resp = run_command('stop', socket_path=sock)
+    _print_response(resp, as_json)
+    if resp.get('ok'):
+        click.echo('EMERGENCY STOP signal sent')
+    if not resp.get('ok'):
+        raise SystemExit(1)
+
+
 @trade.command('swap')
 @click.option(
     '--strategy-ref',

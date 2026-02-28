@@ -13,6 +13,7 @@ import click
 
 from oracle3.backtest.backtester import run_backtest
 from oracle3.cli.utils import _emit
+from oracle3.data.backtest.historical_data_source import HistoricalDataSource
 from oracle3.data.composite_data_source import CompositeDataSource
 from oracle3.data.live.dflow_data_source import DFlowDataSource
 from oracle3.data.live.google_news_data_source import GoogleNewsDataSource
@@ -641,6 +642,14 @@ def paper() -> None:
 @click.option(
     '--monitor', '-m', is_flag=True, default=False, help='Show live TUI dashboard'
 )
+@click.option(
+    '--history-file',
+    default=None,
+    type=click.Path(exists=True, dir_okay=False),
+    help='Replay from a historical JSONL file instead of live data.',
+)
+@click.option('--market-id', default=None, help='Market ID for historical replay.')
+@click.option('--event-id', default=None, help='Event ID for historical replay.')
 def paper_run(
     exchange: str,
     duration: float | None,
@@ -649,8 +658,16 @@ def paper_run(
     strategy_kwargs_json: str | None,
     as_json: bool,
     monitor: bool,
+    history_file: str | None,
+    market_id: str | None,
+    event_id: str | None,
 ) -> None:
     """Run paper trading against a live exchange feed."""
+    if history_file and (not market_id or not event_id):
+        raise click.ClickException(
+            '--history-file requires both --market-id and --event-id'
+        )
+
     strategy_kwargs = _parse_strategy_kwargs_json(strategy_kwargs_json)
     if strategy_kwargs and not strategy_ref:
         raise click.ClickException(
@@ -679,7 +696,26 @@ def paper_run(
         as_json=as_json,
     )
 
-    if exchange == 'polymarket':
+    if history_file:
+        ticker = PolyMarketTicker(
+            symbol=market_id,
+            market_id=market_id,
+            event_id=event_id,
+        )
+        data_source = HistoricalDataSource(history_file, ticker)
+        asyncio.run(
+            run_live_paper_trading(
+                data_source=data_source,
+                strategy=strategy_obj,
+                initial_capital=capital,
+                duration=duration,
+                continuous=False,
+                monitor=monitor,
+                exchange_name='Historical',
+                emit_text=not as_json,
+            )
+        )
+    elif exchange == 'polymarket':
         data_source = _build_news_augmented_source('polymarket')
         asyncio.run(
             run_live_paper_trading(
