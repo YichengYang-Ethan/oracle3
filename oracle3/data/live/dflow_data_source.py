@@ -119,13 +119,19 @@ class DFlowDataSource(DataSource):
         event_ticker = market.get('_event_ticker', '')
         series_ticker = market.get('_series_ticker', '')
 
-        # DFlow prices may be in different formats
-        yes_bid = market.get('yesBid', market.get('yes_bid', 0)) or 0
-        yes_ask = market.get('yesAsk', market.get('yes_ask', 0)) or 0
+        # DFlow prices may be strings or numbers — coerce to float
+        def _to_float(v: Any) -> float:
+            try:
+                return float(v) if v else 0.0
+            except (TypeError, ValueError):
+                return 0.0
+
+        yes_bid = _to_float(market.get('yesBid', market.get('yes_bid', 0)))
+        yes_ask = _to_float(market.get('yesAsk', market.get('yes_ask', 0)))
 
         # Try alternate price fields
         if yes_bid == 0 and yes_ask == 0:
-            last_price = market.get('lastPrice', market.get('last_price', 0)) or 0
+            last_price = _to_float(market.get('lastPrice', market.get('last_price', 0)))
             if last_price > 0:
                 # Synthesize bid/ask from last price, clamped to valid range
                 yes_bid = max(0.01, last_price - 0.01)
