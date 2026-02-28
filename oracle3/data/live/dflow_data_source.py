@@ -3,6 +3,7 @@ import json
 import logging
 import os
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -13,25 +14,46 @@ from ..data_source import DataSource
 
 logger = logging.getLogger(__name__)
 
+_DEFAULT_CACHE_DIR = Path('~/.oracle3/cache')
+
+
+def _resolve_cache_path(path: str) -> Path:
+    """Resolve *path* to an absolute location.
+
+    Relative paths are placed under ``~/.oracle3/cache/`` so that the
+    cache file always lands in a well-known directory.
+    """
+    p = Path(path).expanduser()
+    if not p.is_absolute():
+        p = _DEFAULT_CACHE_DIR.expanduser() / p
+    return p.resolve()
+
 
 class DFlowDataSource(DataSource):
     """Polls DFlow prediction markets API for Solana-tokenized markets."""
 
     METADATA_BASE = 'https://dev-prediction-markets-api.dflow.net'
+    _MAX_BACKOFF = 300.0  # 5 minutes
 
     def __init__(
         self,
         polling_interval: float = 60.0,
         event_cache_file: str = 'dflow_events_cache.jsonl',
         reprocess_on_start: bool = True,
+        max_markets: int = 500,
     ):
         self.polling_interval = polling_interval
-        self.event_cache_file = event_cache_file
+        self.max_markets = max_markets
+        self.event_cache_file = str(_resolve_cache_path(event_cache_file))
         self.processed_event_tickers: set[str] = set()
         self.event_queue: asyncio.Queue = asyncio.Queue()
         self.last_prices: dict[str, tuple[float, float]] = {}
         self._news_fetched_events: set[str] = set()
         self._poll_task: asyncio.Task | None = None
+
+        # Ensure cache directory exists
+        cache_path = Path(self.event_cache_file)
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
 
         # Load cache
         if os.path.exists(self.event_cache_file):
@@ -105,9 +127,9 @@ class DFlowDataSource(DataSource):
         if yes_bid == 0 and yes_ask == 0:
             last_price = market.get('lastPrice', market.get('last_price', 0)) or 0
             if last_price > 0:
-                # Synthesize bid/ask from last price
-                yes_bid = last_price - 0.01
-                yes_ask = last_price + 0.01
+                # Synthesize bid/ask from last price, clamped to valid range
+                yes_bid = max(0.01, last_price - 0.01)
+                yes_ask = min(0.99, last_price + 0.01)
 
         # Get token mints if available
         yes_mint = market.get('yesMint', market.get('yes_mint', ''))
@@ -184,15 +206,19 @@ class DFlowDataSource(DataSource):
             logger.warning('News emit error for "%s": %s', market_question[:50], e)
 
     async def _poll_data(self) -> None:
+        backoff = self.polling_interval
         while True:
             try:
                 markets = await self._fetch_markets()
                 logger.info('Fetched %d DFlow markets', len(markets))
 
+                # Reset backoff on success
+                backoff = self.polling_interval
+
                 new_event_tickers: set[str] = set()
                 news_queue: list[tuple[str, str, SolanaTicker]] = []
 
-                for market in markets[:100]:
+                for market in markets[: self.max_markets]:
                     market_ticker = market.get('ticker', market.get('marketTicker', ''))
                     event_ticker = market.get('_event_ticker', '')
                     market_title = market.get('title', market.get('question', ''))
@@ -240,6 +266,11 @@ class DFlowDataSource(DataSource):
 
                 if news_queue:
                     batch = news_queue[:5]
+                    if len(news_queue) > 5:
+                        logger.warning(
+                            'Dropped %d news events (batch cap)',
+                            len(news_queue) - 5,
+                        )
                     logger.info(
                         'Emitting news for %d/%d new DFlow markets...',
                         len(batch),
@@ -252,8 +283,17 @@ class DFlowDataSource(DataSource):
                             ticker=tkr,
                         )
 
+            except (httpx.HTTPError, httpx.StreamError) as e:
+                logger.warning(
+                    'Network error in DFlow polling loop (backoff=%.0fs): %s',
+                    backoff,
+                    e,
+                )
+                await asyncio.sleep(backoff)
+                backoff = min(backoff * 2, self._MAX_BACKOFF)
+                continue
             except Exception as e:
-                logger.error('Error in DFlow polling loop: %s', e)
+                logger.exception('Error in DFlow polling loop: %s', e)
 
             await asyncio.sleep(self.polling_interval)
 

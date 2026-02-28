@@ -50,9 +50,19 @@ class OnChainLogger:
             'side': side,
             'price': price,
             'qty': quantity,
-            'ref': trade_signature[:16],
+            'ref': trade_signature,
             'ts': datetime.now(timezone.utc).isoformat(),
         }, separators=(',', ':'))
+
+        # Enforce Solana memo size limit (500 bytes).
+        memo_bytes = memo_data.encode('utf-8')
+        if len(memo_bytes) > 500:
+            # Truncate the market ticker to fit within limits.
+            memo_dict = json.loads(memo_data)
+            excess = len(memo_bytes) - 500
+            ticker = memo_dict.get('market', '')
+            memo_dict['market'] = ticker[:max(1, len(ticker) - excess)]
+            memo_data = json.dumps(memo_dict, separators=(',', ':'))
 
         try:
             from solders.hash import Hash
@@ -78,7 +88,11 @@ class OnChainLogger:
                     'method': 'getLatestBlockhash',
                     'params': [{'commitment': 'finalized'}],
                 })
-                blockhash_str = resp.json()['result']['value']['blockhash']
+                rpc_result = resp.json()
+                if 'error' in rpc_result:
+                    logger.error('RPC error fetching blockhash: %s', rpc_result['error'])
+                    return ''
+                blockhash_str = rpc_result['result']['value']['blockhash']
 
             blockhash = Hash.from_string(blockhash_str)
             msg = MessageV0.try_compile(
@@ -119,7 +133,7 @@ class OnChainLogger:
     async def get_trade_log(self, limit: int = 20) -> list[dict[str, Any]]:
         """Fetch recent memo transactions from this wallet."""
         try:
-            async with httpx.AsyncClient(timeout=15.0) as client:
+            async with httpx.AsyncClient(timeout=10.0) as client:
                 resp = await client.post(self.rpc_url, json={
                     'jsonrpc': '2.0',
                     'id': 1,
@@ -128,13 +142,11 @@ class OnChainLogger:
                 })
                 result = resp.json()
 
-            signatures = result.get('result', [])
-            trades: list[dict[str, Any]] = []
+                signatures = result.get('result', [])
+                trades: list[dict[str, Any]] = []
 
-            for sig_info in signatures:
-                sig = sig_info.get('signature', '')
-                resp2 = None
-                async with httpx.AsyncClient(timeout=10.0) as client:
+                for sig_info in signatures:
+                    sig = sig_info.get('signature', '')
                     resp2 = await client.post(self.rpc_url, json={
                         'jsonrpc': '2.0',
                         'id': 1,
@@ -143,25 +155,25 @@ class OnChainLogger:
                     })
                     tx_data = resp2.json().get('result')
 
-                if not tx_data:
-                    continue
+                    if not tx_data:
+                        continue
 
-                # Extract memo data from log messages
-                log_messages = tx_data.get('meta', {}).get('logMessages', [])
-                for msg in log_messages:
-                    if 'Program log: Memo' in msg or '"app":"oracle3"' in msg:
-                        # Try to parse the memo JSON
-                        for part in msg.split('Memo (len '):
-                            if '"oracle3"' in part:
-                                start = part.find('{')
-                                end = part.rfind('}') + 1
-                                if start >= 0 and end > start:
-                                    try:
-                                        memo = json.loads(part[start:end])
-                                        memo['signature'] = sig
-                                        trades.append(memo)
-                                    except json.JSONDecodeError:
-                                        pass
+                    # Extract memo data from log messages
+                    log_messages = tx_data.get('meta', {}).get('logMessages', [])
+                    for msg in log_messages:
+                        if 'Program log: Memo' in msg or '"app":"oracle3"' in msg:
+                            # Try to parse the memo JSON
+                            for part in msg.split('Memo (len '):
+                                if '"oracle3"' in part:
+                                    start = part.find('{')
+                                    end = part.rfind('}') + 1
+                                    if start >= 0 and end > start:
+                                        try:
+                                            memo = json.loads(part[start:end])
+                                            memo['signature'] = sig
+                                            trades.append(memo)
+                                        except json.JSONDecodeError:
+                                            pass
 
             return trades
 

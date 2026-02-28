@@ -33,7 +33,7 @@ from oracle3.live.live_trader import (
 )
 from oracle3.strategy.loader import load_strategy_class as _shared_load_strategy_class
 from oracle3.strategy.strategy import Strategy
-from oracle3.ticker.ticker import PolyMarketTicker
+from oracle3.ticker.ticker import PolyMarketTicker, SolanaTicker
 from oracle3.trader.trader import Trader
 
 
@@ -105,15 +105,21 @@ def _build_news_augmented_source(exchange: str):
         raise click.ClickException(f'Unsupported exchange for market feed: {exchange}')
 
     # Keep Google polling conservative to reduce block/rate-limit risk.
+    queries = [
+        'polymarket prediction market',
+        'kalshi prediction market',
+        'US politics elections 2026',
+        'federal reserve inflation jobs report',
+        'geopolitics world events',
+        'crypto regulation SEC CFTC',
+    ]
+    if exchange in ('solana', 'dflow'):
+        queries.extend([
+            'solana prediction market',
+            'dflow prediction market',
+        ])
     google_source = GoogleNewsDataSource(
-        queries=[
-            'polymarket prediction market',
-            'kalshi prediction market',
-            'US politics elections 2026',
-            'federal reserve inflation jobs report',
-            'geopolitics world events',
-            'crypto regulation SEC CFTC',
-        ],
+        queries=queries,
         cache_file='google_news_cache.jsonl',
         polling_interval=600.0,
         max_articles_per_poll=8,
@@ -349,12 +355,20 @@ class {class_name}(AgentStrategy):
     help='Mock events to feed when --dry-run is set.',
 )
 @click.option('--json', 'as_json', is_flag=True, default=False, help='Emit JSON result')
+@click.option(
+    '--exchange',
+    type=click.Choice(['polymarket', 'kalshi', 'solana']),
+    default='polymarket',
+    show_default=True,
+    help='Exchange to simulate ticker type for dry-run.',
+)
 def strategy_validate(
     strategy_ref: str,
     strategy_kwargs_json: str | None,
     do_dry_run: bool,
     events: int,
     as_json: bool,
+    exchange: str,
 ) -> None:
     """Validate that a strategy is importable, constructible, and (optionally) runtime-safe."""
     strategy_kwargs = _parse_strategy_kwargs_json(strategy_kwargs_json)
@@ -376,19 +390,33 @@ def strategy_validate(
         from oracle3.ticker.ticker import CashTicker
         from oracle3.trader.paper_trader import PaperTrader
 
-        ticker = PolyMarketTicker(
-            symbol='DRYRUN_YES',
-            name='Dry Run Market',
-            token_id='DRYRUN_YES',
-            market_id='DRYRUN_MKT',
-            event_id='DRYRUN_EVT',
-            no_token_id='DRYRUN_NO',
-        )
+        if exchange == 'solana':
+            ticker = SolanaTicker(
+                symbol='DRYRUN_YES',
+                name='Dry Run Market',
+                yes_mint='DRYRUN_YES',
+                no_mint='DRYRUN_NO',
+                market_ticker='DRYRUN_MKT',
+                event_ticker='DRYRUN_EVT',
+            )
+        else:
+            ticker = PolyMarketTicker(
+                symbol='DRYRUN_YES',
+                name='Dry Run Market',
+                token_id='DRYRUN_YES',
+                market_id='DRYRUN_MKT',
+                event_id='DRYRUN_EVT',
+                no_token_id='DRYRUN_NO',
+            )
         market_data = MarketDataManager()
         position_manager = PositionManager()
+        cash_ticker = (
+            CashTicker.DFLOW_USDC if exchange == 'solana'
+            else CashTicker.POLYMARKET_USDC
+        )
         position_manager.update_position(
             Position(
-                ticker=CashTicker.POLYMARKET_USDC,
+                ticker=cash_ticker,
                 quantity=Decimal('10000'),
                 average_cost=Decimal('0'),
                 realized_pnl=Decimal('0'),
@@ -697,11 +725,19 @@ def paper_run(
     )
 
     if history_file:
-        ticker = PolyMarketTicker(
-            symbol=market_id,
-            market_id=market_id,
-            event_id=event_id,
-        )
+        if exchange == 'solana':
+            ticker = SolanaTicker(
+                symbol=market_id,
+                name=market_id,
+                market_ticker=market_id,
+                event_ticker=event_id,
+            )
+        else:
+            ticker = PolyMarketTicker(
+                symbol=market_id,
+                market_id=market_id,
+                event_id=event_id,
+            )
         data_source = HistoricalDataSource(history_file, ticker)
         asyncio.run(
             run_live_paper_trading(
@@ -920,6 +956,11 @@ def live_run(
         )
     else:
         # solana
+        keypair = solana_keypair_path or os.environ.get('SOLANA_KEYPAIR_PATH')
+        if keypair and not Path(keypair).exists():
+            raise click.ClickException(
+                f'Solana keypair file not found: {keypair}'
+            )
         data_source = DFlowDataSource(
             event_cache_file='dflow_events_cache.jsonl',
             polling_interval=60.0,
@@ -929,7 +970,7 @@ def live_run(
             run_live_solana_trading(
                 data_source=data_source,
                 strategy=strategy_obj,
-                keypair_path=solana_keypair_path,
+                keypair_path=keypair,
                 rpc_url=solana_rpc_url,
                 duration=duration,
                 continuous=True,

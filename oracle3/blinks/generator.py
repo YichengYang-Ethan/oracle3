@@ -22,6 +22,9 @@ def generate_blink_url(
     Returns:
         A shareable Solana Action URL
     """
+    if side not in ('yes', 'no'):
+        raise ValueError(f'side must be "yes" or "no", got {side!r}')
+
     base = base_url.rstrip('/')
     action_url = f'{base}/api/trade/{quote(market_ticker)}'
 
@@ -39,3 +42,21 @@ def generate_action_url(
     """Generate the raw Action GET URL (for embedding in tweets, etc.)."""
     base = base_url.rstrip('/')
     return f'{base}/api/trade/{quote(market_ticker)}'
+
+
+def generate_dialect_url(base_url: str, market_ticker: str) -> str:
+    """Generate a Dialect-wrapped Solana Action URL.
+
+    Dialect provides a universal Blink renderer. This wraps the action URL
+    so wallets and Dialect clients can render the trade UI automatically.
+
+    Args:
+        base_url: The base URL of the Blinks server
+        market_ticker: The DFlow market ticker
+
+    Returns:
+        A Dialect-wrapped URL (https://dial.to/?action=solana-action:...)
+    """
+    action_url = generate_action_url(base_url, market_ticker)
+    encoded = quote(action_url, safe='')
+    return f'https://dial.to/?action=solana-action:{encoded}'
