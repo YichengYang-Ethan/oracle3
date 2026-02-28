@@ -1,0 +1,38 @@
+{
+  "total_events": 88866,
+  "total_decisions": 200,
+  "arb_trades": 200,
+  "reverse_arb_signals": 0,
+  "hold_decisions": 0,
+  "poly_orders": 44423,
+  "kalshi_orders": 2123,
+  "total_orders": 46546,
+  "poly_cash_remaining": "10000",
+  "kalshi_cash_remaining": "6.47300",
+  "total_cash": "10006.47300",
+  "total_pnl": "-9993.52700",
+  "pnl_pct": "-49.9676",
+  "poly_market_positions": 0,
+  "kalshi_market_positions": 10,
+  "avg_edge": 0.96725,
+  "max_edge": 0.9895,
+  "min_edge": 0.9089,
+  "data_stats": {
+    "matches": 10,
+    "poly_points": 44433,
+    "kalshi_points": 44433,
+    "arb_windows": 44433
+  },
+  "params": {
+    "initial_capital": "10000",
+    "min_edge": 0.02,
+    "trade_size": "10",
+    "cooldown": 0,
+    "base_spread": 0.02,
+    "spread_vol": 0.01,
+    "lag_steps": 3,
+    "noise_std": 0.008,
+    "max_matches": 10,
+    "seed": 42
+  }
+}

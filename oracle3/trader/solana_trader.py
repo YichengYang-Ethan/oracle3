@@ -1,0 +1,324 @@
+from __future__ import annotations
+
+import asyncio
+import base64
+import json
+import logging
+import os
+import uuid
+from decimal import Decimal
+from typing import TYPE_CHECKING, Any
+
+import httpx
+
+from oracle3.data.market_data_manager import MarketDataManager
+from oracle3.position.position_manager import PositionManager
+from oracle3.risk.risk_manager import RiskManager
+from oracle3.ticker.ticker import SolanaTicker, Ticker
+from oracle3.trader.trader import Trader
+from oracle3.trader.types import (
+    Order,
+    OrderFailureReason,
+    OrderStatus,
+    PlaceOrderResult,
+    Trade,
+    TradeSide,
+)
+
+if TYPE_CHECKING:
+    from oracle3.alerts.alerter import Alerter
+
+logger = logging.getLogger(__name__)
+
+
+def _load_keypair(
+    keypair: Any | None = None,
+    keypair_path: str | None = None,
+) -> Any:
+    """Load a Solana keypair from arg, file, or env var."""
+    from solders.keypair import Keypair
+
+    if keypair is not None:
+        return keypair
+
+    path = keypair_path or os.environ.get('SOLANA_KEYPAIR_PATH')
+    if path:
+        with open(path) as f:
+            data = json.load(f)
+        if isinstance(data, list):
+            return Keypair.from_bytes(bytes(data))
+        raise ValueError(f'Unsupported keypair format in {path}')
+
+    raw = os.environ.get('SOLANA_PRIVATE_KEY')
+    if raw:
+        try:
+            key_bytes = base64.b58decode(raw)
+        except Exception:
+            key_bytes = base64.b64decode(raw)
+        return Keypair.from_bytes(key_bytes)
+
+    raise ValueError(
+        'Solana keypair required. Pass keypair, keypair_path, '
+        'or set SOLANA_KEYPAIR_PATH / SOLANA_PRIVATE_KEY env var.'
+    )
+
+
+class SolanaTrader(Trader):
+    """Trader that executes on Solana via DFlow Trade API."""
+
+    TRADE_API_BASE = 'https://dev-quote-api.dflow.net'
+
+    def __init__(
+        self,
+        market_data: MarketDataManager,
+        risk_manager: RiskManager,
+        position_manager: PositionManager,
+        keypair: Any | None = None,
+        keypair_path: str | None = None,
+        rpc_url: str = 'https://api.mainnet-beta.solana.com',
+        commission_rate: Decimal = Decimal('0.0'),
+        alerter: Alerter | None = None,
+    ):
+        super().__init__(market_data, risk_manager, position_manager, alerter=alerter)
+        self.commission_rate = commission_rate
+        self.rpc_url = rpc_url
+        self._keypair = _load_keypair(keypair, keypair_path)
+        self.orders: list[Order] = []
+
+    @property
+    def public_key(self) -> str:
+        return str(self._keypair.pubkey())
+
+    async def _request_trade_tx(
+        self,
+        side: str,
+        ticker: SolanaTicker,
+        price_cents: int,
+        quantity: int,
+    ) -> bytes:
+        """Request a ready-to-sign transaction from DFlow Trade API."""
+        payload = {
+            'marketTicker': ticker.market_ticker,
+            'side': side,
+            'price': price_cents,
+            'count': quantity,
+            'owner': self.public_key,
+        }
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(
+                f'{self.TRADE_API_BASE}/api/v1/order',
+                json=payload,
+            )
+            resp.raise_for_status()
+            data = resp.json()
+
+        tx_b64 = data.get('transaction', '')
+        if not tx_b64:
+            raise ValueError(f'DFlow API returned no transaction: {data}')
+        return base64.b64decode(tx_b64)
+
+    async def _sign_and_submit(self, tx_bytes: bytes) -> str:
+        """Deserialize, sign, and submit a Solana transaction."""
+        from solders.transaction import VersionedTransaction
+
+        tx = VersionedTransaction.from_bytes(tx_bytes)
+
+        # Sign the transaction
+        signed_tx = VersionedTransaction(tx.message, [self._keypair])
+        raw = bytes(signed_tx)
+
+        # Submit via RPC
+        tx_b64 = base64.b64encode(raw).decode('ascii')
+        rpc_payload = {
+            'jsonrpc': '2.0',
+            'id': 1,
+            'method': 'sendTransaction',
+            'params': [
+                tx_b64,
+                {'encoding': 'base64', 'skipPreflight': False},
+            ],
+        }
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            resp = await client.post(self.rpc_url, json=rpc_payload)
+            resp.raise_for_status()
+            result = resp.json()
+
+        if 'error' in result:
+            raise RuntimeError(f'Solana RPC error: {result["error"]}')
+
+        signature = result.get('result', '')
+        logger.info('Transaction submitted: %s', signature)
+        return signature
+
+    async def _confirm_transaction(self, signature: str, timeout: float = 30.0) -> bool:
+        """Poll Solana RPC for transaction confirmation."""
+        deadline = asyncio.get_event_loop().time() + timeout
+        while asyncio.get_event_loop().time() < deadline:
+            rpc_payload = {
+                'jsonrpc': '2.0',
+                'id': 1,
+                'method': 'getSignatureStatuses',
+                'params': [[signature]],
+            }
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(self.rpc_url, json=rpc_payload)
+                result = resp.json()
+
+            statuses = result.get('result', {}).get('value', [])
+            if statuses and statuses[0] is not None:
+                status = statuses[0]
+                if status.get('err') is not None:
+                    logger.error('Transaction failed: %s', status['err'])
+                    return False
+                confirmation = status.get('confirmationStatus', '')
+                if confirmation in ('confirmed', 'finalized'):
+                    return True
+
+            await asyncio.sleep(1.0)
+
+        logger.warning('Transaction confirmation timed out: %s', signature)
+        return False
+
+    async def _get_spl_balance(self, mint: str) -> Decimal:
+        """Check SPL token balance for a given mint."""
+        rpc_payload = {
+            'jsonrpc': '2.0',
+            'id': 1,
+            'method': 'getTokenAccountsByOwner',
+            'params': [
+                self.public_key,
+                {'mint': mint},
+                {'encoding': 'jsonParsed'},
+            ],
+        }
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.post(self.rpc_url, json=rpc_payload)
+            result = resp.json()
+
+        accounts = result.get('result', {}).get('value', [])
+        total = Decimal('0')
+        for acct in accounts:
+            info = acct.get('account', {}).get('data', {}).get('parsed', {}).get('info', {})
+            amount = info.get('tokenAmount', {}).get('uiAmountString', '0')
+            total += Decimal(amount)
+        return total
+
+    async def _alert_rejected(self, reason: OrderFailureReason, ticker: Ticker) -> None:
+        if self.alerter:
+            try:
+                await self.alerter.on_order_rejected(reason, ticker)
+            except Exception:
+                pass
+
+    async def place_order(
+        self,
+        side: TradeSide,
+        ticker: Ticker,
+        limit_price: Decimal,
+        quantity: Decimal,
+        client_order_id: str | None = None,
+    ) -> PlaceOrderResult:
+        guard_failure = self._check_order_guard(client_order_id)
+        if guard_failure is not None:
+            await self._alert_rejected(guard_failure, ticker)
+            return PlaceOrderResult(order=None, failure_reason=guard_failure)
+
+        if quantity <= 0 or limit_price <= 0:
+            await self._alert_rejected(OrderFailureReason.INVALID_ORDER, ticker)
+            return PlaceOrderResult(
+                order=None, failure_reason=OrderFailureReason.INVALID_ORDER
+            )
+
+        if not isinstance(ticker, SolanaTicker) or not ticker.market_ticker:
+            await self._alert_rejected(OrderFailureReason.INVALID_ORDER, ticker)
+            return PlaceOrderResult(
+                order=None, failure_reason=OrderFailureReason.INVALID_ORDER
+            )
+
+        # No short selling without position
+        if side == TradeSide.SELL:
+            position = self.position_manager.get_position(ticker)
+            if position is None or position.quantity < quantity:
+                await self._alert_rejected(OrderFailureReason.INVALID_ORDER, ticker)
+                return PlaceOrderResult(
+                    order=None, failure_reason=OrderFailureReason.INVALID_ORDER
+                )
+
+        # Cash check
+        if side == TradeSide.BUY:
+            cash_position = self.position_manager.get_position(ticker.collateral)
+            cash_required = quantity * limit_price * (Decimal('1') + self.commission_rate)
+            if cash_position is None or cash_position.quantity < cash_required:
+                logger.warning(
+                    'Insufficient cash for %s: need %s, have %s',
+                    ticker.symbol,
+                    cash_required,
+                    cash_position.quantity if cash_position else 0,
+                )
+                await self._alert_rejected(OrderFailureReason.INSUFFICIENT_CASH, ticker)
+                return PlaceOrderResult(
+                    order=None, failure_reason=OrderFailureReason.INSUFFICIENT_CASH
+                )
+
+        # Risk check
+        if not await self.risk_manager.check_trade(ticker, side, quantity, limit_price):
+            await self._alert_rejected(OrderFailureReason.RISK_CHECK_FAILED, ticker)
+            return PlaceOrderResult(
+                order=None, failure_reason=OrderFailureReason.RISK_CHECK_FAILED
+            )
+
+        try:
+            price_cents = int(limit_price * 100)
+            count = int(quantity)
+
+            api_side = 'no' if ticker.is_no_side else 'yes'
+
+            tx_bytes = await self._request_trade_tx(
+                side=api_side,
+                ticker=ticker,
+                price_cents=price_cents,
+                quantity=count,
+            )
+
+            signature = await self._sign_and_submit(tx_bytes)
+            confirmed = await self._confirm_transaction(signature)
+
+            if not confirmed:
+                return PlaceOrderResult(
+                    order=None, failure_reason=OrderFailureReason.UNKNOWN
+                )
+
+            filled_quantity = Decimal(str(count))
+            commission = filled_quantity * limit_price * self.commission_rate
+
+            trade = Trade(
+                side=side,
+                ticker=ticker,
+                price=limit_price,
+                quantity=filled_quantity,
+                commission=commission,
+            )
+
+            order = Order(
+                status=OrderStatus.FILLED,
+                side=side,
+                ticker=ticker,
+                limit_price=limit_price,
+                filled_quantity=filled_quantity,
+                average_price=limit_price,
+                trades=[trade],
+                remaining=Decimal('0'),
+                commission=commission,
+            )
+
+            for t in order.trades:
+                self.position_manager.apply_trade(t)
+
+            self.orders.append(order)
+            return PlaceOrderResult(order=order)
+
+        except Exception as e:
+            logger.exception('Error placing Solana order for %s: %s', ticker.symbol, e)
+            return PlaceOrderResult(
+                order=None, failure_reason=OrderFailureReason.UNKNOWN
+            )

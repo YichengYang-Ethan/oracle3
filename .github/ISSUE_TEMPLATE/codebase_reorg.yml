@@ -1,0 +1,24 @@
+name: 🧹Codebase Refactor
+description: Refactor, clean, format the codebase
+title: "[ORG]: "
+labels: ["refactor"]
+assignees: [""]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please make sure this codebase refactor request hasn't been already submitted by someone by looking through other open/closed issues
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Give us a brief description of the codebase refactor task you would like
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-information
+    attributes:
+      label: Additional Information
+      description: Give us some additional reason on why codebase refactor is necessary to do

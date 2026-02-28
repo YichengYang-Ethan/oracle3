@@ -1,0 +1,58 @@
+site_name: Oracle3
+site_description: An intelligent trading agent for Polymarket & Kalshi prediction markets, powered by Social World Models and LLM-driven decision making.
+site_url: https://ulab-uiuc.github.io/oracle3
+repo_url: https://github.com/ulab-uiuc/oracle3
+repo_name: ulab-uiuc/oracle3
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - def_list
+
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Quick Start: CLI_QUICK_START.md
+  - CLI Reference:
+      - Monitoring: CLI_MONITORING.md
+  - Architecture:
+      - Project Specification: PROJECT_SPECIFICATION.md

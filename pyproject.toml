@@ -1,0 +1,200 @@
+[tool.poetry]
+name = "oracle3"
+version = "1.0.0"
+description = "AI-native prediction market trading agent on Solana, Polymarket, and Kalshi"
+authors = ["Haofei Yu <yuhaofei44@gmail.com>"]
+license = "Apache-2.0"
+readme = "README.md"
+repository = "https://github.com/ulab-uiuc/oracle3"
+homepage = "https://github.com/ulab-uiuc/oracle3"
+keywords = [
+    "solana",
+    "dflow",
+    "polymarket",
+    "kalshi",
+    "prediction-market",
+    "trading",
+    "llm",
+    "ai-agent",
+    "algorithmic-trading",
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Financial and Insurance Industry",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Office/Business :: Financial :: Investment",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Typing :: Typed",
+]
+packages = [{include = "oracle3"}]
+
+
+[tool.poetry.dependencies]
+python = ">=3.10, <4.0"
+beartype = "^0.17.1"
+pydantic = "^2.8.2"
+py-clob-client = "*"
+click = "^8.1.7"
+rich = "^13.7.0"
+httpx = ">=0.24.0"
+openai = ">=1.0.0"
+openai-agents = "*"
+feedparser = ">=6.0.0"
+requests = ">=2.28.0"
+beautifulsoup4 = ">=4.12.0"
+tenacity = ">=8.2.0"
+textual = ">=0.50.0"
+kalshi-python = "*"
+cryptography = "*"
+solana = ">=0.34.0"
+solders = ">=0.21.0"
+litellm = {version = ">=1.0.0", optional = true}
+fastapi = {version = ">=0.100.0", optional = true}
+uvicorn = {version = ">=0.20.0", optional = true}
+
+[tool.poetry.extras]
+llm = ["litellm"]
+blinks = ["fastapi", "uvicorn"]
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^3.6.0"
+nbmake = "^1.5.0"
+types-setuptools = "^69.0.0.0"
+types-requests = "^2.31.0"
+ruff = "^0.3.0"
+commitizen = "^3.14.1"
+mypy = "^1.15.0"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.0.0"
+pytest-asyncio = "^0.23.5"
+pytest-cov = "^4.1.0"
+pytest-mock = "^3.12.0"
+hypothesis = "^6.98.0"
+
+[tool.poetry.scripts]
+oracle3 = "oracle3.cli.cli:cli"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true
+check_untyped_defs = false
+follow_imports = "normal"
+strict = false
+plugins = ["pydantic.mypy"]
+warn_redundant_casts = false
+warn_unused_ignores = false
+strict_optional = true
+disallow_untyped_defs = false
+disallow_incomplete_defs = false
+no_implicit_optional = false
+exclude = "(examples/|scripts/|tests/)"
+
+[[tool.mypy.overrides]]
+module = "oracle3.strategy.simple_strategy"
+ignore_errors = true
+
+[[tool.mypy.overrides]]
+module = [
+    "oracle3.events.events",
+    "oracle3.analytics.performance_analyzer",
+    "oracle3.data.market_data_manager",
+    "oracle3.data.backtest.historical_data_source",
+    "oracle3.data.live.live_data_source",
+    "oracle3.data.live.google_news_data_source",
+    "oracle3.data.live.kalshi_data_source",
+    "oracle3.trader.kalshi_trader",
+    "oracle3.trader.solana_trader",
+    "oracle3.trader.paper_trader",
+    "oracle3.data.live.dflow_data_source",
+    "oracle3.core.trading_engine",
+    "oracle3.backtest.backtester",
+]
+disable_error_code = ["assignment", "operator", "arg-type", "return-value", "attr-defined", "override", "var-annotated", "func-returns-value", "import-untyped", "misc"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-v --cov=oracle3 --cov-report=term-missing"
+asyncio_mode = "auto"
+markers = [
+    "slow: marks tests as slow",
+    "integration: marks tests as integration tests",
+]
+
+[tool.coverage.run]
+source = ["oracle3"]
+omit = ["tests/*", "**/__init__.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+    "raise ImportError",
+    "except ImportError:",
+]
+
+[tool.codespell]
+ignore-words-list = "dout, te, indicies, astroid"
+skip = ["data", ".git", "*.pyc", "*.csv", "*.json"]
+quiet-level = 3
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "UP",  # pyupgrade
+]
+ignore = ["E203", "E266", "E501"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"tests/*" = ["S101"]
+"oracle3/strategy/simple_strategy.py" = ["C901"]
+"oracle3/data/live/live_data_source.py" = ["C901"]
+"oracle3/data/live/dflow_data_source.py" = ["C901"]
+"oracle3/trader/solana_trader.py" = ["C901"]
+"oracle3/cli/monitor.py" = ["C901"]
+"scripts/*" = ["C901"]
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+version = "1.0.0"
+tag_format = "v$version"
+bump_message = "bump: version $current_version → $new_version"
+version_files = [
+    "pyproject.toml:version",
+    "oracle3/__init__.py:__version__"
+]
+
+[[tool.poetry.source]]
+name = "torchcpu"
+url = "https://download.pytorch.org/whl/cpu"
+priority = "explicit"
