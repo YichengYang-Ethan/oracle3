@@ -3,7 +3,7 @@
 LLM News Analysis Strategy Simulation Runner
 
 Fetches real Polymarket data, generates synthetic news events, and runs a
-mock LLM-driven trading simulation using the swm_agent framework.
+mock LLM-driven trading simulation using the oracle3 framework.
 
 Usage:
     python scripts/run_llm_news_simulation.py
@@ -25,14 +25,14 @@ import httpx
 # Ensure the project root is on the path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from swm_agent.data.market_data_manager import MarketDataManager
-from swm_agent.events.events import NewsEvent, PriceChangeEvent
-from swm_agent.order.order_book import Level, OrderBook
-from swm_agent.position.position_manager import Position, PositionManager
-from swm_agent.risk.risk_manager import StandardRiskManager
-from swm_agent.ticker.ticker import CashTicker, PolyMarketTicker
-from swm_agent.trader.paper_trader import PaperTrader
-from swm_agent.trader.types import OrderStatus, TradeSide
+from oracle3.data.market_data_manager import MarketDataManager
+from oracle3.events.events import NewsEvent, PriceChangeEvent
+from oracle3.order.order_book import Level, OrderBook
+from oracle3.position.position_manager import Position, PositionManager
+from oracle3.risk.risk_manager import StandardRiskManager
+from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
+from oracle3.trader.paper_trader import PaperTrader
+from oracle3.trader.types import OrderStatus, TradeSide
 
 # ---------------------------------------------------------------------------
 # Configuration
@@ -819,7 +819,7 @@ async def main() -> None:
 
     async with httpx.AsyncClient(
         follow_redirects=True,
-        headers={"User-Agent": "swm-agent-simulation/1.0"},
+        headers={"User-Agent": "oracle3-simulation/1.0"},
     ) as client:
         # 1. Fetch and filter markets
         try:

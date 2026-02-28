@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "oracle3"
 version = "1.0.0"
-description = "AI-native prediction market trading agent on Solana, Polymarket, and Kalshi"
+description = "AI-native prediction market agent on Solana — trade DFlow markets with LLM-driven strategies"
 authors = ["Haofei Yu <yuhaofei44@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"

@@ -36,15 +36,15 @@ import httpx
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from swm_agent.analytics.performance_analyzer import PerformanceAnalyzer
-from swm_agent.data.market_data_manager import MarketDataManager
-from swm_agent.events.events import Event, NewsEvent, PriceChangeEvent
-from swm_agent.order.order_book import Level, OrderBook
-from swm_agent.position.position_manager import Position, PositionManager
-from swm_agent.risk.risk_manager import StandardRiskManager
-from swm_agent.ticker.ticker import CashTicker, PolyMarketTicker
-from swm_agent.trader.paper_trader import PaperTrader
-from swm_agent.trader.types import TradeSide
+from oracle3.analytics.performance_analyzer import PerformanceAnalyzer
+from oracle3.data.market_data_manager import MarketDataManager
+from oracle3.events.events import Event, NewsEvent, PriceChangeEvent
+from oracle3.order.order_book import Level, OrderBook
+from oracle3.position.position_manager import Position, PositionManager
+from oracle3.risk.risk_manager import StandardRiskManager
+from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
+from oracle3.trader.paper_trader import PaperTrader
+from oracle3.trader.types import TradeSide
 
 # ---------------------------------------------------------------------------
 # Config
@@ -897,7 +897,7 @@ async def main() -> None:
 
     async with httpx.AsyncClient(
         follow_redirects=True,
-        headers={"User-Agent": "swm-agent-backtest/1.0"},
+        headers={"User-Agent": "oracle3-backtest/1.0"},
     ) as client:
         try:
             raw = await fetch_markets(client)
