@@ -46,8 +46,8 @@ def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool)
     import asyncio
     import json as json_lib
 
-    from oracle3.trader.solana_trader import _load_keypair
     from oracle3.onchain.logger import OnChainLogger
+    from oracle3.trader.solana_trader import _load_keypair
 
     try:
         kp = _load_keypair(keypair_path=keypair_path)

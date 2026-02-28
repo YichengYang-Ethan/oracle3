@@ -14,8 +14,8 @@ import click
 from oracle3.backtest.backtester import run_backtest
 from oracle3.cli.utils import _emit
 from oracle3.data.composite_data_source import CompositeDataSource
-from oracle3.data.live.google_news_data_source import GoogleNewsDataSource
 from oracle3.data.live.dflow_data_source import DFlowDataSource
+from oracle3.data.live.google_news_data_source import GoogleNewsDataSource
 from oracle3.data.live.kalshi_data_source import LiveKalshiDataSource
 from oracle3.data.live.live_data_source import (
     LivePolyMarketDataSource,

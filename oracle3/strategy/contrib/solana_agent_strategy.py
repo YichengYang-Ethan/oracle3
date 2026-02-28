@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any
 
 from oracle3.events.events import Event, NewsEvent, OrderBookEvent, PriceChangeEvent
 from oracle3.strategy.agent_strategy import AgentStrategy
 from oracle3.trader.trader import Trader
-from oracle3.trader.types import TradeSide
 
 
 class SolanaAgentStrategy(AgentStrategy):

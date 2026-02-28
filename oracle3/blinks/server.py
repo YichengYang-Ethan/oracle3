@@ -2,9 +2,7 @@
 
 from __future__ import annotations
 
-import base64
 import logging
-from typing import Any
 
 import httpx
 
@@ -148,12 +146,12 @@ def _build_app():
             raise HTTPException(
                 status_code=502,
                 detail=f'DFlow API error: {e.response.status_code}',
-            )
+            ) from e
         except HTTPException:
             raise
         except Exception as e:
             logger.exception('Error building trade tx: %s', e)
-            raise HTTPException(status_code=500, detail=str(e))
+            raise HTTPException(status_code=500, detail=str(e)) from e
 
     return app
 

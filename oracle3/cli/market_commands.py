@@ -271,7 +271,7 @@ def _fmt_dflow_market(m: dict, idx: int) -> str:
     lines.append(f'     Bid/Ask:  {bid_str} / {ask_str}')
     if m.get('volume'):
         lines.append(f'     Volume:   {m["volume"]}')
-    lines.append(f'     Chain:    Solana (mainnet-beta)')
+    lines.append('     Chain:    Solana (mainnet-beta)')
     return '\n'.join(lines)
 
 
@@ -535,7 +535,7 @@ def market_info(
         click.echo(f'Bid / Ask:  {bid} / {ask}')
         click.echo(f'Volume:     {info.get("volume", 0)}')
         click.echo(f'Status:     {info.get("status", "")}')
-        click.echo(f'Chain:      Solana (mainnet-beta)')
+        click.echo('Chain:      Solana (mainnet-beta)')
     click.echo()
 
 

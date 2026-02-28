@@ -5,7 +5,6 @@ import base64
 import json
 import logging
 import os
-import uuid
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 

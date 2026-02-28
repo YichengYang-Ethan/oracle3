@@ -47,7 +47,7 @@ def test_solana_ticker_frozen():
     t = SolanaTicker(symbol='X', market_ticker='X')
     try:
         t.symbol = 'Y'
-        assert False, 'Should be frozen'
+        raise AssertionError('Should be frozen')
     except AttributeError:
         pass
 

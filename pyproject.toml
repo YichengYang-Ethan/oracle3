@@ -181,6 +181,8 @@ max-complexity = 10
 "oracle3/data/live/live_data_source.py" = ["C901"]
 "oracle3/data/live/dflow_data_source.py" = ["C901"]
 "oracle3/trader/solana_trader.py" = ["C901"]
+"oracle3/blinks/server.py" = ["C901"]
+"oracle3/cli/market_commands.py" = ["C901"]
 "oracle3/cli/monitor.py" = ["C901"]
 "scripts/*" = ["C901"]
 

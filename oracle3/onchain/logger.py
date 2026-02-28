@@ -55,12 +55,11 @@ class OnChainLogger:
         }, separators=(',', ':'))
 
         try:
-            from solders.keypair import Keypair
+            from solders.hash import Hash
+            from solders.instruction import AccountMeta, Instruction
             from solders.message import MessageV0
-            from solders.instruction import Instruction, AccountMeta
             from solders.pubkey import Pubkey
             from solders.transaction import VersionedTransaction
-            from solders.hash import Hash
 
             memo_program = Pubkey.from_string(MEMO_PROGRAM_ID)
             signer = self._keypair.pubkey()
