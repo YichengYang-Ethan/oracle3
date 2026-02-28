@@ -68,7 +68,7 @@ types-setuptools = "^69.0.0.0"
 types-requests = "^2.31.0"
 ruff = "^0.3.0"
 commitizen = "^3.14.1"
-mypy = "^1.15.0"
+mypy = "^1.19.1"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^8.0.0"
