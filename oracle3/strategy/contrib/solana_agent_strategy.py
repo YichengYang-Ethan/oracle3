@@ -32,7 +32,7 @@ class SolanaAgentStrategy(AgentStrategy):
     author = 'Oracle3 Team'
 
     agent_name = 'oracle3-solana-agent'
-    agent_model = 'gpt-4.1-mini'
+    agent_model = 'deepseek-chat'
     agent_max_turns = 8
 
     def __init__(

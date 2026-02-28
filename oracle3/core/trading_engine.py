@@ -259,7 +259,10 @@ class TradingEngine:
                     signals = d.signal_values or {}
                     signal_pairs = list(signals.items())[:2]
                     signal_str = (
-                        ' '.join(f'{k}={v:.3f}' for k, v in signal_pairs)
+                        ' '.join(
+                            f'{k}={v:.3f}' if isinstance(v, (int, float)) else f'{k}={v}'
+                            for k, v in signal_pairs
+                        )
                         if signal_pairs
                         else ''
                     )
