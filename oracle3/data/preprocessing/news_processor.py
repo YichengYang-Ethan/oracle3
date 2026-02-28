@@ -603,7 +603,7 @@ class NewsProcessor:
     def from_news_events(events: list) -> list[NewsArticle]:
         """Convert :class:`NewsEvent` objects to :class:`NewsArticle` objects.
 
-        Accepts ``list[NewsEvent]`` (imported from ``swm_agent.events.events``).
+        Accepts ``list[NewsEvent]`` (imported from ``oracle3.events.events``).
         """
         articles: list[NewsArticle] = []
         for ev in events:

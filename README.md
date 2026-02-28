@@ -1,6 +1,6 @@
 # Oracle3
 
-**AI-Native Prediction Market Trading Agent on Solana, Polymarket & Kalshi**
+**AI-Native Prediction Market Agent on Solana**
 
 Built for HackIllinois 2026
 
@@ -8,22 +8,22 @@ Built for HackIllinois 2026
 
 ## What is Oracle3?
 
-Oracle3 is an autonomous AI trading agent that operates across multiple prediction market exchanges. It uses LLM-driven strategies to analyze markets, place trades, and manage risk — all from a single CLI.
+Oracle3 is an autonomous AI trading agent built for **Solana prediction markets**. It uses LLM-driven strategies to analyze on-chain markets, sign and submit Solana transactions, and manage risk — all from a single CLI. Built on top of [DFlow](https://dflow.net), which tokenizes prediction markets as SPL tokens on Solana mainnet-beta.
 
-### Supported Exchanges
+### Why Solana?
 
-| Exchange | Type | Settlement |
-|----------|------|------------|
-| **Solana/DFlow** | On-chain | Solana mainnet-beta |
-| **Polymarket** | Off-chain | Polygon USDC |
-| **Kalshi** | Regulated | USD |
+- **Instant settlement** — trades finalize on-chain in seconds
+- **Transparent** — every trade logged to Solana via Memo program, fully auditable
+- **Composable** — Solana Blinks let anyone execute trades from a shareable URL
+- **No API keys** — DFlow dev tier requires no authentication
 
 ### Key Features
 
-- **Multi-Exchange**: Trade prediction markets across Solana, Polymarket, and Kalshi from one interface
+- **Solana-Native Trading**: Sign and submit Solana transactions directly via DFlow Trade API
 - **AI Agent Strategies**: LLM-powered trading via OpenAI Agents SDK with tool-using capabilities
 - **Solana Blinks**: Share trades as Solana Actions — anyone can execute directly from a URL
 - **On-Chain Logging**: Every trade logged to Solana via Memo program for full transparency
+- **Multi-Exchange**: Also supports Polymarket and Kalshi for cross-platform arbitrage
 - **Paper Trading**: Test strategies with simulated execution before going live
 - **TUI Dashboard**: Real-time terminal UI with live P&L, positions, and order flow
 

@@ -30,7 +30,7 @@ def load_strategy_class(strategy_ref: str) -> type[Strategy]:
         file_path = Path(module_or_file).expanduser().resolve()
         if not file_path.exists():
             raise ValueError(f'Strategy file not found: {file_path}')
-        module_name = f'_swm_user_strategy_{uuid.uuid4().hex}'
+        module_name = f'_oracle3_user_strategy_{uuid.uuid4().hex}'
         spec = importlib.util.spec_from_file_location(module_name, file_path)
         if spec is None or spec.loader is None:
             raise ValueError(f'Could not load strategy file: {file_path}')

@@ -41,7 +41,7 @@ async def main():
 
     # Data source: Kalshi public API
     data_source = LiveKalshiDataSource(
-        event_cache_file='/tmp/swm_kalshi_test_events.jsonl',
+        event_cache_file='/tmp/oracle3_kalshi_test_events.jsonl',
         polling_interval=30.0,
     )
 

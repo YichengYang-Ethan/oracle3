@@ -391,7 +391,7 @@ class TwitterFetcher(BaseFetcher):
         Returns:
             List of NewsEvent instances.
         """
-        from swm_agent.events.events import NewsEvent
+        from oracle3.events.events import NewsEvent
 
         events: list[NewsEvent] = []
         for username, tweet_list in tweets.items():

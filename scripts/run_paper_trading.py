@@ -42,13 +42,13 @@ EXCHANGE_CONFIG = {
     'kalshi': {
         'data_source_cls': LiveKalshiDataSource,
         'cash_ticker': CashTicker.KALSHI_USD,
-        'cache_file': '/tmp/swm_kalshi_test_events.jsonl',
+        'cache_file': '/tmp/oracle3_kalshi_test_events.jsonl',
         'display_name': 'Kalshi',
     },
     'polymarket': {
         'data_source_cls': LivePolyMarketDataSource,
         'cash_ticker': CashTicker.POLYMARKET_USDC,
-        'cache_file': '/tmp/swm_paper_trading_events.jsonl',
+        'cache_file': '/tmp/oracle3_paper_trading_events.jsonl',
         'display_name': 'Polymarket',
     },
 }
@@ -98,7 +98,7 @@ async def _main(exchange: str, monitor: bool, duration: int) -> None:
             'sports championship odds',
             'economic indicators forecast',
         ],
-        cache_file='/tmp/swm_google_news_cache.jsonl',
+        cache_file='/tmp/oracle3_google_news_cache.jsonl',
         polling_interval=300.0,  # Every 5 minutes
         max_articles_per_poll=15,
         max_pages=1,
@@ -106,7 +106,7 @@ async def _main(exchange: str, monitor: bool, duration: int) -> None:
 
     # WSJ RSS feeds for professional financial news (free, no API key needed)
     rss_source = LiveRSSNewsDataSource(
-        cache_file='/tmp/swm_rss_news_cache.jsonl',
+        cache_file='/tmp/oracle3_rss_news_cache.jsonl',
         polling_interval=300.0,
         max_articles_per_poll=10,
         categories=['world', 'business', 'finance', 'politics', 'economy', 'sports'],
