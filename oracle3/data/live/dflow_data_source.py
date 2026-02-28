@@ -99,10 +99,10 @@ class DFlowDataSource(DataSource):
             events = await self._fetch_events()
             markets = []
             for event in events:
-                event_ticker = event.get('eventTicker', event.get('event_ticker', ''))
+                event_ticker = event.get('ticker', event.get('eventTicker', event.get('event_ticker', '')))
                 series_ticker = event.get('seriesTicker', event.get('series_ticker', ''))
                 for mkt in event.get('markets', []):
-                    mkt['_event_ticker'] = event_ticker
+                    mkt['_event_ticker'] = mkt.get('eventTicker', event_ticker)
                     mkt['_series_ticker'] = series_ticker
                     mkt['_event_title'] = event.get('title', event.get('name', ''))
                     markets.append(mkt)

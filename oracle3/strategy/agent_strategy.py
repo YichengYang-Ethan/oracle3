@@ -248,13 +248,33 @@ class AgentStrategy(Strategy):
             place_trade,
         ]
 
+    def _resolve_model(self) -> Any:
+        """Resolve model, using ChatCompletions adapter for non-OpenAI providers."""
+        import os
+
+        model_name = self.get_agent_model()
+        base_url = os.environ.get('OPENAI_BASE_URL', '')
+
+        # If using a non-OpenAI provider (DeepSeek, etc.), use chat completions
+        if base_url and 'api.openai.com' not in base_url:
+            try:
+                from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+                from openai import AsyncOpenAI
+
+                client = AsyncOpenAI(base_url=base_url)
+                return OpenAIChatCompletionsModel(model=model_name, openai_client=client)
+            except ImportError:
+                pass
+
+        return model_name
+
     def create_openai_agent(self, context: StrategyContext | None = None) -> Any:
         ctx = context or self.require_context()
         Agent, _Runner, _function_tool = _import_agents_sdk()
         return Agent(
             name=self.get_agent_name(),
             instructions=self.build_agent_instructions(ctx),
-            model=self.get_agent_model(),
+            model=self._resolve_model(),
             tools=self.build_openai_tools(ctx),
         )
 
