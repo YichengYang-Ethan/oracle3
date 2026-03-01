@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
-"""Backtest AdaptiveOnChainStrategy against PredictionMarketBench Kalshi episodes.
+"""Backtest AdaptiveOnChainStrategy on Solana prediction market data.
+
+Supports PredictionMarketBench episodes and recorded DFlow WS sessions.
 
 Usage:
     python scripts/backtest_adaptive_kalshi.py /tmp/PredictionMarketBench/episodes/KXBTCD-26JAN2017
-    python scripts/backtest_adaptive_kalshi.py /tmp/PredictionMarketBench/episodes/KXBTCD-26JAN2017 --max-events 5000
+    python scripts/backtest_adaptive_kalshi.py data/episodes/dflow_session --max-events 5000
 """
 
 from __future__ import annotations
@@ -15,7 +17,7 @@ import sys
 from decimal import Decimal
 
 from oracle3.core.trading_engine import TradingEngine
-from oracle3.data.backtest.kalshi_replay_data_source import KalshiReplayDataSource
+from oracle3.data.backtest.kalshi_replay_data_source import SolanaReplayDataSource
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.position.position_manager import Position, PositionManager
 from oracle3.risk.risk_manager import NoRiskManager
@@ -38,7 +40,7 @@ async def run(
     **strategy_kwargs,
 ) -> None:
     # Data source
-    data_source = KalshiReplayDataSource(episode_dir, max_events=max_events)
+    data_source = SolanaReplayDataSource(episode_dir, max_events=max_events)
     if not data_source.events:
         logger.error('No events loaded from %s', episode_dir)
         return
@@ -54,7 +56,7 @@ async def run(
     position_manager = PositionManager()
     position_manager.update_position(
         Position(
-            ticker=CashTicker.KALSHI_USD,
+            ticker=CashTicker.DFLOW_USDC,
             quantity=Decimal(str(initial_capital)),
             average_cost=Decimal('0'),
             realized_pnl=Decimal('0'),
@@ -104,7 +106,7 @@ async def run(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description='Backtest adaptive strategy on Kalshi data')
+    parser = argparse.ArgumentParser(description='Backtest adaptive strategy on Solana market data')
     parser.add_argument('episode_dir', help='Path to PredictionMarketBench episode directory')
     parser.add_argument('--max-events', type=int, default=None, help='Limit events to process')
     parser.add_argument('--capital', type=float, default=10000.0, help='Initial capital')
