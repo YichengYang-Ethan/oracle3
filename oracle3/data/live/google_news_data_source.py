@@ -198,7 +198,7 @@ def _scrape_google_news(  # noqa: C901
                 a = el.find('a')
                 if not a or 'href' not in a.attrs:
                     continue
-                link = _clean_google_href(a['href'])
+                link = _clean_google_href(str(a['href']))
 
                 title_el = el.select_one('div.MBeuO')
                 date_el = el.select_one('.LfVVr')
