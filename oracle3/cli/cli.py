@@ -90,8 +90,10 @@ def dashboard(
         # Set up initial cash based on exchange
         if exchange in ('solana', 'dflow'):
             cash_ticker = CashTicker.DFLOW_USDC
+        elif exchange == 'kalshi':
+            cash_ticker = CashTicker.KALSHI_USD
         else:
-            cash_ticker = CashTicker.USD
+            cash_ticker = CashTicker.POLYMARKET_USDC
 
         position_manager.update_position(
             Position(
