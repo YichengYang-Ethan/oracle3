@@ -73,18 +73,17 @@ class SolanaReplayDataSource(DataSource):
                 ask_vol = sum(lv['size'] for lv in no_bids)
 
                 best_bid_price = yes_bids[0]['price_cents'] / 100.0 if yes_bids else 0.0
-                best_ask_price = (100 - no_bids[0]['price_cents']) / 100.0 if no_bids else 1.0
 
                 if bid_vol > 0 or ask_vol > 0:
-                    ev = OrderBookEvent(
+                    ob_ev = OrderBookEvent(
                         ticker=ticker,
                         price=Decimal(str(best_bid_price)),
                         size=Decimal(str(bid_vol)),
                         size_delta=Decimal(str(ask_vol)),
                         side='bid',
+                        timestamp=datetime.fromtimestamp(ts_val, tz=timezone.utc),
                     )
-                    ev.timestamp = datetime.fromtimestamp(ts_val, tz=timezone.utc)
-                    events.append((ts_val, ev))
+                    events.append((ts_val, ob_ev))
 
         # --- trades → PriceChangeEvent ---
         trades_path = self.episode_dir / 'trades.parquet'
@@ -95,12 +94,12 @@ class SolanaReplayDataSource(DataSource):
                 ticker = self._get_ticker(row.ticker)
                 price = Decimal(str(row.price_cents)) / Decimal('100')
 
-                ev = PriceChangeEvent(
+                price_ev = PriceChangeEvent(
                     ticker=ticker,
                     price=price,
                     timestamp=datetime.fromtimestamp(ts_val, tz=timezone.utc),
                 )
-                events.append((ts_val, ev))
+                events.append((ts_val, price_ev))
 
         # --- recorded DFlow WS parquet (single file) ---
         dflow_path = self.episode_dir / 'dflow_events.parquet'
@@ -127,20 +126,22 @@ class SolanaReplayDataSource(DataSource):
             event_type = getattr(row, 'event_type', 'price')
             price = Decimal(str(row.price))
 
+            ts_dt = datetime.fromtimestamp(ts_val, tz=timezone.utc)
+            parsed_ev: Event
             if event_type == 'orderbook':
                 size = Decimal(str(getattr(row, 'size', 100)))
                 side = getattr(row, 'side', 'bid')
-                ev = OrderBookEvent(
+                parsed_ev = OrderBookEvent(
                     ticker=ticker, price=price,
                     size=size, size_delta=size, side=side,
+                    timestamp=ts_dt,
                 )
-                ev.timestamp = datetime.fromtimestamp(ts_val, tz=timezone.utc)
             else:
-                ev = PriceChangeEvent(
+                parsed_ev = PriceChangeEvent(
                     ticker=ticker, price=price,
-                    timestamp=datetime.fromtimestamp(ts_val, tz=timezone.utc),
+                    timestamp=ts_dt,
                 )
-            events.append((ts_val, ev))
+            events.append((ts_val, parsed_ev))
         return events
 
     def _get_ticker(self, symbol: str) -> SolanaTicker:

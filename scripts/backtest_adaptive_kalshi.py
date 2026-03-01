@@ -13,7 +13,6 @@ from __future__ import annotations
 import argparse
 import asyncio
 import logging
-import sys
 from decimal import Decimal
 
 from oracle3.core.trading_engine import TradingEngine

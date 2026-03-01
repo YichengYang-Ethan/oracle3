@@ -95,12 +95,12 @@ class AdaptiveOnChainStrategy(QuantStrategy):
 
         if isinstance(event, OrderBookEvent):
             self._handle_orderbook(event, trader)
+            ticker = event.ticker
         elif isinstance(event, PriceChangeEvent):
             self._handle_price(event)
+            ticker = event.ticker
         else:
             return
-
-        ticker = event.ticker
         sym = ticker.symbol
 
         if sym in self._entries:
@@ -243,6 +243,34 @@ class AdaptiveOnChainStrategy(QuantStrategy):
     # Exit
     # ------------------------------------------------------------------
 
+    def _get_mid_price(self, ticker: Any, trader: Trader) -> float | None:
+        """Return mid-price from best bid/ask, or None if unavailable."""
+        bid = trader.market_data.get_best_bid(ticker)
+        ask = trader.market_data.get_best_ask(ticker)
+        if bid is None and ask is None:
+            return None
+        if bid is not None and ask is not None:
+            return (float(bid.price) + float(ask.price)) / 2.0
+        level = bid if bid is not None else ask
+        assert level is not None
+        return float(level.price)
+
+    def _determine_exit_action(self, sym: str, entry_info: dict[str, Any], pnl_pct: float) -> str | None:
+        """Return exit action string or None if no exit condition met."""
+        if pnl_pct < -self.stop_loss_pct:
+            return 'CLOSE_SL'
+        if entry_info['events'] >= self.max_hold_events:
+            return 'CLOSE_TIMEOUT'
+        if pnl_pct > self.stop_loss_pct:
+            return 'CLOSE_TP'
+        score = self._compute_score(sym)
+        side = entry_info.get('side')
+        if side == 'BUY' and score < -self.composite_threshold * 0.5:
+            return 'CLOSE_REVERSAL'
+        if side == 'SELL' and score > self.composite_threshold * 0.5:
+            return 'CLOSE_REVERSAL'
+        return None
+
     async def _maybe_exit(self, ticker: Any, trader: Trader, position: Any) -> None:
         sym = ticker.symbol
         if sym in self._closing_in_progress:
@@ -252,39 +280,19 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         if entry_info is None:
             return
 
+        mid = self._get_mid_price(ticker, trader)
+        if mid is None:
+            return
+
         entry_price = entry_info['price']
         events_held = entry_info['events']
-
-        # Mid-price
-        bid = trader.market_data.get_best_bid(ticker)
-        ask = trader.market_data.get_best_ask(ticker)
-        if bid is None and ask is None:
-            return
-        if bid is not None and ask is not None:
-            mid = (float(bid.price) + float(ask.price)) / 2.0
-        else:
-            mid = float(bid.price) if bid else float(ask.price)
 
         if entry_info.get('side') == 'SELL':
             pnl_pct = (entry_price - mid) / entry_price if entry_price else 0.0
         else:
             pnl_pct = (mid - entry_price) / entry_price if entry_price else 0.0
 
-        # Exit conditions
-        action = None
-        if pnl_pct < -self.stop_loss_pct:
-            action = 'CLOSE_SL'
-        elif events_held >= self.max_hold_events:
-            action = 'CLOSE_TIMEOUT'
-        elif pnl_pct > self.stop_loss_pct:
-            action = 'CLOSE_TP'
-        else:
-            score = self._compute_score(sym)
-            if entry_info.get('side') == 'BUY' and score < -self.composite_threshold * 0.5:
-                action = 'CLOSE_REVERSAL'
-            elif entry_info.get('side') == 'SELL' and score > self.composite_threshold * 0.5:
-                action = 'CLOSE_REVERSAL'
-
+        action = self._determine_exit_action(sym, entry_info, pnl_pct)
         if action is None:
             self.record_decision(
                 ticker_name=ticker.name or sym, action='HOLD', executed=False,
