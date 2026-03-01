@@ -370,6 +370,22 @@ class SolanaTrader(Trader):
                 self.position_manager.apply_trade(t)
 
             self.orders.append(order)
+
+            # Log trade on-chain via Memo program (best-effort, non-blocking)
+            try:
+                from oracle3.onchain.logger import OnChainLogger
+
+                on_chain = OnChainLogger(keypair=self._keypair, rpc_url=self.rpc_url)
+                await on_chain.log_trade(
+                    market_ticker=ticker.market_ticker,
+                    side=action,
+                    price=float(limit_price),
+                    quantity=count,
+                    trade_signature=signature,
+                )
+            except Exception as log_err:
+                logger.warning('On-chain trade log failed (non-fatal): %s', log_err)
+
             return PlaceOrderResult(order=order)
 
         except Exception as e:
