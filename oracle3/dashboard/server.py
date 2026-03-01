@@ -91,7 +91,7 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
                     'executed': bool(d.executed),
                 })
         except Exception:
-            pass
+            logger.debug('Failed to serialize decisions', exc_info=True)
 
     # Activity log
     activity_log = list(getattr(engine, '_activity_log', []))
@@ -99,12 +99,48 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
     # News
     news = list(getattr(engine, '_news', []))
 
+    # Performance stats from analyzer
+    performance: dict[str, Any] = {}
+    analyzer = getattr(engine, 'analyzer', None)
+    if analyzer is not None:
+        try:
+            stats = analyzer.get_stats()
+            performance = {
+                'total_trades': stats.total_trades,
+                'winning_trades': stats.winning_trades,
+                'losing_trades': stats.losing_trades,
+                'win_rate': str(stats.win_rate),
+                'average_profit': str(stats.average_profit),
+                'average_loss': str(stats.average_loss),
+                'max_drawdown': str(stats.max_drawdown),
+                'sharpe_ratio': str(stats.sharpe_ratio),
+                'profit_factor': str(stats.profit_factor),
+                'total_pnl': str(stats.total_pnl),
+                'max_consecutive_wins': stats.max_consecutive_wins,
+                'max_consecutive_losses': stats.max_consecutive_losses,
+            }
+        except Exception:
+            logger.debug('Failed to serialize performance stats', exc_info=True)
+
+    # Equity curve from analyzer
+    equity_curve: list[str] = []
+    if analyzer is not None:
+        try:
+            curve = analyzer.get_equity_curve()
+            equity_curve = [str(pt.equity) for pt in curve]
+        except Exception:
+            logger.debug('Failed to serialize equity curve', exc_info=True)
+
+    # Initial capital for return % calculation
+    initial_capital = str(getattr(engine, '_initial_capital', '10000'))
+
     return {
         'timestamp': datetime.now().isoformat(),
         'running': snap.engine_running,
         'paused': getattr(engine, '_data_paused', False),
         'uptime': snap.uptime,
         'event_count': snap.event_count,
+        'initial_capital': initial_capital,
         'portfolio': {
             'equity': str(snap.equity),
             'cash': str(snap.cash),
@@ -117,6 +153,8 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         'order_books': order_books,
         'decisions': decisions,
         'trades': trades,
+        'performance': performance,
+        'equity_curve': equity_curve,
         'activity_log': activity_log[-50:],
         'news': news[-20:],
         'wallet': SOLANA_WALLET,
@@ -207,6 +245,7 @@ def _build_dashboard_app(engine: 'TradingEngine'):  # noqa: C901
                     state = _serialize_snapshot(engine)
                     await websocket.send_json(state)
                 except Exception:
+                    logger.debug('WebSocket send failed', exc_info=True)
                     break
                 await asyncio.sleep(2.0)
         except WebSocketDisconnect:

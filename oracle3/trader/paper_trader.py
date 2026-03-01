@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import random
 from decimal import Decimal
 from typing import TYPE_CHECKING
@@ -21,6 +22,8 @@ from .types import (
 
 if TYPE_CHECKING:
     from oracle3.alerts.alerter import Alerter
+
+logger = logging.getLogger(__name__)
 
 
 class PaperTrader(Trader):
@@ -116,7 +119,7 @@ class PaperTrader(Trader):
             try:
                 await self.alerter.on_order_rejected(reason, ticker)
             except Exception:
-                pass
+                logger.debug('alerter.on_order_rejected() failed', exc_info=True)
 
     async def place_order(
         self,
