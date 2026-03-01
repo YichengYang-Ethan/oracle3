@@ -182,4 +182,4 @@ oracle3 monitor > session_report.txt
 Issues? Questions? See:
 
 - [CLI Monitoring Documentation](CLI_MONITORING.md)
-- [GitHub Issues](https://github.com/ulab-uiuc/oracle3/issues)
+- [GitHub Issues](https://github.com/YichengYang-Ethan/oracle3/issues)
