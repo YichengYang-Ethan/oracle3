@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING
 
 from oracle3.analytics.performance_analyzer import PerformanceAnalyzer
 from oracle3.data.data_source import DataSource
-from oracle3.events.events import NewsEvent, OrderBookEvent, PriceChangeEvent
+from oracle3.events.events import Event, NewsEvent, OrderBookEvent, PriceChangeEvent
 from oracle3.risk.risk_manager import StandardRiskManager
 from oracle3.strategy.strategy import Strategy
 from oracle3.ticker.ticker import CashTicker
@@ -165,7 +165,7 @@ class TradingEngine:
         # of calling data_source.get_next_event().  Set by ControlServer.
         self._data_paused: bool = False
 
-    def _drain_backtest_timestamp_batch(self, event: object) -> list[object]:
+    def _drain_backtest_timestamp_batch(self, event: Event) -> list[Event]:
         """Return all queued backtest events that share a timestamp."""
         if self._continuous:
             return [event]
@@ -207,7 +207,7 @@ class TradingEngine:
 
     async def _process_one_event(
         self,
-        event: object,
+        event: Event,
         *,
         market_data_already_applied: bool = False,
     ) -> None:

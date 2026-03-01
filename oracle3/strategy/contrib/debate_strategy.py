@@ -326,12 +326,12 @@ class DebateStrategy(Strategy):
             'price_pct_change': price_pct_change,
             'trend': trend,
             'num_price_points': len(prices),
-            'position_quantity': position.quantity if has_position else Decimal('0'),
+            'position_quantity': position.quantity if position is not None and has_position else Decimal('0'),
             'position_avg_cost': position.average_cost
-            if has_position
+            if position is not None and has_position
             else Decimal('0'),
             'position_realized_pnl': position.realized_pnl
-            if has_position
+            if position is not None and has_position
             else Decimal('0'),
             'cash_total': cash_total,
             'order_flow_signals': flow_signals,
