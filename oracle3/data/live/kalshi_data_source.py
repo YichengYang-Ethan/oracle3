@@ -103,7 +103,7 @@ class LiveKalshiDataSource(DataSource):
                 if cursor:
                     kwargs['cursor'] = cursor
                 response = await asyncio.to_thread(
-                    lambda kw=kwargs: self._markets_api.get_markets(**kw)
+                    self._markets_api.get_markets, **kwargs
                 )
                 raw_markets = response.markets if hasattr(response, 'markets') else []
                 for m in raw_markets or []:

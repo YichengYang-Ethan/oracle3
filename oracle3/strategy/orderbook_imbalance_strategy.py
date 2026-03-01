@@ -83,6 +83,7 @@ class OrderBookImbalanceStrategy(QuantStrategy):
             # Check exit conditions
             if ticker.symbol in self._closing_in_progress:
                 return
+            assert position is not None
             entry_time = self._entries.get(ticker.symbol)
             elapsed = (now - entry_time).total_seconds() if entry_time else 0
 

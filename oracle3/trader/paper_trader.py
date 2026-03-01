@@ -98,7 +98,7 @@ class PaperTrader(Trader):
         ]
 
         remaining = quantity - filled_qty
-        commission = sum(trade.commission for trade in trades)
+        commission = sum((trade.commission for trade in trades), Decimal('0'))
 
         return Order(
             status=OrderStatus.FILLED

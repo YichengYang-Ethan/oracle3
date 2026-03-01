@@ -104,14 +104,9 @@ ignore_errors = true
 
 [[tool.mypy.overrides]]
 module = [
-    "oracle3.events.events",
     "oracle3.analytics.performance_analyzer",
-    "oracle3.data.backtest.historical_data_source",
     "oracle3.data.live.live_data_source",
-    "oracle3.data.live.google_news_data_source",
-    "oracle3.data.live.kalshi_data_source",
     "oracle3.trader.solana_trader",
-    "oracle3.trader.paper_trader",
     "oracle3.core.trading_engine",
     "oracle3.backtest.backtester",
     "oracle3.cli.agent_commands",
@@ -119,11 +114,8 @@ module = [
     "oracle3.cli.control",
     "oracle3.cli.data_commands",
     "oracle3.cli.market_commands",
-    "oracle3.cli.textual_monitor",
     "oracle3.strategy.contrib.debate_strategy",
     "oracle3.strategy.contrib.solana_agent_strategy",
-    "oracle3.strategy.orderbook_imbalance_strategy",
-    "oracle3.strategy.market_making_strategy",
 ]
 disable_error_code = ["assignment", "operator", "arg-type", "return-value", "attr-defined", "override", "var-annotated", "func-returns-value", "import-untyped", "misc", "dict-item", "call-overload", "union-attr", "no-redef"]
 

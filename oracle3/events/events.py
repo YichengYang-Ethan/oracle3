@@ -70,7 +70,7 @@ class NewsEvent(Event):
     image_url: str
     uuid: str
     event_id: str
-    ticker: Ticker
+    ticker: Ticker | None
 
     def __init__(
         self,
@@ -84,7 +84,7 @@ class NewsEvent(Event):
         image_url: str = '',
         uuid: str = '',
         event_id: str = '',
-        ticker: Ticker = None,
+        ticker: Ticker | None = None,
     ):
         self.news = news
         self.title = title

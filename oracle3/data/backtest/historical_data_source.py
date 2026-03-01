@@ -75,7 +75,7 @@ class HistoricalDataSource(DataSource):
             logger.error('Error loading events from %s: %s', self.history_file, e)
 
         # Sort events by timestamp
-        events.sort(key=lambda e: self._timestamp_sort_key(e.timestamp))
+        events.sort(key=lambda e: self._timestamp_sort_key(getattr(e, 'timestamp', None)))
         logger.info('Historical data loaded: %d events', len(events))
         return events
 

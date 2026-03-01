@@ -85,6 +85,7 @@ class MarketMakingStrategy(QuantStrategy):
         if has_position:
             if sym in self._closing_in_progress:
                 return
+            assert position is not None
             meta = self._entries.get(sym)
             if meta is None:
                 return  # No entry metadata
