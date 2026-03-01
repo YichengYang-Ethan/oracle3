@@ -29,6 +29,126 @@ def blinks(host: str, port: int) -> None:
     run_server(host=host, port=port)
 
 
+@cli.command()
+@click.option('--port', default=3000, show_default=True, type=int, help='Dashboard server port')
+@click.option(
+    '--exchange',
+    type=click.Choice(['solana', 'polymarket', 'kalshi']),
+    default='solana',
+    show_default=True,
+)
+@click.option('--duration', type=float, default=None, help='Seconds to run (default: forever)')
+@click.option('--initial-capital', default='1000', show_default=True)
+@click.option(
+    '--strategy-ref',
+    default=None,
+    help='Strategy ref: module:Class or /path/file.py:Class. If omitted, run in idle mode.',
+)
+@click.option(
+    '--strategy-kwargs-json', default=None, help='JSON object for strategy constructor kwargs.'
+)
+def dashboard(
+    port: int,
+    exchange: str,
+    duration: float | None,
+    initial_capital: str,
+    strategy_ref: str | None,
+    strategy_kwargs_json: str | None,
+) -> None:
+    """Launch the web dashboard with paper trading (open browser to http://localhost:PORT)."""
+    import asyncio
+    import json as json_lib
+    from decimal import Decimal
+
+    from oracle3.cli.agent_commands import _build_news_augmented_source, _IdleStrategy
+    from oracle3.dashboard.server import DashboardServer
+    from oracle3.strategy.loader import load_strategy_class
+
+    # Build strategy
+    if strategy_ref:
+        kwargs = json_lib.loads(strategy_kwargs_json) if strategy_kwargs_json else {}
+        strategy_cls = load_strategy_class(strategy_ref)
+        strategy_obj = strategy_cls(**kwargs)
+    else:
+        strategy_obj = _IdleStrategy()
+
+    capital = Decimal(initial_capital)
+    data_source = _build_news_augmented_source(exchange)
+
+    async def _run() -> None:
+        from oracle3.cli.control import ControlServer
+        from oracle3.core.trading_engine import TradingEngine
+        from oracle3.data.market_data_manager import MarketDataManager
+        from oracle3.position.position_manager import Position, PositionManager
+        from oracle3.risk.risk_manager import NoRiskManager
+        from oracle3.ticker.ticker import CashTicker
+        from oracle3.trader.paper_trader import PaperTrader
+
+        market_data = MarketDataManager()
+        position_manager = PositionManager()
+
+        # Set up initial cash based on exchange
+        if exchange in ('solana', 'dflow'):
+            cash_ticker = CashTicker.DFLOW_USDC
+        else:
+            cash_ticker = CashTicker.USD
+
+        position_manager.update_position(
+            Position(
+                ticker=cash_ticker,
+                quantity=capital,
+                average_cost=Decimal('0'),
+                realized_pnl=Decimal('0'),
+            )
+        )
+
+        trader = PaperTrader(
+            market_data=market_data,
+            risk_manager=NoRiskManager(),
+            position_manager=position_manager,
+            min_fill_rate=Decimal('0.5'),
+            max_fill_rate=Decimal('1.0'),
+            commission_rate=Decimal('0.0'),
+        )
+
+        engine = TradingEngine(
+            data_source=data_source,
+            strategy=strategy_obj,
+            trader=trader,
+            continuous=True,
+        )
+
+        # Start dashboard server (background thread)
+        dash = DashboardServer(engine, port=port)
+        dash.start()
+
+        # Start control server
+        ctrl = ControlServer(engine)
+        await ctrl.start()
+
+        click.echo(f'Dashboard running at http://localhost:{port}')
+        click.echo('Press Ctrl+C to stop.\n')
+
+        try:
+            if duration:
+                await asyncio.wait_for(engine.start(), timeout=duration)
+            else:
+                await engine.start()
+        except asyncio.TimeoutError:
+            click.echo(f'\nDuration reached ({duration}s). Stopping...')
+        except asyncio.CancelledError:
+            pass
+        finally:
+            await engine.stop()
+            await ctrl.stop()
+            dash.stop()
+
+    try:
+        asyncio.run(_run())
+    except KeyboardInterrupt:
+        click.echo('\nDashboard stopped.')
+
+
 @cli.command('trade-log')
 @click.option('--limit', default=20, show_default=True, type=int, help='Number of entries')
 @click.option(

@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle3 Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #c9d1d9;
+    --text-dim: #8b949e;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --blue: #58a6ff;
+    --purple: #bc8cff;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  /* Header */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--blue);
+  }
+  .header h1 span { color: var(--purple); }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+  }
+  .status-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+  .status-running { background: rgba(63,185,80,0.15); color: var(--green); }
+  .status-paused  { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .status-stopped { background: rgba(248,81,73,0.15); color: var(--red); }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    margin: 0;
+  }
+  .panel {
+    background: var(--surface);
+    padding: 14px 18px;
+    min-height: 200px;
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Portfolio Panel */
+  .metric {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+  }
+  .metric:last-child { border: none; }
+  .metric-label { color: var(--text-dim); }
+  .metric-value { font-weight: 600; }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+
+  /* Decisions / Orders */
+  .decision-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+    font-size: 12px;
+  }
+  .decision-action {
+    font-weight: 700;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 11px;
+    min-width: 50px;
+    text-align: center;
+  }
+  .action-buy, .action-buy_yes   { background: rgba(63,185,80,0.2); color: var(--green); }
+  .action-sell, .action-buy_no   { background: rgba(248,81,73,0.2); color: var(--red); }
+  .action-hold                   { background: rgba(139,148,158,0.15); color: var(--text-dim); }
+  .action-close                  { background: rgba(188,140,255,0.2); color: var(--purple); }
+
+  .confidence-bar {
+    width: 60px;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .confidence-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s;
+  }
+  .executed-mark { color: var(--green); font-size: 11px; }
+  .ticker-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--text-dim);
+    font-size: 11px;
+  }
+
+  /* Order Book */
+  .ob-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 3px 0;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+  }
+  .ob-symbol { font-weight: 600; flex: 1; }
+  .ob-bid { color: var(--green); width: 65px; text-align: right; }
+  .ob-ask { color: var(--red); width: 65px; text-align: right; }
+  .ob-spread { color: var(--text-dim); width: 55px; text-align: right; }
+
+  /* Activity / News */
+  .activity-item {
+    padding: 3px 0;
+    font-size: 11px;
+    border-bottom: 1px solid rgba(48,54,61,0.2);
+    display: flex;
+    gap: 8px;
+  }
+  .activity-time { color: var(--text-dim); flex-shrink: 0; width: 45px; }
+  .activity-text { color: var(--text); flex: 1; word-break: break-word; }
+
+  /* Controls */
+  .controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .controls-left { display: flex; gap: 8px; }
+  .btn {
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--border); }
+  .btn-danger { border-color: var(--red); color: var(--red); }
+  .btn-danger:hover { background: rgba(248,81,73,0.15); }
+  .btn-primary { border-color: var(--blue); color: var(--blue); }
+  .btn-primary:hover { background: rgba(88,166,255,0.15); }
+
+  .solscan-link {
+    color: var(--purple);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .solscan-link:hover { text-decoration: underline; }
+
+  /* Positions table */
+  .pos-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 0;
+    font-size: 12px;
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+  }
+  .pos-name { flex: 1; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pos-qty  { width: 50px; text-align: right; color: var(--text-dim); }
+  .pos-price { width: 65px; text-align: right; }
+  .pos-pnl { width: 70px; text-align: right; font-weight: 600; }
+
+  /* Connection indicator */
+  .ws-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+  .ws-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--red);
+  }
+  .ws-dot.connected { background: var(--green); }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+
+  /* Scrollable panels */
+  .scroll-content {
+    max-height: 280px;
+    overflow-y: auto;
+  }
+  .scroll-content::-webkit-scrollbar { width: 4px; }
+  .scroll-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>Oracle<span>3</span> Dashboard</h1>
+  <div class="header-right">
+    <div class="ws-status">
+      <div class="ws-dot" id="wsDot"></div>
+      <span id="wsLabel">Connecting...</span>
+    </div>
+    <span id="statusBadge" class="status-badge status-stopped">STOPPED</span>
+    <span id="uptime" style="color:var(--text-dim)">00:00:00</span>
+    <span id="eventCount" style="color:var(--text-dim)">0 events</span>
+  </div>
+</div>
+
+<!-- Main Grid -->
+<div class="grid">
+
+  <!-- Portfolio -->
+  <div class="panel">
+    <div class="panel-title">&#x1f4b0; Portfolio</div>
+    <div id="portfolio">
+      <div class="metric"><span class="metric-label">Equity</span><span class="metric-value" id="equity">$0.00</span></div>
+      <div class="metric"><span class="metric-label">Cash</span><span class="metric-value" id="cash">$0.00</span></div>
+      <div class="metric"><span class="metric-label">Realized P&L</span><span class="metric-value" id="realizedPnl">$0.00</span></div>
+      <div class="metric"><span class="metric-label">Unrealized P&L</span><span class="metric-value" id="unrealizedPnl">$0.00</span></div>
+      <div class="metric"><span class="metric-label">Total P&L</span><span class="metric-value" id="totalPnl">$0.00</span></div>
+      <div class="metric"><span class="metric-label">Exposure</span><span class="metric-value" id="exposure">0%</span></div>
+    </div>
+    <div class="panel-title" style="margin-top:14px">Positions</div>
+    <div id="positions" class="scroll-content">
+      <div style="color:var(--text-dim);font-size:12px">No positions</div>
+    </div>
+  </div>
+
+  <!-- AI Decisions -->
+  <div class="panel">
+    <div class="panel-title">&#x1f916; AI Decisions</div>
+    <div id="decisions" class="scroll-content">
+      <div style="color:var(--text-dim);font-size:12px">Waiting for data...</div>
+    </div>
+  </div>
+
+  <!-- Order Books -->
+  <div class="panel">
+    <div class="panel-title">&#x1f4ca; Order Books</div>
+    <div class="ob-row" style="border-bottom:1px solid var(--border);font-weight:700;font-size:11px;color:var(--text-dim)">
+      <span class="ob-symbol">MARKET</span>
+      <span class="ob-bid">BID</span>
+      <span class="ob-ask">ASK</span>
+      <span class="ob-spread">SPREAD</span>
+    </div>
+    <div id="orderBooks" class="scroll-content">
+      <div style="color:var(--text-dim);font-size:12px;padding:8px 0">No order books</div>
+    </div>
+  </div>
+
+  <!-- Activity + News -->
+  <div class="panel">
+    <div class="panel-title">&#x1f4f0; News + Activity</div>
+    <div id="activity" class="scroll-content">
+      <div style="color:var(--text-dim);font-size:12px">No activity yet</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Controls -->
+<div class="controls">
+  <div class="controls-left">
+    <button class="btn btn-primary" onclick="sendCmd('pause')">Pause</button>
+    <button class="btn btn-primary" onclick="sendCmd('resume')">Resume</button>
+    <button class="btn btn-danger" onclick="if(confirm('Stop the trading engine?'))sendCmd('stop')">E-Stop</button>
+  </div>
+  <a id="solscanLink" class="solscan-link" href="#" target="_blank" rel="noopener">
+    Solscan &#x2197;
+  </a>
+</div>
+
+<script>
+const WS_URL = `ws://${location.host}/ws`;
+let ws = null;
+let reconnectTimer = null;
+
+function connect() {
+  ws = new WebSocket(WS_URL);
+
+  ws.onopen = () => {
+    document.getElementById('wsDot').classList.add('connected');
+    document.getElementById('wsLabel').textContent = 'Connected';
+    if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  };
+
+  ws.onmessage = (e) => {
+    try { updateDashboard(JSON.parse(e.data)); } catch (err) { console.error(err); }
+  };
+
+  ws.onclose = () => {
+    document.getElementById('wsDot').classList.remove('connected');
+    document.getElementById('wsLabel').textContent = 'Reconnecting...';
+    reconnectTimer = setTimeout(connect, 3000);
+  };
+
+  ws.onerror = () => { ws.close(); };
+}
+
+function sendCmd(cmd) {
+  fetch(`/api/command/${cmd}`, { method: 'POST' })
+    .then(r => r.json())
+    .then(d => console.log('Command result:', d))
+    .catch(e => console.error('Command error:', e));
+}
+
+function fmt$(v) {
+  const n = parseFloat(v) || 0;
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function pnlClass(v) {
+  const n = parseFloat(v) || 0;
+  return n > 0 ? 'positive' : n < 0 ? 'negative' : '';
+}
+
+function actionClass(a) {
+  const lower = (a || '').toLowerCase().replace(/\s+/g, '_');
+  return `action-${lower}`;
+}
+
+function confColor(c) {
+  if (c >= 0.7) return 'var(--green)';
+  if (c >= 0.4) return 'var(--yellow)';
+  return 'var(--red)';
+}
+
+function updateDashboard(s) {
+  // Status badge
+  const badge = document.getElementById('statusBadge');
+  if (!s.running) {
+    badge.textContent = 'STOPPED';
+    badge.className = 'status-badge status-stopped';
+  } else if (s.paused) {
+    badge.textContent = 'PAUSED';
+    badge.className = 'status-badge status-paused';
+  } else {
+    badge.textContent = 'RUNNING';
+    badge.className = 'status-badge status-running';
+  }
+
+  document.getElementById('uptime').textContent = s.uptime || '00:00:00';
+  document.getElementById('eventCount').textContent = (s.event_count || 0) + ' events';
+
+  // Portfolio
+  const p = s.portfolio || {};
+  document.getElementById('equity').textContent = fmt$(p.equity);
+  document.getElementById('cash').textContent = fmt$(p.cash);
+
+  const rPnl = document.getElementById('realizedPnl');
+  rPnl.textContent = fmt$(p.realized_pnl);
+  rPnl.className = 'metric-value ' + pnlClass(p.realized_pnl);
+
+  const uPnl = document.getElementById('unrealizedPnl');
+  uPnl.textContent = fmt$(p.unrealized_pnl);
+  uPnl.className = 'metric-value ' + pnlClass(p.unrealized_pnl);
+
+  const tPnl = document.getElementById('totalPnl');
+  tPnl.textContent = fmt$(p.total_pnl);
+  tPnl.className = 'metric-value ' + pnlClass(p.total_pnl);
+
+  document.getElementById('exposure').textContent = (p.exposure_pct || 0).toFixed(1) + '%';
+
+  // Positions
+  const posEl = document.getElementById('positions');
+  if (s.positions && s.positions.length > 0) {
+    posEl.innerHTML = s.positions.map(pos => {
+      const pnl = parseFloat(pos.unrealized_pnl) || 0;
+      return `<div class="pos-row">
+        <span class="pos-name">${esc(pos.name || pos.symbol)}</span>
+        <span class="pos-qty">${pos.qty}x</span>
+        <span class="pos-price">${fmt$(pos.current_price)}</span>
+        <span class="pos-pnl ${pnlClass(pos.unrealized_pnl)}">${pnl >= 0 ? '+' : ''}${fmt$(pos.unrealized_pnl)}</span>
+      </div>`;
+    }).join('');
+  } else {
+    posEl.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No positions</div>';
+  }
+
+  // AI Decisions (newest first)
+  const decEl = document.getElementById('decisions');
+  if (s.decisions && s.decisions.length > 0) {
+    const sorted = [...s.decisions].reverse();
+    decEl.innerHTML = sorted.map(d => {
+      const conf = d.confidence || 0;
+      return `<div class="decision-row">
+        <span class="decision-action ${actionClass(d.action)}">${esc(d.action).toUpperCase()}</span>
+        <span class="ticker-name" title="${esc(d.ticker_name)}">${esc(d.ticker_name)}</span>
+        <div class="confidence-bar"><div class="confidence-fill" style="width:${conf*100}%;background:${confColor(conf)}"></div></div>
+        <span style="width:32px;text-align:right;font-size:11px;color:var(--text-dim)">${(conf*100).toFixed(0)}%</span>
+        ${d.executed ? '<span class="executed-mark">&#x2705;</span>' : '<span style="width:16px"></span>'}
+      </div>`;
+    }).join('');
+  } else {
+    decEl.innerHTML = '<div style="color:var(--text-dim);font-size:12px">Waiting for data...</div>';
+  }
+
+  // Order Books
+  const obEl = document.getElementById('orderBooks');
+  if (s.order_books && s.order_books.length > 0) {
+    obEl.innerHTML = s.order_books.map(ob =>
+      `<div class="ob-row">
+        <span class="ob-symbol">${esc(ob.symbol)}</span>
+        <span class="ob-bid">${ob.bid}</span>
+        <span class="ob-ask">${ob.ask}</span>
+        <span class="ob-spread">${ob.spread}</span>
+      </div>`
+    ).join('');
+  } else {
+    obEl.innerHTML = '<div style="color:var(--text-dim);font-size:12px;padding:8px 0">No order books</div>';
+  }
+
+  // Activity + News (merged, newest first)
+  const actEl = document.getElementById('activity');
+  const items = [];
+  if (s.activity_log) {
+    s.activity_log.forEach(a => items.push({ time: a[0], text: a[1], type: 'activity' }));
+  }
+  if (s.news) {
+    s.news.forEach(n => items.push({ time: n.timestamp, text: `[${n.source || 'news'}] ${n.title}`, type: 'news' }));
+  }
+  // Sort by time desc (simple string sort since HH:MM:SS format)
+  items.sort((a, b) => b.time.localeCompare(a.time));
+  if (items.length > 0) {
+    actEl.innerHTML = items.slice(0, 50).map(i =>
+      `<div class="activity-item">
+        <span class="activity-time">${esc(i.time)}</span>
+        <span class="activity-text">${esc(i.text)}</span>
+      </div>`
+    ).join('');
+  } else {
+    actEl.innerHTML = '<div style="color:var(--text-dim);font-size:12px">No activity yet</div>';
+  }
+
+  // Solscan link
+  if (s.wallet) {
+    const link = document.getElementById('solscanLink');
+    link.href = `https://solscan.io/account/${s.wallet}`;
+  }
+}
+
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+// Start
+connect();
+</script>
+</body>
+</html>
