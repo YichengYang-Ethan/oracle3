@@ -311,7 +311,7 @@ class TradingEngine:
                 try:
                     await self._alerter.on_error(exc)
                 except Exception:
-                    pass
+                    logger.debug('alerter.on_error() failed', exc_info=True)
             await self._auto_degrade_if_needed()
         else:
             self._consecutive_processing_errors = 0
@@ -479,7 +479,7 @@ class TradingEngine:
             try:
                 await self._alerter.on_engine_stop('stopped')
             except Exception:
-                pass
+                logger.debug('alerter.on_engine_stop() failed', exc_info=True)
 
     def request_stop(self) -> None:
         """Non-async flag-flip — safe to call from any context."""
@@ -569,7 +569,7 @@ class TradingEngine:
             try:
                 await self._alerter.on_risk_limit_hit(reason)
             except Exception:
-                pass
+                logger.debug('alerter.on_risk_limit_hit() failed', exc_info=True)
 
     async def _auto_degrade_if_needed(self) -> None:
         """Pause strategy and force read-only mode on repeated processing errors."""
@@ -591,7 +591,7 @@ class TradingEngine:
             try:
                 await self._alerter.on_risk_limit_hit('auto_degrade_error_storm')
             except Exception:
-                pass
+                logger.debug('alerter.on_risk_limit_hit() failed', exc_info=True)
 
     # ------------------------------------------------------------------ #
     # Snapshot (non-blocking, no awaits)                                  #

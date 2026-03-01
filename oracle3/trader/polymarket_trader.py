@@ -207,7 +207,7 @@ class PolymarketTrader(Trader):
             try:
                 await self.alerter.on_order_rejected(reason, ticker)
             except Exception:
-                pass
+                logger.debug('alerter.on_order_rejected() failed', exc_info=True)
 
     async def place_order(  # noqa: C901
         self,
