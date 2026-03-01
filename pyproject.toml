@@ -5,8 +5,8 @@ description = "AI-native prediction market agent on Solana — trade DFlow marke
 authors = ["Haofei Yu <yuhaofei44@gmail.com>"]
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/ulab-uiuc/oracle3"
-homepage = "https://github.com/ulab-uiuc/oracle3"
+repository = "https://github.com/YichengYang-Ethan/oracle3"
+homepage = "https://github.com/YichengYang-Ethan/oracle3"
 keywords = [
     "solana",
     "dflow",

@@ -1,8 +1,8 @@
 site_name: Oracle3
 site_description: An intelligent trading agent for Polymarket & Kalshi prediction markets, powered by Social World Models and LLM-driven decision making.
-site_url: https://ulab-uiuc.github.io/oracle3
-repo_url: https://github.com/ulab-uiuc/oracle3
-repo_name: ulab-uiuc/oracle3
+site_url: https://yichengyang-ethan.github.io/oracle3
+repo_url: https://github.com/YichengYang-Ethan/oracle3
+repo_name: YichengYang-Ethan/oracle3
 edit_uri: edit/main/docs/
 
 theme:

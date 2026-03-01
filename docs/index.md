@@ -2,7 +2,7 @@
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![PyPI version](https://img.shields.io/pypi/v/oracle3.svg)](https://pypi.org/project/oracle3/)
-[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/ulab-uiuc/oracle3/blob/main/LICENSE)
+[![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)](https://github.com/YichengYang-Ethan/oracle3/blob/main/LICENSE)
 
 **Oracle3** is an intelligent trading agent for [Polymarket](https://polymarket.com/) and [Kalshi](https://kalshi.com/) prediction markets, powered by Social World Models and LLM-driven decision making. It combines real-time market data, news sentiment analysis, and Large Language Models to automate trading decisions.
 
@@ -36,7 +36,7 @@ pip install oracle3
 Or install from source with [Poetry](https://python-poetry.org/):
 
 ```bash
-git clone https://github.com/ulab-uiuc/oracle3.git
+git clone https://github.com/YichengYang-Ethan/oracle3.git
 cd oracle3
 pip install poetry
 poetry install
@@ -147,7 +147,7 @@ export NEWS_API_KEY="your_news_api_key"             # Optional, for News API sou
 
 ## License
 
-[Apache 2.0](https://github.com/ulab-uiuc/oracle3/blob/main/LICENSE)
+[Apache 2.0](https://github.com/YichengYang-Ethan/oracle3/blob/main/LICENSE)
 
 !!! warning "Disclaimer"
 This software is for **educational and research purposes only**. Trading involves substantial risk of loss. Always test strategies with paper trading before using real funds.
