@@ -101,7 +101,7 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
 
     # Performance stats from analyzer
     performance: dict[str, Any] = {}
-    analyzer = getattr(engine, 'analyzer', None)
+    analyzer = getattr(engine, '_perf', None) or getattr(engine, 'analyzer', None)
     if analyzer is not None:
         try:
             stats = analyzer.get_stats()
@@ -122,7 +122,7 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         except Exception:
             logger.debug('Failed to serialize performance stats', exc_info=True)
 
-    # Equity curve from analyzer
+    # Equity curve from analyzer (reuse resolved reference)
     equity_curve: list[str] = []
     if analyzer is not None:
         try:
@@ -134,6 +134,13 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
     # Initial capital for return % calculation
     initial_capital = str(getattr(engine, '_initial_capital', '10000'))
 
+    # Truncated wallet for display (e.g. "7RQ3...f8Ae")
+    wallet_short = (
+        f'{SOLANA_WALLET[:4]}...{SOLANA_WALLET[-4:]}'
+        if len(SOLANA_WALLET) >= 8
+        else SOLANA_WALLET
+    )
+
     return {
         'timestamp': datetime.now().isoformat(),
         'running': snap.engine_running,
@@ -141,6 +148,7 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         'uptime': snap.uptime,
         'event_count': snap.event_count,
         'initial_capital': initial_capital,
+        'network': 'Solana Mainnet',
         'portfolio': {
             'equity': str(snap.equity),
             'cash': str(snap.cash),
@@ -158,6 +166,7 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         'activity_log': activity_log[-50:],
         'news': news[-20:],
         'wallet': SOLANA_WALLET,
+        'wallet_short': wallet_short,
     }
 
 
