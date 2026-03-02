@@ -22,6 +22,12 @@
 
 ---
 
+<p align="center">
+  <img src="assets/dashboard-live.png" alt="Oracle3 Live Dashboard" width="800">
+  <br>
+  <sub>Live trading dashboard — 8 on-chain agent capabilities, real-time equity curve, execution pipeline</sub>
+</p>
+
 ## Why On-Chain Agents?
 
 DeFi is shifting from human-operated dashboards to **autonomous agents** that perceive, decide, and execute entirely on-chain. Prediction markets are the ideal proving ground: discrete outcomes, transparent order books, and real-money accountability force an agent to be right — not just convincing.
