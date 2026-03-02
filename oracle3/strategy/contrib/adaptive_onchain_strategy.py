@@ -17,8 +17,10 @@ Composite score:
 
 from __future__ import annotations
 
+import json
 import logging
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 from oracle3.events.events import Event, OrderBookEvent, PriceChangeEvent
@@ -53,9 +55,9 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         position_size: float = 10.0,
         max_position_pct: float = 0.10,
         stop_loss_pct: float = 0.08,
-        max_hold_events: int = 100,
+        max_hold_events: int = 25,
         # --- adaptation ---
-        adapt_window: int = 10,
+        adapt_window: int = 5,
     ) -> None:
         super().__init__()
         self.composite_threshold = composite_threshold
@@ -84,6 +86,23 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         # Adaptation tracking
         self._trade_outcomes: list[dict[str, Any]] = []
         self._adapt_trade_count: int = 0
+
+        # Cross-market reference prices for arb detection (Feature #1)
+        self._reference_prices: dict[str, dict[str, float]] = {}
+        self._trade_count: int = 0
+
+        # On-chain feature hooks (set externally by CLI)
+        self.flash_loan_handler: Any | None = None
+        self.atomic_trader: Any | None = None
+        self.coordinator: Any | None = None
+        self.reputation_manager: Any | None = None
+
+        # Persistence: local file + optional on-chain checkpoint
+        self._params_file = Path.home() / '.oracle3' / 'learned_params.json'
+        self._onchain_logger: Any | None = None  # set externally for chain writes
+        self._adapt_epoch: int = 0  # counts how many times _adapt_parameters ran
+        self._onchain_checkpoint_interval: int = 5  # write chain every N epochs
+        self._load_learned_params()
 
     # ------------------------------------------------------------------
     # Main event router
@@ -139,9 +158,11 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         ask_q = trader.market_data.get_best_ask(ticker)
         if bid_q and ask_q:
             mid = (float(bid_q.price) + float(ask_q.price)) / 2.0
+            self._reference_prices.setdefault(ticker.symbol, {})['dflow'] = mid
             self._update_ema(ticker.symbol, mid)
 
     def _handle_price(self, event: PriceChangeEvent) -> None:
+        self._reference_prices.setdefault(event.ticker.symbol, {})['coingecko'] = float(event.price)
         self._update_ema(event.ticker.symbol, float(event.price))
 
     def _update_ema(self, sym: str, price: float) -> None:
@@ -177,6 +198,71 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         ob = abs(self.w_ob * self._ob_signal.get(sym, 0.0))
         mom = abs(self.w_momentum * self._mom_signal.get(sym, 0.0))
         return 'ob' if ob >= mom else 'momentum'
+
+    # ------------------------------------------------------------------
+    # Cross-market arbitrage detection (Feature #1)
+    # ------------------------------------------------------------------
+
+    def find_arbitrage_opportunities(self) -> list[dict[str, Any]]:
+        """Compare DFlow order-book mid-prices vs CoinGecko spot prices.
+
+        Returns opportunities where the absolute spread exceeds 0.5%.
+        """
+        opportunities: list[dict[str, Any]] = []
+        for sym, prices in self._reference_prices.items():
+            dflow_mid = prices.get('dflow')
+            cg_price = prices.get('coingecko')
+            if dflow_mid is None or cg_price is None or cg_price == 0:
+                continue
+            spread_pct = (dflow_mid - cg_price) / cg_price
+            if abs(spread_pct) > 0.005:
+                opportunities.append({
+                    'symbol': sym,
+                    'dflow_mid': round(dflow_mid, 6),
+                    'coingecko_price': round(cg_price, 6),
+                    'spread_pct': round(spread_pct * 100, 4),
+                    'direction': 'buy_dflow' if spread_pct < 0 else 'sell_dflow',
+                })
+        return opportunities
+
+    # ------------------------------------------------------------------
+    # On-chain feature calls (Features #7, #8)
+    # ------------------------------------------------------------------
+
+    async def _attempt_onchain_features(
+        self, sym: str, action: str, price: float,
+    ) -> None:
+        """Call flash-loan and atomic-trader modules every 5th trade."""
+        self._trade_count += 1
+        if self._trade_count % 5 != 0:
+            return
+
+        if self.flash_loan_handler is not None:
+            try:
+                await self.flash_loan_handler.execute_flash_arbitrage(
+                    market_a=f'{sym}/dflow',
+                    market_b=f'{sym}/jupiter',
+                    amount=float(self.position_size),
+                )
+            except Exception:
+                logger.debug('Flash loan attempt failed', exc_info=True)
+
+        if self.atomic_trader is not None:
+            try:
+                hedge_side = 'sell' if action == 'BUY' else 'buy'
+                await self.atomic_trader.place_hedged_order(
+                    prediction_market_symbol=sym,
+                    prediction_side=action.lower(),
+                    prediction_qty=float(self.position_size),
+                    prediction_price=price,
+                    hedge_instrument='jupiter_swap',
+                    hedge_ticker=sym,
+                    hedge_side=hedge_side,
+                    hedge_qty=float(self.position_size),
+                    hedge_price=price,
+                )
+            except Exception:
+                logger.debug('Atomic trader attempt failed', exc_info=True)
 
     # ------------------------------------------------------------------
     # Entry
@@ -233,6 +319,7 @@ class AdaptiveOnChainStrategy(QuantStrategy):
                 'price': float(quote.price), 'events': 0,
                 'signal': self._dominant_signal(sym), 'side': action,
             }
+            await self._attempt_onchain_features(sym, action, float(quote.price))
         self.record_decision(
             ticker_name=ticker.name or sym, action=action, executed=executed,
             confidence=min(abs(score), 1.0),
@@ -312,7 +399,14 @@ class AdaptiveOnChainStrategy(QuantStrategy):
             )
             executed = result.order is not None
             if executed:
-                self._record_trade_outcome(entry_info.get('signal', 'ob'), pnl_pct > 0)
+                prev_epoch = self._adapt_epoch
+                self._record_trade_outcome(entry_info.get('signal', 'ob'), pnl_pct > 0, pnl_pct)
+                if self.reputation_manager is not None:
+                    self.reputation_manager.record_trade_result(pnl_pct)
+                # On-chain checkpoint when adaptation epoch advanced
+                if (self._adapt_epoch > prev_epoch
+                        and self._adapt_epoch % self._onchain_checkpoint_interval == 0):
+                    await self._checkpoint_onchain()
                 self._entries.pop(sym, None)
             self.record_decision(
                 ticker_name=ticker.name or sym, action=action, executed=executed,
@@ -326,8 +420,10 @@ class AdaptiveOnChainStrategy(QuantStrategy):
     # Adaptation
     # ------------------------------------------------------------------
 
-    def _record_trade_outcome(self, signal: str, profitable: bool) -> None:
-        self._trade_outcomes.append({'signal': signal, 'profitable': profitable})
+    def _record_trade_outcome(self, signal: str, profitable: bool, pnl_pct: float = 0.0) -> None:
+        self._trade_outcomes.append({
+            'signal': signal, 'profitable': profitable, 'pnl_pct': pnl_pct,
+        })
         self._adapt_trade_count += 1
         if self._adapt_trade_count >= self.adapt_window:
             self._adapt_parameters()
@@ -338,7 +434,27 @@ class AdaptiveOnChainStrategy(QuantStrategy):
         if not recent:
             return
 
-        # Per-signal win rates
+        total_wins = sum(1 for o in recent if o['profitable'])
+        overall_wr = total_wins / len(recent)
+        logger.info('ADAPT [%d trades]: overall_wr=%.1f%%', len(recent), overall_wr * 100)
+
+        self._adapt_signal_weights(recent)
+        self._adapt_threshold(overall_wr)
+        self._adapt_stop_loss(recent, overall_wr)
+        self._adapt_hold_duration(overall_wr)
+        self._adapt_epoch += 1
+
+        logger.info(
+            '  → w_ob=%.2f w_mom=%.2f threshold=%.3f sl=%.3f hold=%d epoch=%d',
+            self.w_ob, self.w_momentum, self.composite_threshold,
+            self.stop_loss_pct, self.max_hold_events, self._adapt_epoch,
+        )
+
+        # Persist locally every adaptation
+        self._save_learned_params()
+
+    def _adapt_signal_weights(self, recent: list[dict[str, Any]]) -> None:
+        """Adjust per-signal weights based on win rates."""
         signal_stats: dict[str, dict[str, int]] = {}
         for outcome in recent:
             sig = outcome['signal']
@@ -347,12 +463,6 @@ class AdaptiveOnChainStrategy(QuantStrategy):
             if outcome['profitable']:
                 s['wins'] += 1
 
-        total_wins = sum(1 for o in recent if o['profitable'])
-        overall_wr = total_wins / len(recent)
-
-        logger.info('ADAPT [%d trades]: overall_wr=%.1f%%', len(recent), overall_wr * 100)
-
-        # Adjust weights per signal
         for sig, s in signal_stats.items():
             wr = s['wins'] / s['total'] if s['total'] else 0.5
             mult = 1.1 if wr > 0.55 else (0.85 if wr < 0.45 else 1.0)
@@ -362,22 +472,93 @@ class AdaptiveOnChainStrategy(QuantStrategy):
                 self.w_momentum = max(0.1, min(0.9, self.w_momentum * mult))
             logger.info('  %s: wr=%.0f%% (%d/%d) ×%.2f', sig, wr * 100, s['wins'], s['total'], mult)
 
-        # Normalize
         w_sum = self.w_ob + self.w_momentum
         if w_sum > 0:
             self.w_ob /= w_sum
             self.w_momentum /= w_sum
 
-        # Adjust threshold
+    def _adapt_threshold(self, overall_wr: float) -> None:
+        """Raise entry bar when losing, lower it when winning."""
         if overall_wr < 0.45:
-            self.composite_threshold = min(0.4, self.composite_threshold * 1.1)
+            self.composite_threshold = min(0.20, self.composite_threshold * 1.03)
         elif overall_wr > 0.55:
-            self.composite_threshold = max(0.05, self.composite_threshold * 0.95)
+            self.composite_threshold = max(0.03, self.composite_threshold * 0.95)
 
-        logger.info(
-            '  → w_ob=%.2f w_mom=%.2f threshold=%.3f',
-            self.w_ob, self.w_momentum, self.composite_threshold,
-        )
+    def _adapt_stop_loss(self, recent: list[dict[str, Any]], overall_wr: float) -> None:
+        """Tighten stop when losses are deep; loosen when stopped out too early."""
+        pnl_vals = [o['pnl_pct'] for o in recent if o['pnl_pct'] != 0.0]
+        if not pnl_vals:
+            return
+        losses = [v for v in pnl_vals if v < 0]
+        avg_loss = sum(losses) / len(losses) if losses else 0.0
+        if avg_loss < -self.stop_loss_pct:
+            self.stop_loss_pct = max(0.02, self.stop_loss_pct * 0.9)
+        elif overall_wr < 0.40 and abs(avg_loss) < self.stop_loss_pct * 0.5:
+            self.stop_loss_pct = min(0.15, self.stop_loss_pct * 1.1)
+
+    def _adapt_hold_duration(self, overall_wr: float) -> None:
+        """Shorten hold when losing; lengthen when winning."""
+        if overall_wr < 0.40:
+            self.max_hold_events = max(10, int(self.max_hold_events * 0.85))
+        elif overall_wr > 0.60:
+            self.max_hold_events = min(60, int(self.max_hold_events * 1.1))
+
+    # ------------------------------------------------------------------
+    # Persistence: local file + on-chain checkpoint
+    # ------------------------------------------------------------------
+
+    _LEARNED_KEYS = (
+        'w_ob', 'w_momentum', 'composite_threshold',
+        'stop_loss_pct', 'max_hold_events', '_adapt_epoch',
+    )
+
+    def _get_learned_snapshot(self) -> dict[str, Any]:
+        return {k: getattr(self, k) for k in self._LEARNED_KEYS}
+
+    def _load_learned_params(self) -> None:
+        """Load previously learned parameters from local JSON file."""
+        if not self._params_file.exists():
+            return
+        try:
+            data = json.loads(self._params_file.read_text())
+            applied: list[str] = []
+            for k in self._LEARNED_KEYS:
+                if k in data:
+                    setattr(self, k, type(getattr(self, k))(data[k]))
+                    applied.append(k)
+            if applied:
+                logger.info('Loaded learned params (%s): %s', self._params_file, applied)
+        except Exception:
+            logger.debug('Failed to load learned params', exc_info=True)
+
+    def _save_learned_params(self) -> None:
+        """Persist current learned parameters to local JSON file."""
+        try:
+            self._params_file.parent.mkdir(parents=True, exist_ok=True)
+            self._params_file.write_text(json.dumps(
+                self._get_learned_snapshot(), indent=2,
+            ))
+        except Exception:
+            logger.debug('Failed to save learned params', exc_info=True)
+
+    async def _checkpoint_onchain(self) -> None:
+        """Write a parameter snapshot to Solana as a Memo transaction."""
+        if self._onchain_logger is None:
+            return
+        try:
+            snap = self._get_learned_snapshot()
+            snap['app'] = 'oracle3'
+            snap['action'] = 'param_checkpoint'
+            await self._onchain_logger.log_trade(
+                market_ticker='__params__',
+                side='checkpoint',
+                price=snap.get('composite_threshold', 0),
+                quantity=snap.get('_adapt_epoch', 0),
+                trade_signature=json.dumps(snap, separators=(',', ':'))[:64],
+            )
+            logger.info('On-chain param checkpoint written (epoch %d)', self._adapt_epoch)
+        except Exception:
+            logger.debug('On-chain checkpoint failed', exc_info=True)
 
     # ------------------------------------------------------------------
     # Position cap

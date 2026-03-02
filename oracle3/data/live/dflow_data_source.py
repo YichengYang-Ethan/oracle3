@@ -162,7 +162,7 @@ class DFlowDataSource(DataSource):
                 return Decimal(str(p)) / Decimal('100')
             return Decimal(str(p))
 
-        if yes_bid > 0 and yes_bid != prev_bid:
+        if yes_bid > 0:
             bid_price = _normalize_price(yes_bid)
             if Decimal('0') < bid_price < Decimal('1'):
                 events.append(
@@ -170,12 +170,12 @@ class DFlowDataSource(DataSource):
                         ticker=ticker,
                         price=bid_price,
                         size=size,
-                        size_delta=size,
+                        size_delta=size if yes_bid != prev_bid else Decimal('0'),
                         side='bid',
                     )
                 )
 
-        if yes_ask > 0 and yes_ask != prev_ask:
+        if yes_ask > 0:
             ask_price = _normalize_price(yes_ask)
             if Decimal('0') < ask_price < Decimal('1'):
                 events.append(
@@ -183,7 +183,7 @@ class DFlowDataSource(DataSource):
                         ticker=ticker,
                         price=ask_price,
                         size=size,
-                        size_delta=size,
+                        size_delta=size if yes_ask != prev_ask else Decimal('0'),
                         side='ask',
                     )
                 )

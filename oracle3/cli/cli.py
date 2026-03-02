@@ -72,6 +72,7 @@ def dashboard(  # noqa: C901
     import asyncio
     import json as json_lib
     from decimal import Decimal
+    from pathlib import Path
 
     from oracle3.cli.agent_commands import _build_news_augmented_source, _IdleStrategy
     from oracle3.dashboard.server import DashboardServer
@@ -184,6 +185,19 @@ def dashboard(  # noqa: C901
                 # Add to composite data source
                 if hasattr(data_source, 'sources'):
                     data_source.sources.append(signal_source)
+                # Bootstrap "monitoring started" signal so Feature #3 card is active
+                import time as _time
+
+                from oracle3.data.live.onchain_signal_source import OnChainSignal
+                signal_source._signals.append(OnChainSignal(
+                    signal_type='wallet_monitor',
+                    wallet='7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae',
+                    amount=0.0,
+                    direction='monitoring',
+                    token='USDC',
+                    timestamp=_time.time(),
+                    label='oracle3-agent',
+                ))
                 click.echo('  [✓] On-Chain Signal Source loaded')
             except Exception as exc:
                 click.echo(f'  [–] On-Chain Signal Source skipped: {exc}')
@@ -195,21 +209,56 @@ def dashboard(  # noqa: C901
             continuous=not is_backtest,
         )
 
-        # --- Feature 5: Agent Reputation ---
+        # --- Feature 5: Agent Reputation + On-Chain Logger ---
+        onchain_logger = None
+        keypair_file = Path.home() / '.oracle3' / 'keypair.json'
+        try:
+            if keypair_file.exists():
+                from oracle3.onchain.logger import OnChainLogger
+                from oracle3.trader.solana_trader import _load_keypair
+                kp = _load_keypair(keypair_path=str(keypair_file))
+                onchain_logger = OnChainLogger(
+                    keypair=kp,
+                    rpc_url='https://api.devnet.solana.com',
+                )
+                click.echo(f'  [✓] Solana keypair loaded ({str(kp.pubkey())[:8]}…, devnet)')
+        except Exception as exc:
+            click.echo(f'  [–] Solana keypair skipped: {exc}')
+
         try:
             from oracle3.onchain.reputation import ReputationManager
-            rep_mgr = ReputationManager()
+            rep_mgr = ReputationManager(on_chain_logger=onchain_logger)
             engine._reputation_manager = rep_mgr
+            if hasattr(strategy_obj, 'reputation_manager'):
+                strategy_obj.reputation_manager = rep_mgr
+            if hasattr(strategy_obj, '_onchain_logger'):
+                strategy_obj._onchain_logger = onchain_logger
             click.echo('  [✓] Agent Reputation loaded')
         except Exception as exc:
             click.echo(f'  [–] Agent Reputation skipped: {exc}')
 
+        # --- Feature 6: Multi-Agent Pipeline ---
+        coordinator = None
+        try:
+            from oracle3.agent.coordinator import AgentCoordinator, RiskAgent
+            coordinator = AgentCoordinator(
+                risk_agent=RiskAgent(risk_manager=risk_manager),
+            )
+            if hasattr(strategy_obj, 'coordinator'):
+                strategy_obj.coordinator = coordinator
+            click.echo('  [✓] Multi-Agent Pipeline loaded')
+        except Exception as exc:
+            click.echo(f'  [–] Multi-Agent Pipeline skipped: {exc}')
+
         # --- Feature 7: Flash Loan Arbitrage ---
         try:
             from oracle3.trader.flash_loan import FlashLoanArbitrage
+            kp_for_features = onchain_logger._keypair if onchain_logger else None
             flash_loan = FlashLoanArbitrage(
+                keypair=kp_for_features,
                 jito_submitter=jito_submitter,
                 max_borrow=float(capital),
+                rpc_url='https://api.devnet.solana.com',
             )
             engine._flash_loan = flash_loan
             # Also link to strategy if it supports it
@@ -222,8 +271,14 @@ def dashboard(  # noqa: C901
         # --- Feature 8: Atomic Multi-Leg Trader ---
         try:
             from oracle3.trader.atomic_trader import AtomicTrader
-            atomic_trader = AtomicTrader(jito_submitter=jito_submitter)
+            atomic_trader = AtomicTrader(
+                keypair=kp_for_features,
+                jito_submitter=jito_submitter,
+                rpc_url='https://api.devnet.solana.com',
+            )
             engine._atomic_trader = atomic_trader
+            if hasattr(strategy_obj, 'atomic_trader'):
+                strategy_obj.atomic_trader = atomic_trader
             click.echo('  [✓] Atomic Multi-Leg Trader loaded')
         except Exception as exc:
             click.echo(f'  [–] Atomic Multi-Leg Trader skipped: {exc}')
@@ -235,6 +290,9 @@ def dashboard(  # noqa: C901
         # Start control server
         ctrl = ControlServer(engine)
         await ctrl.start()
+
+        if coordinator is not None:
+            await coordinator.start()
 
         mode_label = 'Solana Backtest' if is_backtest else 'Paper Trading'
         click.echo(f'{mode_label} Dashboard running at http://localhost:{port}')
@@ -256,6 +314,8 @@ def dashboard(  # noqa: C901
         except asyncio.CancelledError:
             pass
         finally:
+            if coordinator is not None:
+                await coordinator.stop()
             await engine.stop()
             await ctrl.stop()
             dash.stop()

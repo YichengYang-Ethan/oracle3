@@ -51,9 +51,10 @@ def test_market_to_order_book_no_price_change(data_source):
     # First call populates
     events1 = data_source._market_to_order_book_events(market)
     assert len(events1) == 2
-    # Same prices → no events
+    # Same prices → still emits events but with size_delta=0
     events2 = data_source._market_to_order_book_events(market)
-    assert len(events2) == 0
+    assert len(events2) == 2
+    assert all(e.size_delta == 0 for e in events2)
 
 
 def test_cache_loading(tmp_path):

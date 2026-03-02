@@ -92,11 +92,11 @@ def _build_news_augmented_source(exchange: str):
         # Solana-native data sources — no Google/RSS scraping needed.
         dflow_rest = DFlowDataSource(
             event_cache_file='dflow_events_cache.jsonl',
-            polling_interval=60.0,
+            polling_interval=15.0,
             reprocess_on_start=True,
         )
         dflow_ws = DFlowWebSocketDataSource()
-        coingecko = CoinGeckoX402DataSource()
+        coingecko = CoinGeckoX402DataSource(polling_interval=60.0)
         return CompositeDataSource([dflow_rest, dflow_ws, coingecko])
 
     if exchange == 'polymarket':
