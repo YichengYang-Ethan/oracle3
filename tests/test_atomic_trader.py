@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from oracle3.trader.atomic_trader import AtomicTradeResult, AtomicTrader, HedgeLeg
+from oracle3.trader.atomic_trader import AtomicTrader, AtomicTradeResult, HedgeLeg
 
 
 class MockKeypair:

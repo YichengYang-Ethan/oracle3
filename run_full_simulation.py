@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# mypy: ignore-errors
 """Oracle3 全功能端到端模拟交易 — 使用真实录制数据验证全部 8 项能力。
 
 数据源:
@@ -94,7 +95,7 @@ async def fetch_sol_balance(address: str) -> float:
 # 主流程
 # ---------------------------------------------------------------------------
 
-async def run_simulation() -> None:
+async def run_simulation() -> None:  # noqa: C901
     print('\n' + '=' * 72)
     print('  Oracle3 全功能端到端模拟交易')
     print(f'  钱包: {WALLET_ADDRESS}')
@@ -481,11 +482,10 @@ async def run_simulation() -> None:
     section('Step 9: PaperTrader 真实数据回放交易')
 
     from oracle3.events.events import PriceChangeEvent
-    from oracle3.risk.risk_manager import StandardRiskManager
-    from oracle3.trader.paper_trader import PaperTrader
-
     from oracle3.position.position_manager import Position
+    from oracle3.risk.risk_manager import StandardRiskManager
     from oracle3.ticker.ticker import CashTicker
+    from oracle3.trader.paper_trader import PaperTrader
 
     sim_md = MarketDataManager()
     sim_pm = PositionManager()
@@ -523,10 +523,10 @@ async def run_simulation() -> None:
 
     prev_prices: dict[str, float] = {}
 
-    for idx, (_, event_row) in enumerate(replay_df.iterrows()):
+    for _idx, (_, event_row) in enumerate(replay_df.iterrows()):
         ticker_sym = str(event_row['ticker'])
         price = float(event_row['price'])
-        side_str = str(event_row.get('side', 'bid'))
+        _ = str(event_row.get('side', 'bid'))
 
         ticker = SolanaTicker(
             symbol=ticker_sym,

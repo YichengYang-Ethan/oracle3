@@ -58,7 +58,7 @@ def blinks(host: str, port: int) -> None:
 @click.option(
     '--max-events', default=None, type=int, help='Limit events for episode replay.'
 )
-def dashboard(
+def dashboard(  # noqa: C901
     port: int,
     exchange: str,
     duration: float | None,
@@ -90,14 +90,16 @@ def dashboard(
 
     # Build data source: episode replay or live
     if episode_dir:
-        from oracle3.data.backtest.kalshi_replay_data_source import SolanaReplayDataSource
+        from oracle3.data.backtest.kalshi_replay_data_source import (
+            SolanaReplayDataSource,
+        )
 
         data_source = SolanaReplayDataSource(episode_dir, max_events=max_events)
         exchange = 'solana'  # force Solana for DFlow episodes
     else:
         data_source = _build_news_augmented_source(exchange)
 
-    async def _run() -> None:
+    async def _run() -> None:  # noqa: C901
         from oracle3.cli.control import ControlServer
         from oracle3.core.trading_engine import TradingEngine
         from oracle3.data.market_data_manager import MarketDataManager

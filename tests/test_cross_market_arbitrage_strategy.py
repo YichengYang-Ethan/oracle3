@@ -7,7 +7,6 @@ from decimal import Decimal
 import pytest
 
 from oracle3.strategy.contrib.cross_market_arbitrage_strategy import (
-    ArbitrageOpportunity,
     CrossMarketArbitrageStrategy,
     TickerGrouper,
     _normalize,
@@ -116,8 +115,8 @@ class TestCrossMarketArbitrageStrategy:
 
     @pytest.mark.asyncio
     async def test_process_event_no_crash(self):
-        from oracle3.events.events import PriceChangeEvent
         from oracle3.data.market_data_manager import MarketDataManager
+        from oracle3.events.events import PriceChangeEvent
         from oracle3.position.position_manager import PositionManager
         from oracle3.risk.risk_manager import NoRiskManager
         from oracle3.trader.paper_trader import PaperTrader

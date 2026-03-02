@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# mypy: ignore-errors
 """Oracle3 Interactive Web3 Demo — showcases all 8 on-chain Agent capabilities.
 
 Standalone HTTP server that runs the full simulation in a background thread
@@ -18,6 +19,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import threading
 import time
 import traceback
@@ -25,8 +27,6 @@ from decimal import Decimal
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 from unittest.mock import MagicMock
-
-import logging
 
 import httpx
 import pandas as pd
@@ -928,7 +928,7 @@ if __name__ == '__main__':
     print(f'  \033[38;5;84mWallet:\033[0m {WALLET_ADDRESS}')
     print(f'  \033[38;5;84mData:\033[0m   {PARQUET_PATH}')
     print(f'  \033[38;5;84mOpen:\033[0m   http://localhost:{PORT}')
-    print(f'  \033[2mPress Ctrl+C to stop\033[0m')
+    print('  \033[2mPress Ctrl+C to stop\033[0m')
     print()
 
     SIM.start()

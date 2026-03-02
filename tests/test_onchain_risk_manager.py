@@ -8,7 +8,7 @@ import pytest
 
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.position.position_manager import Position, PositionManager
-from oracle3.risk.onchain_risk_manager import OnChainRiskManager, RiskStatus
+from oracle3.risk.onchain_risk_manager import OnChainRiskManager
 from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
 from oracle3.trader.types import TradeSide
 

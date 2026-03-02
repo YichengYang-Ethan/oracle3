@@ -26,7 +26,7 @@ STATIC_DIR = Path(__file__).parent / 'static'
 SOLANA_WALLET = '7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae'
 
 
-def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
+def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:  # noqa: C901
     """Build a JSON-safe state dict from the engine snapshot.
 
     Re-uses the same data as ControlServer._cmd_get_state() but reads

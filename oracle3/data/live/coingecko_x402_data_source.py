@@ -120,7 +120,7 @@ class CoinGeckoX402DataSource(DataSource):
         return await self._fetch_free(params)
 
     async def _fetch_with_x402(self, params: dict) -> dict:
-        headers = {'X-402-Payment': self._wallet_key}
+        headers: dict[str, str] = {'X-402-Payment': self._wallet_key or ''}
         async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.get(
                 f'{_PRO_API_BASE}/simple/price',

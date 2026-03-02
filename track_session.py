@@ -21,7 +21,7 @@ def fetch_state():
     try:
         with urllib.request.urlopen(API_URL, timeout=10) as resp:
             return json.loads(resp.read())
-    except Exception as e:
+    except Exception:
         return None
 
 
@@ -108,7 +108,7 @@ def write_summary():
         f.write(f'Duration: {last["elapsed_min"]} minutes\n\n')
 
         f.write('--- Portfolio ---\n')
-        f.write(f'Initial Capital: $10,000.00\n')
+        f.write('Initial Capital: $10,000.00\n')
         f.write(f'Final Equity:    ${last["equity"]:,.2f}\n')
         f.write(f'Total P&L:       ${last["total_pnl"]:+,.2f}\n')
         f.write(f'Return:          {(last["equity"]-10000)/100:+.2f}%\n\n')
@@ -145,7 +145,7 @@ def write_summary():
 if __name__ == '__main__':
     print(f'Oracle3 Session Tracker — logging every {INTERVAL//60} min')
     print(f'Log file: {LOG_FILE}')
-    print(f'Dashboard: http://localhost:3000')
+    print('Dashboard: http://localhost:3000')
     print()
 
     start = time.time()

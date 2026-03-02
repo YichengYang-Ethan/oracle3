@@ -154,6 +154,7 @@ class TestMultiAgentStrategy:
 
     def test_event_to_task_price_change(self):
         from decimal import Decimal
+
         from oracle3.events.events import PriceChangeEvent
         from oracle3.ticker.ticker import PolyMarketTicker
 
