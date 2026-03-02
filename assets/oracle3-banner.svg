@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 160" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0b10;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#12131d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d8eff" />
+      <stop offset="50%" style="stop-color:#a78bfa" />
+      <stop offset="100%" style="stop-color:#00e59b" />
+    </linearGradient>
+    <linearGradient id="text-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d8eff" />
+      <stop offset="40%" style="stop-color:#a78bfa" />
+      <stop offset="100%" style="stop-color:#00e59b" />
+    </linearGradient>
+  </defs>
+  <rect width="600" height="160" rx="12" fill="url(#bg)"/>
+  <rect x="0" y="156" width="600" height="4" rx="0 0 12 12" fill="url(#accent)" opacity="0.6"/>
+
+  <!-- Logo text -->
+  <text x="300" y="78" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="56" font-weight="800" fill="url(#text-grad)" letter-spacing="-2">Oracle3</text>
+
+  <!-- Subtitle -->
+  <text x="300" y="110" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="600" fill="#6b7094" letter-spacing="3" text-transform="uppercase">AI-NATIVE PREDICTION MARKET AGENT</text>
+
+  <!-- Solana badge -->
+  <rect x="230" y="122" width="140" height="22" rx="11" fill="#9945FF" fill-opacity="0.15"/>
+  <text x="300" y="137" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="10" font-weight="700" fill="#9945FF" letter-spacing="1.5">BUILT ON SOLANA</text>
+</svg>

@@ -47,13 +47,15 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         for p in snap.positions
     ]
 
-    # Order books
+    # Order books — only include markets with two-sided liquidity
     order_books = []
     for ob in snap.orderbooks:
         best_bid = float(ob.bids[0][0]) if ob.bids else 0.0
         best_ask = float(ob.asks[0][0]) if ob.asks else 0.0
-        spread = best_ask - best_bid if (best_bid > 0 and best_ask > 0) else 0.0
-        mid = (best_bid + best_ask) / 2 if (best_bid > 0 and best_ask > 0) else 0.0
+        if best_bid <= 0 or best_ask <= 0:
+            continue
+        spread = best_ask - best_bid
+        mid = (best_bid + best_ask) / 2
         order_books.append({
             'symbol': ob.ticker_symbol,
             'bid': f'{best_bid:.4f}',
@@ -141,6 +143,103 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         else SOLANA_WALLET
     )
 
+    # Arbitrage opportunities (Feature 1)
+    arbitrage_opportunities: list[dict[str, Any]] = []
+    strategy = getattr(engine, 'strategy', None)
+    if strategy is not None:
+        try:
+            find_arb = getattr(strategy, 'find_arbitrage_opportunities', None)
+            if callable(find_arb):
+                arbitrage_opportunities = find_arb()
+        except Exception:
+            logger.debug('Failed to get arbitrage opportunities', exc_info=True)
+
+    # Risk status (Feature 2)
+    risk_status: dict[str, Any] = {}
+    trader = getattr(engine, 'trader', None)
+    if trader is not None:
+        rm = getattr(trader, 'risk_manager', None)
+        if rm is not None:
+            get_status = getattr(rm, 'get_risk_status', None)
+            if callable(get_status):
+                try:
+                    risk_status = get_status()
+                except Exception:
+                    logger.debug('Failed to get risk status', exc_info=True)
+
+    # On-chain signals (Feature 3)
+    onchain_signals: list[dict[str, Any]] = []
+    ds = getattr(engine, 'data_source', None)
+    if ds is not None:
+        # Check composite data source children too
+        sources = [ds] + list(getattr(ds, 'sources', []))
+        for src in sources:
+            get_signals = getattr(src, 'get_onchain_signals', None)
+            if callable(get_signals):
+                try:
+                    onchain_signals = get_signals(limit=10)
+                except Exception:
+                    logger.debug('Failed to get on-chain signals', exc_info=True)
+                break
+
+    # Reputation (Feature 5)
+    reputation: dict[str, Any] = {}
+    rep_mgr = getattr(engine, '_reputation_manager', None)
+    if rep_mgr is not None:
+        try:
+            reputation = rep_mgr.get_my_reputation()
+        except Exception:
+            logger.debug('Failed to get reputation', exc_info=True)
+
+    # Multi-agent pipeline status (Feature 6)
+    pipeline_status: dict[str, Any] = {}
+    if strategy is not None:
+        coordinator = getattr(strategy, 'coordinator', None)
+        if coordinator is not None:
+            get_pipeline = getattr(coordinator, 'get_pipeline_status', None)
+            if callable(get_pipeline):
+                try:
+                    pipeline_status = get_pipeline()
+                except Exception:
+                    logger.debug('Failed to get pipeline status', exc_info=True)
+
+    # MEV Protection status (Feature 4)
+    mev_status: dict[str, Any] = {}
+    if trader is not None:
+        jito = getattr(trader, '_jito_submitter', None)
+        if jito is not None:
+            get_mev = getattr(jito, 'get_mev_protection_status', None)
+            if callable(get_mev):
+                try:
+                    mev_status = get_mev()
+                except Exception:
+                    logger.debug('Failed to get MEV status', exc_info=True)
+
+    # Flash Loan Arbitrage stats (Feature 7)
+    flash_loan_stats: dict[str, Any] = {}
+    fl = getattr(engine, '_flash_loan', None)
+    if fl is not None:
+        try:
+            flash_loan_stats = getattr(fl, 'stats', {}) or {}
+        except Exception:
+            logger.debug('Failed to get flash loan stats', exc_info=True)
+    if not flash_loan_stats and strategy is not None:
+        fl_handler = getattr(strategy, 'flash_loan_handler', None)
+        if fl_handler is not None:
+            try:
+                flash_loan_stats = getattr(fl_handler, 'stats', {}) or {}
+            except Exception:
+                logger.debug('Failed to get flash loan stats from strategy', exc_info=True)
+
+    # Atomic Multi-Leg Trader stats (Feature 8)
+    atomic_trader_stats: dict[str, Any] = {}
+    at = getattr(engine, '_atomic_trader', None)
+    if at is not None:
+        try:
+            atomic_trader_stats = getattr(at, 'stats', {}) or {}
+        except Exception:
+            logger.debug('Failed to get atomic trader stats', exc_info=True)
+
     return {
         'timestamp': datetime.now().isoformat(),
         'running': snap.engine_running,
@@ -167,6 +266,14 @@ def _serialize_snapshot(engine: 'TradingEngine') -> dict[str, Any]:
         'news': news[-20:],
         'wallet': SOLANA_WALLET,
         'wallet_short': wallet_short,
+        'arbitrage_opportunities': arbitrage_opportunities,
+        'risk_status': risk_status,
+        'onchain_signals': onchain_signals,
+        'reputation': reputation,
+        'pipeline_status': pipeline_status,
+        'mev_status': mev_status,
+        'flash_loan_stats': flash_loan_stats,
+        'atomic_trader_stats': atomic_trader_stats,
     }
 
 
@@ -189,6 +296,11 @@ def _build_dashboard_app(engine: 'TradingEngine'):  # noqa: C901
     async def index():
         """Serve the dashboard HTML."""
         return FileResponse(STATIC_DIR / 'index.html', media_type='text/html')
+
+    @app.get('/live')
+    async def live_dashboard():
+        """Serve the live trading dashboard HTML."""
+        return FileResponse(STATIC_DIR / 'live.html', media_type='text/html')
 
     @app.get('/api/state')
     async def get_state():

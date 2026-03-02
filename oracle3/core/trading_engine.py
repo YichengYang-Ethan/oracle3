@@ -8,11 +8,17 @@ from collections import deque
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from oracle3.analytics.performance_analyzer import PerformanceAnalyzer
 from oracle3.data.data_source import DataSource
-from oracle3.events.events import Event, NewsEvent, OrderBookEvent, PriceChangeEvent
+from oracle3.events.events import (
+    Event,
+    NewsEvent,
+    OnChainSignalEvent,
+    OrderBookEvent,
+    PriceChangeEvent,
+)
 from oracle3.risk.risk_manager import StandardRiskManager
 from oracle3.strategy.strategy import Strategy
 from oracle3.ticker.ticker import CashTicker
@@ -165,6 +171,13 @@ class TradingEngine:
         # of calling data_source.get_next_event().  Set by ControlServer.
         self._data_paused: bool = False
 
+        # Reputation manager (optional, set externally)
+        self._reputation_manager: Any | None = None
+
+        # Flash loan and atomic trader instances (optional, set externally)
+        self._flash_loan: Any | None = None
+        self._atomic_trader: Any | None = None
+
     def _drain_backtest_timestamp_batch(self, event: Event) -> list[Event]:
         """Return all queued backtest events that share a timestamp."""
         if self._continuous:
@@ -220,6 +233,12 @@ class TradingEngine:
             if not market_data_already_applied:
                 self._apply_market_event(event)
 
+            if isinstance(event, OnChainSignalEvent):
+                self._activity_log.append(
+                    (now_str, f'OnChainSignal: {event.signal_type} {event.direction} {event.amount} ({event.wallet[:8]}...)')
+                )
+                logger.info('OnChainSignalEvent: %s %s %s', event.signal_type, event.direction, event.amount)
+
             if isinstance(event, NewsEvent):
                 headline = event.title or event.news[:100]
                 source = getattr(event, 'source', '') or ''
@@ -273,6 +292,7 @@ class TradingEngine:
                 self._last_decisions_count = total_d
 
             await self._sync_trades()
+            await self._maybe_write_reputation()
             new_orders = self.trader.orders[prev_orders:]
             for order in new_orders:
                 status = order.status.value.upper()
@@ -523,6 +543,16 @@ class TradingEngine:
                 except Exception:
                     logger.debug('state_store.append_order() failed', exc_info=True)
             self._last_orders_idx += 1
+
+    async def _maybe_write_reputation(self) -> None:
+        """Write reputation summary if the manager is set and interval reached."""
+        rm = self._reputation_manager
+        if rm is None:
+            return
+        try:
+            await rm.maybe_write_summary()
+        except Exception:
+            logger.debug('_maybe_write_reputation() failed', exc_info=True)
 
     async def _check_drawdown_alert(self) -> None:
         """Fire a drawdown alert if the current drawdown exceeds the threshold."""

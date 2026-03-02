@@ -129,3 +129,37 @@ class PriceChangeEvent(Event):
 
     def __repr__(self) -> str:
         return self.__str__()
+
+
+class OnChainSignalEvent(Event):
+    """On-chain signal event (whale transfer, TVL change, large transfer)."""
+
+    def __init__(
+        self,
+        signal_type: str,
+        wallet: str = '',
+        amount: Decimal = Decimal('0'),
+        direction: str = '',
+        token: str = '',
+        timestamp: datetime | None = None,
+        label: str = '',
+    ):
+        self.signal_type = signal_type
+        self.wallet = wallet
+        self.amount = amount
+        self.direction = direction
+        self.token = token
+        self.timestamp = timestamp or datetime.now()
+        self.label = label
+
+    def trigger(self) -> None:
+        pass
+
+    def __str__(self) -> str:
+        return (
+            f'OnChainSignalEvent: type={self.signal_type}, wallet={self.wallet[:8]}..., '
+            f'amount={self.amount}, direction={self.direction}'
+        )
+
+    def __repr__(self) -> str:
+        return self.__str__()

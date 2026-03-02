@@ -1,0 +1,5959 @@
+{
+  "source": "DFlow Solana Backtest",
+  "episode": "data/episodes/dflow_15min",
+  "initial_capital": "10000",
+  "equity": "10048.8000",
+  "cash": "9991.2000",
+  "total_pnl": "48.8000",
+  "realized_pnl": "44.0000",
+  "unrealized_pnl": "4.8000",
+  "event_count": 4534,
+  "positions": [
+    {
+      "symbol": "KXT20WORLDCUP-26-WI",
+      "name": "KXT20WORLDCUP-26-WI",
+      "qty": "20.0",
+      "avg_cost": "0.050",
+      "current_price": "0.06",
+      "unrealized_pnl": "0.2000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-PFIS",
+      "name": "KXPGATOP20-COCITPB26-PFIS",
+      "qty": "20.0",
+      "avg_cost": "0.160",
+      "current_price": "0.19",
+      "unrealized_pnl": "0.6000"
+    },
+    {
+      "symbol": "KXT20MATCH-26MAR01WIIND-WI",
+      "name": "KXT20MATCH-26MAR01WIIND-WI",
+      "qty": "20.0",
+      "avg_cost": "0.240",
+      "current_price": "0.3",
+      "unrealized_pnl": "1.2000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-HLI",
+      "name": "KXPGATOP20-COCITPB26-HLI",
+      "qty": "20.0",
+      "avg_cost": "0.030",
+      "current_price": "0.03",
+      "unrealized_pnl": "0.0000"
+    },
+    {
+      "symbol": "KXDHSFUND-26MAR10",
+      "name": "KXDHSFUND-26MAR10",
+      "qty": "20.0",
+      "avg_cost": "0.290",
+      "current_price": "0.26",
+      "unrealized_pnl": "-0.6000"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-TCU",
+      "name": "KXMAKEMARMAD-26-TCU",
+      "qty": "20.0",
+      "avg_cost": "0.70",
+      "current_price": "0.7",
+      "unrealized_pnl": "0.000"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "qty": "20.0",
+      "avg_cost": "0.260",
+      "current_price": "0.44",
+      "unrealized_pnl": "3.6000"
+    },
+    {
+      "symbol": "KXNHLWEST-26-UTA",
+      "name": "KXNHLWEST-26-UTA",
+      "qty": "20.0",
+      "avg_cost": "0.050",
+      "current_price": "0.05",
+      "unrealized_pnl": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-RNEE",
+      "name": "KXPGATOP20-COCITPB26-RNEE",
+      "qty": "20.0",
+      "avg_cost": "0.270",
+      "current_price": "0.24",
+      "unrealized_pnl": "-0.6000"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-JJOH",
+      "name": "KXNBAMIMP-26-JJOH",
+      "qty": "20.0",
+      "avg_cost": "0.270",
+      "current_price": "0.25",
+      "unrealized_pnl": "-0.4000"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "qty": "20.0",
+      "avg_cost": "0.320",
+      "current_price": "0.36",
+      "unrealized_pnl": "0.8000"
+    }
+  ],
+  "order_books": [
+    {
+      "symbol": "CONTROLH-2026-D",
+      "bid": "0.8000",
+      "ask": "0.8100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "CONTROLH-2026-R",
+      "bid": "0.1800",
+      "ask": "0.1900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "CONTROLS-2026-D",
+      "bid": "0.4000",
+      "ask": "0.4100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "CONTROLS-2026-R",
+      "bid": "0.5900",
+      "ask": "0.6000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "FEDHIKE-26DEC31",
+      "bid": "0.1000",
+      "ask": "0.1200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "FEDHIKE-26JUN30",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "FEDHIKE-27DEC31",
+      "bid": "0.5500",
+      "ask": "0.5900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "FEDHIKE-27JUN30",
+      "bid": "0.3000",
+      "ask": "0.3100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "GTA6-26DEC31",
+      "bid": "0.8000",
+      "ask": "0.8100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "GTA6-26JUL31",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "GTA6-26MAY31",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXAAAGASW-26MAR02-2.978",
+      "bid": "0.9700",
+      "ask": "0.9800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXAAAGASW-26MAR02-2.988",
+      "bid": "0.6000",
+      "ask": "0.5900",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXAAAGASW-26MAR02-2.998",
+      "bid": "0.2300",
+      "ask": "0.2200",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXAAAGASW-26MAR02-3.008",
+      "bid": "0.1100",
+      "ask": "0.1100",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXAAAGASW-26MAR02-3.018",
+      "bid": "0.0700",
+      "ask": "0.0700",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXACAEXT-26JAN-27",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXACAEXT-26JAN-APR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXALIENS-27",
+      "bid": "0.2300",
+      "ask": "0.2400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXARREST-27JAN-AFAU",
+      "bid": "0.0700",
+      "ask": "0.0750",
+      "spread": "0.0050"
+    },
+    {
+      "symbol": "KXARREST-27JAN-ASCH",
+      "bid": "0.1600",
+      "ask": "0.1880",
+      "spread": "0.0280"
+    },
+    {
+      "symbol": "KXARREST-27JAN-BCLIN",
+      "bid": "0.0950",
+      "ask": "0.1140",
+      "spread": "0.0190"
+    },
+    {
+      "symbol": "KXARREST-27JAN-BJOH",
+      "bid": "0.0500",
+      "ask": "0.0800",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXARREST-27JAN-BNET",
+      "bid": "0.0900",
+      "ask": "0.1300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXARREST-27JAN-BOM",
+      "bid": "0.0950",
+      "ask": "0.0960",
+      "spread": "0.0010"
+    },
+    {
+      "symbol": "KXARREST-27JAN-COWE",
+      "bid": "0.0300",
+      "ask": "0.0900",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXARREST-27JAN-GNEW",
+      "bid": "0.0520",
+      "ask": "0.0900",
+      "spread": "0.0380"
+    },
+    {
+      "symbol": "KXARREST-27JAN-HCLIN",
+      "bid": "0.0750",
+      "ask": "0.0980",
+      "spread": "0.0230"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JBID",
+      "bid": "0.0130",
+      "ask": "0.0430",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JBRE",
+      "bid": "0.4810",
+      "ask": "0.4900",
+      "spread": "0.0090"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JCLA",
+      "bid": "0.1700",
+      "ask": "0.2000",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JCOM",
+      "bid": "0.1920",
+      "ask": "0.2500",
+      "spread": "0.0580"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JKER",
+      "bid": "0.0570",
+      "ask": "0.0790",
+      "spread": "0.0220"
+    },
+    {
+      "symbol": "KXARREST-27JAN-JZAP",
+      "bid": "0.2200",
+      "ask": "0.2800",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXARREST-27JAN-KPAT",
+      "bid": "0.0400",
+      "ask": "0.0900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXARREST-27JAN-LCOO",
+      "bid": "0.0310",
+      "ask": "0.0670",
+      "spread": "0.0360"
+    },
+    {
+      "symbol": "KXARREST-27JAN-LJAM",
+      "bid": "0.2020",
+      "ask": "0.2400",
+      "spread": "0.0380"
+    },
+    {
+      "symbol": "KXARREST-27JAN-LJUN",
+      "bid": "0.0800",
+      "ask": "0.1300",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXARREST-27JAN-LLYN",
+      "bid": "0.0600",
+      "ask": "0.0900",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXARREST-27JAN-MKHA",
+      "bid": "0.5400",
+      "ask": "0.6000",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXARREST-27JAN-PBON",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXARREST-27JAN-SRIC",
+      "bid": "0.0500",
+      "ask": "0.0900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXARREST-27JAN-THOM",
+      "bid": "0.0400",
+      "ask": "0.0700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-PIR",
+      "bid": "0.9100",
+      "ask": "0.5700",
+      "spread": "-0.3400"
+    },
+    {
+      "symbol": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-SCH",
+      "bid": "0.4300",
+      "ask": "0.1000",
+      "spread": "-0.3300"
+    },
+    {
+      "symbol": "KXBALANCEPOWERCOMBO-27FEB-DD",
+      "bid": "0.3900",
+      "ask": "0.4000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBALANCEPOWERCOMBO-27FEB-DR",
+      "bid": "0.4400",
+      "ask": "0.4500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBALANCEPOWERCOMBO-27FEB-RD",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBALANCEPOWERCOMBO-27FEB-RR",
+      "bid": "0.1600",
+      "ask": "0.1700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTC2026200-27JAN01-200000",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-APR",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-DEC",
+      "bid": "0.3400",
+      "ask": "0.3700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-JUNE",
+      "bid": "0.2100",
+      "ask": "0.2200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-MAR",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-MAY",
+      "bid": "0.1600",
+      "ask": "0.1700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAX100-26-SEP",
+      "bid": "0.2600",
+      "ask": "0.3000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXBTCMAX150-25-26APR30-149999.99",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXBTCMAX150-25-26MAY31-149999.99",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-109999.99",
+      "bid": "0.2800",
+      "ask": "0.2900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-119999.99",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-129999.99",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-139999.99",
+      "bid": "0.1100",
+      "ask": "0.1400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-149999.99",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-199999.99",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMAXY-26DEC31-99999.99",
+      "bid": "0.3500",
+      "ask": "0.3900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXBTCMINY-27JAN01-40000.00",
+      "bid": "0.3600",
+      "ask": "0.3700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMINY-27JAN01-45000.00",
+      "bid": "0.4500",
+      "ask": "0.4600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXBTCMINY-27JAN01-50000.00",
+      "bid": "0.5800",
+      "ask": "0.6000",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXBTCMINY-27JAN01-55000.00",
+      "bid": "0.6800",
+      "ask": "0.7000",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXBTCMINY-27JAN01-60000.00",
+      "bid": "0.8000",
+      "ask": "0.8200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-BROL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-CWRI",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-DBUR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-DCOL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-HLUT",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-JGRE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-JRAT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-KLOE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-KNOE",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-LCDR",
+      "bid": "0.0600",
+      "ask": "0.0800",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-LMCM",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-LZEL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-MKRA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-MRUB",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-MWAL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-PBON",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-PHEG",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-RFK",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-RVOU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-SBES",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-SDUF",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-STUR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-SWIL",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXCABOUT-29JAN-TGAB",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXCLOSEHORMUZ-27JAN",
+      "bid": "0.3500",
+      "ask": "0.3200",
+      "spread": "-0.0300"
+    },
+    {
+      "symbol": "KXCLOSEHORMUZ-27JAN-26AUG",
+      "bid": "0.0200",
+      "ask": "0.6000",
+      "spread": "0.5800"
+    },
+    {
+      "symbol": "KXCLOSEHORMUZ-27JAN-26MAY",
+      "bid": "0.0200",
+      "ask": "0.6000",
+      "spread": "0.5800"
+    },
+    {
+      "symbol": "KXDHSFUND-26APR01",
+      "bid": "0.7600",
+      "ask": "0.7700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXDHSFUND-26MAR10",
+      "bid": "0.2600",
+      "ask": "0.2900",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXDHSFUND-26MAR20",
+      "bid": "0.4900",
+      "ask": "0.5200",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXDHSFUNDING-26APR01",
+      "bid": "0.7300",
+      "ask": "0.7600",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXDHSFUNDING-26MAR10",
+      "bid": "0.2000",
+      "ask": "0.2200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXDHSFUNDING-26MAR20",
+      "bid": "0.4900",
+      "ask": "0.5300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-ACQU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-APEX",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-COMP",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-ENGA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-LIVE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-SAUD",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-SIMS",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-SKAT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-SPFC",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEARNINGSMENTIONEA-25OCT28-UNDP",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.0",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.4",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.5",
+      "bid": "0.0700",
+      "ask": "0.1200",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.6",
+      "bid": "0.1300",
+      "ask": "0.1900",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.7",
+      "bid": "0.1400",
+      "ask": "0.1600",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.8",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T2.9",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T3.0",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26JUN-T3.1",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.0",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.1",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.2",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.3",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.4",
+      "bid": "0.0200",
+      "ask": "0.0900",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.5",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.6",
+      "bid": "0.0700",
+      "ask": "0.1400",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.7",
+      "bid": "0.2200",
+      "ask": "0.2500",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.8",
+      "bid": "0.1700",
+      "ask": "0.1900",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T2.9",
+      "bid": "0.1100",
+      "ask": "0.1500",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.0",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.1",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.2",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.3",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.4",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXECONSTATCPIYOY-26MAY-T3.5",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01FULTOT-FUL",
+      "bid": "0.9000",
+      "ask": "0.8900",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01FULTOT-TIE",
+      "bid": "0.0800",
+      "ask": "0.0700",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01FULTOT-TOT",
+      "bid": "0.0300",
+      "ask": "0.0200",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-CRY",
+      "bid": "0.4200",
+      "ask": "0.2400",
+      "spread": "-0.1800"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "bid": "0.4400",
+      "ask": "0.2600",
+      "spread": "-0.1800"
+    },
+    {
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "bid": "0.3600",
+      "ask": "0.3200",
+      "spread": "-0.0400"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-ARS",
+      "bid": "0.9600",
+      "ask": "0.9900",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-AVL",
+      "bid": "0.3800",
+      "ask": "0.4100",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-BRE",
+      "bid": "0.0200",
+      "ask": "0.0700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-CHE",
+      "bid": "0.3400",
+      "ask": "0.3900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-LFC",
+      "bid": "0.6400",
+      "ask": "0.6800",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-MCI",
+      "bid": "0.9400",
+      "ask": "0.9700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXEPLTOP4-26-MUN",
+      "bid": "0.6300",
+      "ask": "0.6500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-3500.00",
+      "bid": "0.3600",
+      "ask": "0.3700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-3750.00",
+      "bid": "0.3000",
+      "ask": "0.3100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-4000.00",
+      "bid": "0.2100",
+      "ask": "0.2400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-4250.00",
+      "bid": "0.1900",
+      "ask": "0.2300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-4500.00",
+      "bid": "0.1700",
+      "ask": "0.1900",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-4750.00",
+      "bid": "0.1300",
+      "ask": "0.1700",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-5000.00",
+      "bid": "0.1300",
+      "ask": "0.1500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXETHMAXY-27JAN01-6000.00",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-CL",
+      "bid": "0.1600",
+      "ask": "0.1700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-FA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-GR",
+      "bid": "0.2400",
+      "ask": "0.2500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-KA",
+      "bid": "0.0600",
+      "ask": "0.0800",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXF1-26-LH",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-LN",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-MV",
+      "bid": "0.2200",
+      "ask": "0.2300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXF1-26-OP",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXFEDCHAIRNOM-29-JS",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXFEDCHAIRNOM-29-KW",
+      "bid": "0.9300",
+      "ask": "0.9400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXFEDDECISION-26MAR-C25",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXFEDDECISION-26MAR-C26",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXFEDDECISION-26MAR-H0",
+      "bid": "0.9500",
+      "ask": "0.9600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGAMBLINGREPEAL-26JAN-27",
+      "bid": "0.2600",
+      "ask": "0.2800",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXGAMBLINGREPEAL-26JAN-APR",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXGOVCA-26-BWAR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-CAHN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-CBIA",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-ESWA",
+      "bid": "0.5600",
+      "ask": "0.5700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-KPOR",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-MMAH",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-SHIL",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVCA-26-TSTE",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVFLNOMR-26-BD",
+      "bid": "0.7500",
+      "ask": "0.7600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVFLNOMR-26-CDES",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVFLNOMR-26-JCOL",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVFLNOMR-26-JFIS",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G20",
+      "bid": "0.9300",
+      "ask": "0.9300",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G25",
+      "bid": "0.7500",
+      "ask": "0.7600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G30",
+      "bid": "0.6600",
+      "ask": "0.6700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G35",
+      "bid": "0.5500",
+      "ask": "0.5600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G40",
+      "bid": "0.4800",
+      "ask": "0.4800",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G43",
+      "bid": "0.4100",
+      "ask": "0.4200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G50",
+      "bid": "0.2700",
+      "ask": "0.2800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G60",
+      "bid": "0.1600",
+      "ask": "0.2000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXGOVTSHUTLENGTH-26FEB07-G90",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGREENLAND-29",
+      "bid": "0.2610",
+      "ask": "0.2800",
+      "spread": "0.0190"
+    },
+    {
+      "symbol": "KXGREENLAND-29-26JUL",
+      "bid": "0.0400",
+      "ask": "0.0600",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXGREENLAND-29-26MAY",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGREENLAND-29-27",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGREENTERRITORY-29",
+      "bid": "0.3900",
+      "ask": "0.4100",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXGREENTERRITORY-29-26APR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXGREENTERRITORY-29-27",
+      "bid": "0.1400",
+      "ask": "0.1500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXIMPEACH-26-JUN01",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXIMPEACH-27-JAN01",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXIMPEACH-28-JAN01",
+      "bid": "0.6600",
+      "ask": "0.6700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINSURRECTION-29",
+      "bid": "0.5600",
+      "ask": "0.6000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXINSURRECTION-29-26MAY",
+      "bid": "0.0900",
+      "ask": "0.1300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXINSURRECTION-29-27",
+      "bid": "0.3000",
+      "ask": "0.3300",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B4900",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B5100",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B5300",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B5500",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B5700",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B5900",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B6100",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B6300",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B6500",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B6700",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B6900",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B7100",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B7300",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B7500",
+      "bid": "0.1200",
+      "ask": "0.1400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B7700",
+      "bid": "0.1000",
+      "ask": "0.1200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B7900",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B8100",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B8300",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B8500",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B8700",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-B8900",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-T4000",
+      "bid": "0.0600",
+      "ask": "0.0800",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXINXY-26DEC31H1600-T9000",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLALIGA-26-BAR",
+      "bid": "0.6300",
+      "ask": "0.6500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXLALIGA-26-RMA",
+      "bid": "0.3500",
+      "ask": "0.3600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-AALSSYR",
+      "bid": "0.1500",
+      "ask": "0.2100",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-AVUCPSER",
+      "bid": "0.1500",
+      "ask": "0.2000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-BNETISR",
+      "bid": "0.3000",
+      "ask": "0.3300",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-CRAMSAFR",
+      "bid": "0.0900",
+      "ask": "0.1600",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-CSHEPMEX",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-DNOBECUA",
+      "bid": "0.0900",
+      "ask": "0.1600",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-DRODAPRE",
+      "bid": "0.2700",
+      "ask": "0.3400",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-EMACFRA",
+      "bid": "0.1300",
+      "ask": "0.1700",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-FMERCGER",
+      "bid": "0.0500",
+      "ask": "0.1200",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-FTSHPDRC",
+      "bid": "0.1100",
+      "ask": "0.1700",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-GMELITA",
+      "bid": "0.0800",
+      "ask": "0.1300",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-GPETCOL",
+      "bid": "0.9500",
+      "ask": "0.9600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-IALIPGUY",
+      "bid": "0.0500",
+      "ask": "0.1300",
+      "spread": "0.0800"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-JFNPMG",
+      "bid": "0.1300",
+      "ask": "0.2000",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-JMILARG",
+      "bid": "0.0500",
+      "ask": "0.1100",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-KJONDPRK",
+      "bid": "0.0500",
+      "ask": "0.1000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-KSTAUK",
+      "bid": "0.6800",
+      "ask": "0.7300",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-LJMKOR",
+      "bid": "0.0400",
+      "ask": "0.1100",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-LSILBRA",
+      "bid": "0.0500",
+      "ask": "0.1000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-MCARCAN",
+      "bid": "0.0800",
+      "ask": "0.1400",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-MDIACPC",
+      "bid": "0.6500",
+      "ask": "0.6500",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-MFREPMD",
+      "bid": "0.1700",
+      "ask": "0.2400",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-NBUKELSA",
+      "bid": "0.0500",
+      "ask": "0.1100",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-NMODIND",
+      "bid": "0.0300",
+      "ask": "0.0900",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-PLUXPMNZ",
+      "bid": "0.3000",
+      "ask": "0.3700",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-PSANPM",
+      "bid": "0.2900",
+      "ask": "0.3400",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-RERDTUR",
+      "bid": "0.0800",
+      "ask": "0.1300",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-RPERBOL",
+      "bid": "0.0500",
+      "ask": "0.0900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-TRUEPDRC",
+      "bid": "0.0900",
+      "ask": "0.1800",
+      "spread": "0.0900"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-VORBHUN",
+      "bid": "0.6700",
+      "ask": "0.7200",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-VPUTRUS",
+      "bid": "0.1400",
+      "ask": "0.1500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-VZELUKR",
+      "bid": "0.2800",
+      "ask": "0.3200",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXLEADERSOUT-27JAN01-XJINCHI",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEAVELISACOOK-26JAN-27JAN01",
+      "bid": "0.1400",
+      "ask": "0.1700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXLEAVEWALZ-27JAN01-TWAL-26JUL01",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLEAVEWALZ-27JAN01-TWAL-27JAN01",
+      "bid": "0.1600",
+      "ask": "0.1700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLLM1-26DEC31-A",
+      "bid": "0.3800",
+      "ask": "0.3900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLLM1-26DEC31-ALI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLLM1-26DEC31-GOOG",
+      "bid": "0.3600",
+      "ask": "0.3700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLLM1-26DEC31-OAI",
+      "bid": "0.1400",
+      "ask": "0.1500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXLLM1-26DEC31-XAI",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-AUB",
+      "bid": "0.3100",
+      "ask": "0.3100",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-BAY",
+      "bid": "0.0600",
+      "ask": "0.1100",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-BSU",
+      "bid": "0.0500",
+      "ask": "0.1200",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-BUT",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-CIN",
+      "bid": "0.0800",
+      "ask": "0.1700",
+      "spread": "0.0900"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-CLEM",
+      "bid": "0.8800",
+      "ask": "0.9500",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-COLG",
+      "bid": "0.1700",
+      "ask": "0.2300",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-CREI",
+      "bid": "0.0500",
+      "ask": "0.1000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-CSU",
+      "bid": "0.0200",
+      "ask": "0.0800",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-DAY",
+      "bid": "0.0400",
+      "ask": "0.0900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-DRKE",
+      "bid": "0.0300",
+      "ask": "0.0800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-FUR",
+      "bid": "0.1400",
+      "ask": "0.2100",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-GC",
+      "bid": "0.0700",
+      "ask": "0.2100",
+      "spread": "0.1400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-GTWN",
+      "bid": "0.0300",
+      "ask": "0.1000",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-HALL",
+      "bid": "0.1400",
+      "ask": "0.1500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-HOF",
+      "bid": "0.1700",
+      "ask": "0.4400",
+      "spread": "0.2700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-HOW",
+      "bid": "0.3200",
+      "ask": "0.5300",
+      "spread": "0.2100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-HP",
+      "bid": "0.6100",
+      "ask": "0.6500",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-IND",
+      "bid": "0.3800",
+      "ask": "0.3900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-IONA",
+      "bid": "0.0300",
+      "ask": "0.0800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-IOWA",
+      "bid": "0.9100",
+      "ask": "0.9400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-LIB",
+      "bid": "0.3400",
+      "ask": "0.4800",
+      "spread": "0.1400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-LONG",
+      "bid": "0.1500",
+      "ask": "0.3600",
+      "spread": "0.2100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MARQ",
+      "bid": "0.0100",
+      "ask": "0.0400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MCNS",
+      "bid": "0.4500",
+      "ask": "0.5000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MEM",
+      "bid": "0.0300",
+      "ask": "0.1000",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MISS",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MIZZ",
+      "bid": "0.8900",
+      "ask": "0.9400",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MOH",
+      "bid": "0.7200",
+      "ask": "0.7300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MONT",
+      "bid": "0.0500",
+      "ask": "0.1000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-MURR",
+      "bid": "0.1000",
+      "ask": "0.1600",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-NAVY",
+      "bid": "0.5100",
+      "ask": "0.7800",
+      "spread": "0.2700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-NCST",
+      "bid": "0.9300",
+      "ask": "0.9800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-NORF",
+      "bid": "0.1400",
+      "ask": "0.2100",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-OSU",
+      "bid": "0.4200",
+      "ask": "0.4300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-PROV",
+      "bid": "0.0100",
+      "ask": "0.0400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-QUIN",
+      "bid": "0.0500",
+      "ask": "0.1100",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-RMU",
+      "bid": "0.1600",
+      "ask": "0.3200",
+      "spread": "0.1600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-SCU",
+      "bid": "0.5300",
+      "ask": "0.5500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-SDSU",
+      "bid": "0.2000",
+      "ask": "0.3500",
+      "spread": "0.1500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-SFA",
+      "bid": "0.7000",
+      "ask": "0.7100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-SIE",
+      "bid": "0.0600",
+      "ask": "0.1300",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-SMU",
+      "bid": "0.6600",
+      "ask": "0.6700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-TCU",
+      "bid": "0.7000",
+      "ask": "0.7000",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-TEX",
+      "bid": "0.9100",
+      "ask": "0.9700",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-TXAM",
+      "bid": "0.6200",
+      "ask": "0.6700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UCI",
+      "bid": "0.1900",
+      "ask": "0.2300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UCLA",
+      "bid": "0.7400",
+      "ask": "0.9800",
+      "spread": "0.2400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UCSB",
+      "bid": "0.1500",
+      "ask": "0.2000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UCSD",
+      "bid": "0.0600",
+      "ask": "0.1200",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UGA",
+      "bid": "0.8400",
+      "ask": "0.9300",
+      "spread": "0.0900"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-USC",
+      "bid": "0.0400",
+      "ask": "0.1100",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-USU",
+      "bid": "0.9400",
+      "ask": "0.9700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UTU",
+      "bid": "0.0600",
+      "ask": "0.1000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-UVM",
+      "bid": "0.2500",
+      "ask": "0.2700",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-VCU",
+      "bid": "0.1700",
+      "ask": "0.2200",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-VT",
+      "bid": "0.0600",
+      "ask": "0.1300",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-WEB",
+      "bid": "0.0300",
+      "ask": "0.1200",
+      "spread": "0.0900"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-WIN",
+      "bid": "0.1500",
+      "ask": "0.1800",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-WKU",
+      "bid": "0.1500",
+      "ask": "0.4800",
+      "spread": "0.3300"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-WOF",
+      "bid": "0.1100",
+      "ask": "0.1500",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-WVU",
+      "bid": "0.0400",
+      "ask": "0.1600",
+      "spread": "0.1200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-XAV",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-YALE",
+      "bid": "0.4900",
+      "ask": "0.5600",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXMAKEMARMAD-26-YSU",
+      "bid": "0.0500",
+      "ask": "0.0900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMARMAD-26-ALA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-ARIZ",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-ARK",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-CONN",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-DUKE",
+      "bid": "0.2000",
+      "ask": "0.2100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-FLA",
+      "bid": "0.1000",
+      "ask": "0.1300",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXMARMAD-26-GONZ",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-HOU",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-ILL",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-ISU",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-KU",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-MICH",
+      "bid": "0.2000",
+      "ask": "0.2100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-MSU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-NEB",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-PUR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-SJU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-UVA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMARMAD-26-VAN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMEDIARELEASEST-27JAN01",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-AR",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-BE",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-BR",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-CO",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-DE",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-ES",
+      "bid": "0.1800",
+      "ask": "0.1900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-FR",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-GB",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-HR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-IT",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-JP",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-MA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-MX",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-NL",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-NO",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-PT",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-US",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMENWORLDCUP-26-UY",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMJSCHEDULE-26JUL",
+      "bid": "0.2300",
+      "ask": "0.2500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMJSCHEDULE-27",
+      "bid": "0.5300",
+      "ask": "0.5500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMJSCHEDULE-28",
+      "bid": "0.7700",
+      "ask": "0.8300",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXMJSCHEDULE-29",
+      "bid": "0.8600",
+      "ask": "0.9000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXMLB-26-ATL",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-BAL",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-BOS",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-CHC",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-CIN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-CLE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-DET",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-HOU",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-KC",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-LAD",
+      "bid": "0.3100",
+      "ask": "0.3200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-MIL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-NYM",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-NYY",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-PHI",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-PIT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-SD",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMLB-26-SEA",
+      "bid": "0.1000",
+      "ask": "0.1200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXMLB-26-SF",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-TEX",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLB-26-TOR",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-DO",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-JP",
+      "bid": "0.2100",
+      "ask": "0.2200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-MX",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-PR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-USA",
+      "bid": "0.5100",
+      "ask": "0.5200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXMLBWORLD-26-VE",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-BOS",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-CLE",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-DEN",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-DET",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-HOU",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-LAL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-MIN",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-NYK",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-OKC",
+      "bid": "0.3900",
+      "ask": "0.4000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-PHI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBA-26-SAS",
+      "bid": "0.1400",
+      "ask": "0.1500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBADPOY-26-CHOL",
+      "bid": "0.1400",
+      "ask": "0.1900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNBADPOY-26-RGOB",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBADPOY-26-VWEM",
+      "bid": "0.7800",
+      "ask": "0.7900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-BOS",
+      "bid": "0.2500",
+      "ask": "0.2600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-CHA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-CLE",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-DET",
+      "bid": "0.2200",
+      "ask": "0.2400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBAEAST-26-MIA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-MIL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-NYK",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-ORL",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-PHI",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAEAST-26-TOR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAGAME-26MAR01SASNYK-NYK",
+      "bid": "0.4800",
+      "ask": "0.4900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAGAME-26MAR01SASNYK-SAS",
+      "bid": "0.5100",
+      "ask": "0.5100",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-DAVD",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-JDUR",
+      "bid": "0.5300",
+      "ask": "0.5400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-JJOH",
+      "bid": "0.2500",
+      "ask": "0.2700",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-KGEO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-NALE",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMIMP-26-RROL",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMVP-26-CCUN",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMVP-26-JBRO",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMVP-26-NJOK",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMVP-26-SGIL",
+      "bid": "0.7300",
+      "ask": "0.7400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAMVP-26-VWEM",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-ATL",
+      "bid": "0.2700",
+      "ask": "0.3300",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-CHA",
+      "bid": "0.6000",
+      "ask": "0.6400",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-CHI",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-GSW",
+      "bid": "0.5900",
+      "ask": "0.6200",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-LAC",
+      "bid": "0.4400",
+      "ask": "0.4500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-LAL",
+      "bid": "0.8900",
+      "ask": "0.9400",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-MIA",
+      "bid": "0.6600",
+      "ask": "0.7000",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-MIL",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-MIN",
+      "bid": "0.9600",
+      "ask": "0.9900",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-ORL",
+      "bid": "0.7500",
+      "ask": "0.7600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-PHI",
+      "bid": "0.8300",
+      "ask": "0.8800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-PHX",
+      "bid": "0.7800",
+      "ask": "0.8100",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-POR",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAPLAYOFF-26-TOR",
+      "bid": "0.9200",
+      "ask": "0.9700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNBAROY-26-CFLA",
+      "bid": "0.3800",
+      "ask": "0.4200",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXNBAROY-26-KKNU",
+      "bid": "0.5600",
+      "ask": "0.5700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAROY-26-TIE",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-AMIT",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-JGRA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-JJAQ",
+      "bid": "0.1400",
+      "ask": "0.1700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-KGEO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-KJOH",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-NREI",
+      "bid": "0.4900",
+      "ask": "0.5300",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-RSHE",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-SALD",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBASIXTH-26-THAR",
+      "bid": "0.0600",
+      "ask": "0.1200",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXNBAWEST-26-DEN",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAWEST-26-GSW",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAWEST-26-HOU",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAWEST-26-LAL",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBAWEST-26-MIN",
+      "bid": "0.0500",
+      "ask": "0.0700",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNBAWEST-26-OKC",
+      "bid": "0.4900",
+      "ask": "0.5000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNBAWEST-26-SAS",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-ALA",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-AUB",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-FLA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-IND",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-LSU",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-MIA",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-MICH",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-MISS",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-ND",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-OKLA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-ORE",
+      "bid": "0.0700",
+      "ask": "0.0900",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNCAAF-27-OSU",
+      "bid": "0.0900",
+      "ask": "0.1100",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNCAAF-27-PSU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-TENN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-TEX",
+      "bid": "0.1100",
+      "ask": "0.1300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNCAAF-27-TTU",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-TXAM",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-UGA",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNCAAF-27-USC",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-AARA",
+      "bid": "0.4300",
+      "ask": "0.4000",
+      "spread": "-0.0300"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-ABO",
+      "bid": "0.1300",
+      "ask": "0.1300",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-ALAR",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-GMOH",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-HBUS",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-HKHO",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-MARA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-MKHA",
+      "bid": "0.1400",
+      "ask": "0.1400",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-MMIR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-MQOM",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNEXTIRANLEADER-45JAN01-SLAR",
+      "bid": "0.0400",
+      "ask": "0.0400",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNHL-26-ANA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-BUF",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-CAR",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-COL",
+      "bid": "0.2200",
+      "ask": "0.2300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-DAL",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-DET",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-EDM",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-FLA",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-LA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-MIN",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-MTL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-NYI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-PIT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-SEA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-TB",
+      "bid": "0.1600",
+      "ask": "0.1700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-UTA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-VGK",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHL-26-WSH",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-ANA",
+      "bid": "0.8300",
+      "ask": "0.8800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-BOS",
+      "bid": "0.5000",
+      "ask": "0.5000",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-BUF",
+      "bid": "0.8800",
+      "ask": "0.9500",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-CAR",
+      "bid": "0.9800",
+      "ask": "0.9900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-CBJ",
+      "bid": "0.3000",
+      "ask": "0.3400",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-CGY",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-CHI",
+      "bid": "0.0200",
+      "ask": "0.0400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-COL",
+      "bid": "0.9800",
+      "ask": "0.9900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-DAL",
+      "bid": "0.9700",
+      "ask": "0.9900",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-DET",
+      "bid": "0.7900",
+      "ask": "0.8000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-EDM",
+      "bid": "0.7300",
+      "ask": "0.7800",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-FLA",
+      "bid": "0.1600",
+      "ask": "0.2200",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-LA",
+      "bid": "0.4900",
+      "ask": "0.5200",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-MIN",
+      "bid": "0.9800",
+      "ask": "0.9900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-MTL",
+      "bid": "0.8400",
+      "ask": "0.9000",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-NJ",
+      "bid": "0.0100",
+      "ask": "0.0400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-NSH",
+      "bid": "0.3900",
+      "ask": "0.4200",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-NYI",
+      "bid": "0.7200",
+      "ask": "0.7700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-NYR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-OTT",
+      "bid": "0.3400",
+      "ask": "0.3900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-PHI",
+      "bid": "0.1000",
+      "ask": "0.1500",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-PIT",
+      "bid": "0.7800",
+      "ask": "0.7900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-SEA",
+      "bid": "0.4000",
+      "ask": "0.4200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-SJ",
+      "bid": "0.2900",
+      "ask": "0.3000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-STL",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-TB",
+      "bid": "0.9800",
+      "ask": "0.9900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-TOR",
+      "bid": "0.0300",
+      "ask": "0.0900",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-UTA",
+      "bid": "0.8500",
+      "ask": "0.8800",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-VGK",
+      "bid": "0.9500",
+      "ask": "0.9800",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-WPG",
+      "bid": "0.1800",
+      "ask": "0.2100",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXNHLPLAYOFF-26-WSH",
+      "bid": "0.3500",
+      "ask": "0.4000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXNHLWEST-26-ANA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-COL",
+      "bid": "0.3500",
+      "ask": "0.3600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-DAL",
+      "bid": "0.1000",
+      "ask": "0.1200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXNHLWEST-26-EDM",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-LA",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-MIN",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-SEA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXNHLWEST-26-UTA",
+      "bid": "0.0500",
+      "ask": "0.0500",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXNHLWEST-26-VGK",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTO-26-ETH",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTO-26-LEO",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTO-26-MIC",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTO-26-TIM",
+      "bid": "0.6700",
+      "ask": "0.6800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTO-26-WAG",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTR-26-EMM",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTR-26-JES",
+      "bid": "0.9100",
+      "ask": "0.9200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTR-26-KAT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARACTR-26-ROS",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARCINE-26-ONE",
+      "bid": "0.7000",
+      "ask": "0.7100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARCINE-26-SIN",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARCINE-26-TRA",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARDIR-26-CHL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARDIR-26-PAU",
+      "bid": "0.9000",
+      "ask": "0.9100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARDIR-26-RYA",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARPIC-26-HAM",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARPIC-26-MAR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARPIC-26-ONE",
+      "bid": "0.8700",
+      "ask": "0.8800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARPIC-26-SIN",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTO-26-BEN",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTO-26-DEL",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTO-26-JAC",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTO-26-SEAN",
+      "bid": "0.6000",
+      "ask": "0.6000",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXOSCARSUPACTO-26-STE",
+      "bid": "0.2000",
+      "ask": "0.2100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTR-26-AMY",
+      "bid": "0.2800",
+      "ask": "0.2900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTR-26-ING",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTR-26-TEY",
+      "bid": "0.4900",
+      "ask": "0.5000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXOSCARSUPACTR-26-WUN",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ADUM",
+      "bid": "0.4600",
+      "ask": "0.4600",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-AECK",
+      "bid": "0.1200",
+      "ask": "0.1000",
+      "spread": "-0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-AEWA",
+      "bid": "0.8400",
+      "ask": "0.8500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ARAI",
+      "bid": "0.6700",
+      "ask": "0.6700",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ASAD",
+      "bid": "0.0700",
+      "ask": "0.0700",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ASMO",
+      "bid": "0.9700",
+      "ask": "0.9800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-BHOS",
+      "bid": "0.7000",
+      "ask": "0.7100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-BKOE",
+      "bid": "0.2500",
+      "ask": "0.2600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-CBEZ",
+      "bid": "0.1400",
+      "ask": "0.1900",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-CRAM",
+      "bid": "0.4100",
+      "ask": "0.4400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-DBER",
+      "bid": "0.2300",
+      "ask": "0.2300",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-DBRO",
+      "bid": "0.1300",
+      "ask": "0.1300",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ECOL",
+      "bid": "0.1700",
+      "ask": "0.2000",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-GHIG",
+      "bid": "0.2400",
+      "ask": "0.2600",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-HLI",
+      "bid": "0.0300",
+      "ask": "0.0300",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-JDAH",
+      "bid": "0.8400",
+      "ask": "0.8600",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-JPAR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-JSMI",
+      "bid": "0.2200",
+      "ask": "0.2400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-JSTA",
+      "bid": "0.8700",
+      "ask": "0.8800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-KMIT",
+      "bid": "0.7800",
+      "ask": "0.7800",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-KREI",
+      "bid": "0.6400",
+      "ask": "0.6700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-KROY",
+      "bid": "0.3300",
+      "ask": "0.3500",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-KSTR",
+      "bid": "0.1900",
+      "ask": "0.2100",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-LHOD",
+      "bid": "0.3200",
+      "ask": "0.3400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MHOM",
+      "bid": "0.3400",
+      "ask": "0.3800",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MHUB",
+      "bid": "0.5700",
+      "ask": "0.5800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MHUG",
+      "bid": "0.2000",
+      "ask": "0.2200",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MPAV",
+      "bid": "0.2600",
+      "ask": "0.2800",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MSCH",
+      "bid": "0.5700",
+      "ask": "0.5700",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-MWAL",
+      "bid": "0.1200",
+      "ask": "0.1200",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-NECH",
+      "bid": "0.9700",
+      "ask": "0.9800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-NHOJ",
+      "bid": "0.4200",
+      "ask": "0.4500",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-PFIS",
+      "bid": "0.1900",
+      "ask": "0.1600",
+      "spread": "-0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-PKIZ",
+      "bid": "0.6600",
+      "ask": "0.6700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-RCAS",
+      "bid": "0.9100",
+      "ask": "0.9200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-RGER",
+      "bid": "0.3400",
+      "ask": "0.3500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-RHOJ",
+      "bid": "0.5800",
+      "ask": "0.5900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-RNEE",
+      "bid": "0.2400",
+      "ask": "0.2700",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-SFIS",
+      "bid": "0.2800",
+      "ask": "0.3200",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-SYEL",
+      "bid": "0.2700",
+      "ask": "0.3000",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-TKAN",
+      "bid": "0.5800",
+      "ask": "0.5800",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-TMOO",
+      "bid": "0.9600",
+      "ask": "0.9700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-TOLE",
+      "bid": "0.5200",
+      "ask": "0.5400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-WMOU",
+      "bid": "0.5700",
+      "ask": "0.5800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ZBAU",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOP20-COCITPB26-ZDOU",
+      "bid": "0.5900",
+      "ask": "0.6000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-AEWA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-ASMO",
+      "bid": "0.1800",
+      "ask": "0.1900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-JDAH",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-JSTA",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-KMIT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-NECH",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-RCAS",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-SLOW",
+      "bid": "0.3800",
+      "ask": "0.3900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-COCITPB26-TMOO",
+      "bid": "0.1100",
+      "ask": "0.1200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-ABHA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-BDEC",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-BGRI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-BKOE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-CGOT",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-CMOR",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-CYOU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-HMAT",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JBRI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JDAY",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JNIE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JRAH",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JROS",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JSPI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-JTHO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-LABE",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-MFIT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-MWLE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-PCAN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-PREE",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-RHEN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-RMAC",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-RMCI",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-SBUR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-SLOW",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-SSCH",
+      "bid": "0.2100",
+      "ask": "0.2200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-SWOO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-TFLE",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-THAT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-VHOV",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPGATOUR-MAST26-XSCH",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPREMIERLEAGUE-26-ARS",
+      "bid": "0.5900",
+      "ask": "0.6000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPREMIERLEAGUE-26-MCI",
+      "bid": "0.3900",
+      "ask": "0.4000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-AB",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-AOC",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-CBOO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-CMUR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-GN",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-GW",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-JBP",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-JOSS",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-JS",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-JSTE",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-JTAL",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-KH",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-MK",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-PB",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-REMA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-RGAL",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-RKHA",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-RW",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-SAS",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-WM",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMD-28-ZMAM",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-BD",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-BK",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-DJT",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-DJTJR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-GA",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-GY",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-JDV",
+      "bid": "0.4300",
+      "ask": "0.4400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-JH",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-MR",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-MTG",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-NH",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-RDS",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-RFK",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-SHS",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-TC",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-TCAR",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-TG",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-TMAS",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESNOMR-28-VR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-ABES",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-AOCA",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-DTRU",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-DTRUJR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-GNEWS",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-GWHI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-GYOU",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-JOSS",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-JPRI",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-JSHA",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-JVAN",
+      "bid": "0.2100",
+      "ask": "0.2300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-KHAR",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-MKEL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-MRUB",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-PBUT",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-RDES",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-SSMI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXPRESPERSON-28-WMOO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T0",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T1",
+      "bid": "0.1700",
+      "ask": "0.1800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T2",
+      "bid": "0.2100",
+      "ask": "0.2200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T3",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T4",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T5",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXRATECUTCOUNT-26DEC31-T6",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSAVEACT-27-JAN04",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-ATL",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-BAL",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-BUF",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-CHI",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-CIN",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-DAL",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-DEN",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-DET",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-GB",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-HOU",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-IND",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-JAC",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-KC",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-LAC",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-LAR",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-MIN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-NE",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-NYG",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-PHI",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-PIT",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-SEA",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-SF",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-TB",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSB-27-WAS",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATEMED-26-GRA",
+      "bid": "0.7500",
+      "ask": "0.7600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATEMED-26-JM",
+      "bid": "0.2300",
+      "ask": "0.2400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATETXD-26-JCRO",
+      "bid": "0.3100",
+      "ask": "0.3200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATETXD-26-JTAL",
+      "bid": "0.6800",
+      "ask": "0.6900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATETXR-26-JC",
+      "bid": "0.2000",
+      "ask": "0.2100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATETXR-26-KP",
+      "bid": "0.7800",
+      "ask": "0.7900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSENATETXR-26-WHUN",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSURVIVOR-26DEC31-AUB",
+      "bid": "0.8700",
+      "ask": "0.8800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSURVIVOR-26DEC31-CIR",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSURVIVOR-26DEC31-JOE",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSURVIVOR-26DEC31-JON",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXSURVIVOR-26DEC31-RIZ",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXT20MATCH-26MAR01WIIND-IND",
+      "bid": "0.7500",
+      "ask": "0.7000",
+      "spread": "-0.0500"
+    },
+    {
+      "symbol": "KXT20MATCH-26MAR01WIIND-WI",
+      "bid": "0.3000",
+      "ask": "0.2400",
+      "spread": "-0.0600"
+    },
+    {
+      "symbol": "KXT20WORLDCUP-26-ENG",
+      "bid": "0.1700",
+      "ask": "0.1700",
+      "spread": "0.0000"
+    },
+    {
+      "symbol": "KXT20WORLDCUP-26-IND",
+      "bid": "0.4000",
+      "ask": "0.3500",
+      "spread": "-0.0500"
+    },
+    {
+      "symbol": "KXT20WORLDCUP-26-NZ",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXT20WORLDCUP-26-RSA",
+      "bid": "0.3000",
+      "ask": "0.3100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXT20WORLDCUP-26-WI",
+      "bid": "0.0600",
+      "ask": "0.0500",
+      "spread": "-0.0100"
+    },
+    {
+      "symbol": "KXTAKEOVERACQWB-27JUN30-NFLX",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTAKEOVERACQWB-27JUN30-NONE",
+      "bid": "0.1200",
+      "ask": "0.1300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTAKEOVERACQWB-27JUN30-PSKY",
+      "bid": "0.8400",
+      "ask": "0.8500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-27",
+      "bid": "0.1900",
+      "ask": "0.2000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-APR",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-AUG",
+      "bid": "0.1000",
+      "ask": "0.1100",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-JUL",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-JUN",
+      "bid": "0.0400",
+      "ask": "0.0500",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTARIFFCHECKS-26-MAY",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-AGLE",
+      "bid": "0.4900",
+      "ask": "0.5200",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-BCAR",
+      "bid": "0.1500",
+      "ask": "0.2000",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-BPUL",
+      "bid": "0.3100",
+      "ask": "0.3500",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-BROL",
+      "bid": "0.1400",
+      "ask": "0.1800",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-CWRI",
+      "bid": "0.3100",
+      "ask": "0.3500",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-DBUR",
+      "bid": "0.1500",
+      "ask": "0.1900",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-DCOL",
+      "bid": "0.1100",
+      "ask": "0.1300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-HLUT",
+      "bid": "0.4400",
+      "ask": "0.4600",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-JGRE",
+      "bid": "0.1100",
+      "ask": "0.1600",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-JRAT",
+      "bid": "0.1800",
+      "ask": "0.2200",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-KLEA",
+      "bid": "0.3600",
+      "ask": "0.4100",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-KLOE",
+      "bid": "0.1700",
+      "ask": "0.2400",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-KNOE",
+      "bid": "0.4800",
+      "ask": "0.4900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-KPAT",
+      "bid": "0.3800",
+      "ask": "0.4000",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-LCHA",
+      "bid": "0.4700",
+      "ask": "0.4800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-LMCM",
+      "bid": "0.1800",
+      "ask": "0.2400",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-LZEL",
+      "bid": "0.1700",
+      "ask": "0.2000",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-MHUC",
+      "bid": "0.2100",
+      "ask": "0.2400",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-MOZ",
+      "bid": "0.1800",
+      "ask": "0.2000",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-MRUB",
+      "bid": "0.1700",
+      "ask": "0.2200",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-PBON",
+      "bid": "0.4900",
+      "ask": "0.5000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-PHEG",
+      "bid": "0.3300",
+      "ask": "0.3600",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-PNAV",
+      "bid": "0.1200",
+      "ask": "0.1700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-RFK",
+      "bid": "0.3300",
+      "ask": "0.3600",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-RSCO",
+      "bid": "0.2900",
+      "ask": "0.3500",
+      "spread": "0.0600"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-RVOU",
+      "bid": "0.1900",
+      "ask": "0.2400",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-SBES",
+      "bid": "0.1200",
+      "ask": "0.1500",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-SDUF",
+      "bid": "0.1200",
+      "ask": "0.1700",
+      "spread": "0.0500"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-SMIL",
+      "bid": "0.2300",
+      "ask": "0.2600",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-STUR",
+      "bid": "0.2800",
+      "ask": "0.3100",
+      "spread": "0.0300"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-SWIL",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-SWIT",
+      "bid": "0.1700",
+      "ask": "0.2400",
+      "spread": "0.0700"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-TBLA",
+      "bid": "0.4100",
+      "ask": "0.4200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-TGAB",
+      "bid": "0.3300",
+      "ask": "0.3400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPADMINLEAVE-26DEC31-THOM",
+      "bid": "0.1400",
+      "ask": "0.1800",
+      "spread": "0.0400"
+    },
+    {
+      "symbol": "KXTRUMPOUT27-27-26APR01",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPOUT27-27-26AUG01",
+      "bid": "0.0700",
+      "ask": "0.0800",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPOUT27-27-28",
+      "bid": "0.3300",
+      "ask": "0.3400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPOUT27-27-DJT",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXTRUMPOUT27-27-JAN2029",
+      "bid": "0.4200",
+      "ask": "0.4300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-ARS",
+      "bid": "0.2600",
+      "ask": "0.2700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-ATM",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-BAR",
+      "bid": "0.1200",
+      "ask": "0.1400",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXUCL-26-BMU",
+      "bid": "0.1300",
+      "ask": "0.1400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-BOG",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-CHE",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-LEV",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-LFC",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-MCI",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-NEW",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-PSG",
+      "bid": "0.0800",
+      "ask": "0.0900",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-RMA",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-SPO",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXUCL-26-TOT",
+      "bid": "0.0100",
+      "ask": "0.0300",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-DCAI",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-DFIG",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-DJT",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-DROD",
+      "bid": "0.6500",
+      "ask": "0.6600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-DRON",
+      "bid": "0.0500",
+      "ask": "0.0700",
+      "spread": "0.0200"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-EGON",
+      "bid": "0.0900",
+      "ask": "0.1000",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-JGUA",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-JROD",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-MCM",
+      "bid": "0.1500",
+      "ask": "0.1600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-MRT",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-MRUB",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-NMAD",
+      "bid": "0.0600",
+      "ask": "0.0700",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-PHEG",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-RGRE",
+      "bid": "0.0100",
+      "ask": "0.0200",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-SMIL",
+      "bid": "0.0200",
+      "ask": "0.0300",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "KXVENEZUELALEADER-26DEC31-VLOP",
+      "bid": "0.0500",
+      "ask": "0.0600",
+      "spread": "0.0100"
+    },
+    {
+      "symbol": "LEAVEPOWELL-25-26APR30",
+      "bid": "0.0300",
+      "ask": "0.0400",
+      "spread": "0.0100"
+    }
+  ],
+  "trades": [
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.26",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "price": "0.32",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "SELL",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.44",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.26",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXNBAMIMP-26-JJOH",
+      "symbol": "KXNBAMIMP-26-JJOH",
+      "price": "0.27",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXPGATOP20-COCITPB26-RNEE",
+      "symbol": "KXPGATOP20-COCITPB26-RNEE",
+      "price": "0.27",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "SELL",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.4",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.26",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "SELL",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.38",
+      "qty": "20.0",
+      "status": "FILLED"
+    },
+    {
+      "time": "09:13:03",
+      "side": "BUY",
+      "name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "symbol": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "price": "0.26",
+      "qty": "20.0",
+      "status": "FILLED"
+    }
+  ],
+  "decisions": [
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXAAAGASW-26MAR02-2.988",
+      "confidence": 0.0,
+      "reasoning": "score=0.0702, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXT20WORLDCUP-26-RSA",
+      "confidence": 0.0,
+      "reasoning": "score=0.2623, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXT20MATCH-26MAR01WIIND-IND",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0473, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXT20MATCH-26MAR01WIIND-WI",
+      "confidence": 0.0,
+      "reasoning": "pnl=+0.1250, events=39",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXT20MATCH-26MAR01WIIND-WI",
+      "confidence": 0.0,
+      "reasoning": "pnl=+0.1250, events=40",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNBADPOY-26-VWEM",
+      "confidence": 0.0,
+      "reasoning": "score=0.0000, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNEXTIRANLEADER-45JAN01-AARA",
+      "confidence": 0.0,
+      "reasoning": "score=0.0563, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "BUY",
+      "ticker_name": "KXNBAMIMP-26-JJOH",
+      "confidence": 0.36727116669015725,
+      "reasoning": "score=0.3673",
+      "executed": true
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNBAMIMP-26-JJOH",
+      "confidence": 0.0,
+      "reasoning": "pnl=-0.0370, events=1",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "confidence": 0.0,
+      "reasoning": "score=0.1145, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "confidence": 0.0,
+      "reasoning": "score=0.1743, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-CRY",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=-0.7564",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-CRY",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=-0.7564",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "BUY",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=0.7564",
+      "executed": true
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "CLOSE_TP",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "confidence": 0.0,
+      "reasoning": "CLOSE_TP: pnl=+0.3462, events=1",
+      "executed": true
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXECONSTATCPIYOY-26MAY-T2.6",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0487, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXARREST-27JAN-ASCH",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0812, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-BOS",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0124, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-BOS",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0241, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-EDM",
+      "confidence": 0.0,
+      "reasoning": "score=-0.1624, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-SEA",
+      "confidence": 0.0,
+      "reasoning": "score=-0.1171, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-DET",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0248, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXMAKEMARMAD-26-MIZZ",
+      "confidence": 0.0,
+      "reasoning": "score=0.0404, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-PIR",
+      "confidence": 0.0,
+      "reasoning": "score=0.2472, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-SCH",
+      "confidence": 0.5624215400288648,
+      "reasoning": "score=-0.5624",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-SCH",
+      "confidence": 0.5318139299734028,
+      "reasoning": "score=-0.5318",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXMJSCHEDULE-27",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0812, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXGOVTSHUTLENGTH-26FEB07-G20",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0360, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXDHSFUND-26MAR20",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0661, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "confidence": 0.0,
+      "reasoning": "score=0.2853, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "BUY",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-TIE",
+      "confidence": 0.3262334396586848,
+      "reasoning": "score=0.3262",
+      "executed": true
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-CRY",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=-0.7564",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-CRY",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=-0.7564",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "BUY",
+      "ticker_name": "KXEPLGAME-26MAR01MUNCRY-MUN",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=0.7564",
+      "executed": true
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLTOP4-26-AVL",
+      "confidence": 0.0,
+      "reasoning": "score=0.1273, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLTOP4-26-AVL",
+      "confidence": 0.0,
+      "reasoning": "score=0.0724, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXPGATOP20-COCITPB26-CRAM",
+      "confidence": 0.0,
+      "reasoning": "score=-0.2054, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXCLOSEHORMUZ-27JAN",
+      "confidence": 0.0,
+      "reasoning": "score=0.1250, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXCLOSEHORMUZ-27JAN",
+      "confidence": 0.0,
+      "reasoning": "score=0.1409, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXNHLPLAYOFF-26-BOS",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0367, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXMAKEMARMAD-26-VT",
+      "confidence": 0.0,
+      "reasoning": "score=-0.1218, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXMAKEMARMAD-26-AUB",
+      "confidence": 0.0,
+      "reasoning": "score=-0.2879, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-PIR",
+      "confidence": 0.0,
+      "reasoning": "score=0.2585, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-PIR",
+      "confidence": 0.0,
+      "reasoning": "score=0.2569, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXATPCHALLENGERMATCH-26MAR01SCHPIR-SCH",
+      "confidence": 0.4969224342486894,
+      "reasoning": "score=-0.4969",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01FULTOT-TOT",
+      "confidence": 0.756434196638792,
+      "reasoning": "score=-0.7564",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01FULTOT-TIE",
+      "confidence": 0.38015618111151683,
+      "reasoning": "score=-0.3802",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXEPLGAME-26MAR01FULTOT-TIE",
+      "confidence": 0.6530173512188048,
+      "reasoning": "score=-0.6530",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "HOLD",
+      "ticker_name": "KXEPLGAME-26MAR01FULTOT-FUL",
+      "confidence": 0.0,
+      "reasoning": "score=-0.0031, threshold=\u00b10.30008124999999997",
+      "executed": false
+    },
+    {
+      "timestamp": "09:13:03",
+      "action": "SELL",
+      "ticker_name": "KXAAAGASW-26MAR02-3.018",
+      "confidence": 0.3332658521675432,
+      "reasoning": "score=-0.3333",
+      "executed": false
+    }
+  ],
+  "performance": {
+    "total_trades": 43,
+    "winning_trades": 16,
+    "losing_trades": 27,
+    "win_rate": "0.3720930232558139534883720930",
+    "average_profit": "11.0625",
+    "average_loss": "-6.881481481481481481481481481",
+    "max_drawdown": "0.003033447752853835714855911232",
+    "sharpe_ratio": "-1.5749",
+    "profit_factor": "0.9526372443487621097954790097",
+    "total_pnl": "-8.8000",
+    "max_consecutive_wins": 1,
+    "max_consecutive_losses": 3
+  },
+  "equity_curve": [
+    {
+      "equity": "10000"
+    },
+    {
+      "equity": "9999.0000"
+    },
+    {
+      "equity": "9994.8000"
+    },
+    {
+      "equity": "9990.0000"
+    },
+    {
+      "equity": "9991.8000"
+    },
+    {
+      "equity": "9980.4000"
+    },
+    {
+      "equity": "9979.8000"
+    },
+    {
+      "equity": "9977.0000"
+    },
+    {
+      "equity": "9978.2000"
+    },
+    {
+      "equity": "9972.4000"
+    },
+    {
+      "equity": "9989.2000"
+    },
+    {
+      "equity": "9977.8000"
+    },
+    {
+      "equity": "9994.6000"
+    },
+    {
+      "equity": "9983.2000"
+    },
+    {
+      "equity": "10000.0000"
+    },
+    {
+      "equity": "9988.6000"
+    },
+    {
+      "equity": "10005.4000"
+    },
+    {
+      "equity": "9994.0000"
+    },
+    {
+      "equity": "10010.8000"
+    },
+    {
+      "equity": "9999.4000"
+    },
+    {
+      "equity": "10016.2000"
+    },
+    {
+      "equity": "10004.8000"
+    },
+    {
+      "equity": "10021.6000"
+    },
+    {
+      "equity": "10010.2000"
+    },
+    {
+      "equity": "10007.0000"
+    },
+    {
+      "equity": "9993.0000"
+    },
+    {
+      "equity": "10009.8000"
+    },
+    {
+      "equity": "10002.8000"
+    },
+    {
+      "equity": "10006.6000"
+    },
+    {
+      "equity": "9999.6000"
+    },
+    {
+      "equity": "10003.6000"
+    },
+    {
+      "equity": "9998.4000"
+    },
+    {
+      "equity": "10005.8000"
+    },
+    {
+      "equity": "10004.8000"
+    },
+    {
+      "equity": "9999.6000"
+    },
+    {
+      "equity": "10007.2000"
+    },
+    {
+      "equity": "10002.0000"
+    },
+    {
+      "equity": "10010.0000"
+    },
+    {
+      "equity": "10004.6000"
+    },
+    {
+      "equity": "9999.2000"
+    },
+    {
+      "equity": "9994.0000"
+    },
+    {
+      "equity": "10002.8000"
+    },
+    {
+      "equity": "9996.4000"
+    },
+    {
+      "equity": "9991.2000"
+    }
+  ]
+}

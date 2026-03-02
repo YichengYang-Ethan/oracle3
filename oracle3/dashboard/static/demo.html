@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oracle3 — Interactive Web3 Demo</title>
+<style>
+  :root {
+    --bg: #08090d;
+    --surface: #0f1118;
+    --surface-2: #151720;
+    --border: #1e2030;
+    --border-light: #2a2d42;
+    --text: #e2e4f0;
+    --text-dim: #6b7094;
+    --text-muted: #454868;
+    --green: #00e59b;
+    --green-dim: rgba(0,229,155,0.12);
+    --red: #ff4d6a;
+    --red-dim: rgba(255,77,106,0.12);
+    --yellow: #ffc53d;
+    --yellow-dim: rgba(255,197,61,0.12);
+    --blue: #4d8eff;
+    --blue-dim: rgba(77,142,255,0.12);
+    --purple: #a78bfa;
+    --purple-dim: rgba(167,139,250,0.12);
+    --cyan: #22d3ee;
+    --accent-gradient: linear-gradient(135deg, #4d8eff 0%, #a78bfa 50%, #00e59b 100%);
+    --glow-green: 0 0 20px rgba(0,229,155,0.15);
+    --glow-red: 0 0 20px rgba(255,77,106,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+    line-height: 1.5;
+    overflow-x: hidden;
+  }
+
+  /* ============ HEADER ============ */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 100;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 1px;
+    background: var(--accent-gradient);
+    opacity: 0.4;
+  }
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: var(--accent-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .logo-sub {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-top: -2px;
+  }
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .solana-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, rgba(153,69,255,0.12), rgba(0,229,155,0.12));
+    border: 1px solid rgba(153,69,255,0.2);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+  }
+  .solana-badge svg { flex-shrink: 0; }
+
+  .network-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--green-dim);
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: 0.5px;
+  }
+  .network-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  .header-stat {
+    text-align: center;
+  }
+  .header-stat-value {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .header-stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+
+  .wallet-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    letter-spacing: 0.3px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    background: var(--surface-2);
+    border: 1px solid var(--border-light);
+    transition: all 0.2s;
+  }
+  .wallet-link:hover { color: var(--text); border-color: var(--purple); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* ============ BOOT OVERLAY ============ */
+  .boot-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.8s ease, visibility 0.8s;
+  }
+  .boot-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+  .boot-terminal {
+    width: 600px;
+    max-width: 90vw;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 0 60px rgba(0,229,155,0.05);
+  }
+  .boot-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--border);
+  }
+  .boot-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .boot-dot.r { background: var(--red); }
+  .boot-dot.y { background: var(--yellow); }
+  .boot-dot.g { background: var(--green); }
+  .boot-titlebar-text {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+  .boot-body {
+    padding: 20px;
+    font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--green);
+    min-height: 240px;
+    max-height: 340px;
+    overflow-y: auto;
+  }
+  .boot-line {
+    opacity: 0;
+    animation: bootReveal 0.3s forwards;
+  }
+  .boot-line .status-ok { color: var(--green); }
+  .boot-line .status-warn { color: var(--yellow); }
+  .boot-line .status-error { color: var(--red); }
+  .boot-line .status-info { color: var(--cyan); }
+  .boot-line .status-done { color: var(--purple); }
+  @keyframes bootReveal {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ METRICS BAR ============ */
+  .metrics-bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .metric-card {
+    background: var(--surface);
+    padding: 14px 16px;
+    text-align: center;
+  }
+  .metric-card-value {
+    font-size: 18px;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.3px;
+  }
+  .metric-card-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    margin-top: 3px;
+    font-weight: 600;
+  }
+  .positive { color: var(--green); }
+  .negative { color: var(--red); }
+
+  /* ============ EQUITY CHART ============ */
+  .chart-section {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px 8px;
+  }
+  .chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .chart-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+  }
+  .chart-value {
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .chart-canvas-wrap {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+  }
+  #equityChart {
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ============ FEATURE CARDS ============ */
+  .features-section {
+    padding: 24px;
+  }
+  .section-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-gradient);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover::before { opacity: 1; }
+  .feature-card:hover {
+    border-color: var(--border-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .feature-card.status-running { border-color: rgba(77,142,255,0.3); }
+  .feature-card.status-complete { border-color: rgba(0,229,155,0.15); }
+  .feature-card.status-error { border-color: rgba(255,77,106,0.3); }
+
+  .feature-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .feature-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .feature-status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+  .feature-status-dot.running {
+    background: var(--blue);
+    box-shadow: 0 0 8px var(--blue);
+    animation: pulse 1.5s infinite;
+  }
+  .feature-status-dot.complete {
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+  }
+  .feature-status-dot.error {
+    background: var(--red);
+    box-shadow: 0 0 8px var(--red);
+  }
+
+  .feature-name {
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .feature-summary {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+    min-height: 17px;
+  }
+  .feature-btn {
+    padding: 5px 14px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+  }
+  .feature-btn:hover { background: var(--border); color: var(--text); }
+
+  /* ============ PIPELINE VISUALIZATION ============ */
+  .pipeline-section {
+    padding: 0 24px 24px;
+  }
+  .pipeline-viz {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .pipeline-node {
+    background: var(--surface-2);
+    border: 1px solid var(--border-light);
+    border-radius: 10px;
+    padding: 14px 24px;
+    text-align: center;
+    min-width: 160px;
+    position: relative;
+    z-index: 2;
+    transition: border-color 0.3s;
+  }
+  .pipeline-node.active {
+    border-color: var(--green);
+    box-shadow: 0 0 20px rgba(0,229,155,0.1);
+  }
+  .pipeline-node-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+  }
+  .pipeline-node-value {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .pipeline-arrow {
+    width: 80px;
+    height: 2px;
+    background: var(--border-light);
+    position: relative;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+  .pipeline-arrow::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -4px;
+    width: 0; height: 0;
+    border-left: 8px solid var(--border-light);
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+  }
+  .pipeline-flow-dot {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 10px var(--green);
+    top: -2px; left: 0;
+    animation: flowDot 2s linear infinite;
+  }
+  @keyframes flowDot {
+    0% { left: 0; opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* ============ BOTTOM GRID ============ */
+  .bottom-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-top: 1px solid var(--border);
+  }
+  .bottom-panel {
+    background: var(--surface);
+    padding: 20px 24px;
+    min-height: 260px;
+  }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .panel-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .panel-title-icon {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+  }
+  .panel-count {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--text-muted);
+    background: var(--surface-2);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* Trade feed */
+  .trade-feed {
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .trade-feed::-webkit-scrollbar { width: 3px; }
+  .trade-feed::-webkit-scrollbar-track { background: transparent; }
+  .trade-feed::-webkit-scrollbar-thumb { background: var(--border-light); border-radius: 2px; }
+
+  .trade-row {
+    display: grid;
+    grid-template-columns: 30px 40px 1fr 70px 20px;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 11px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+  .trade-row:last-child { border: none; }
+  .trade-num { color: var(--text-muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .trade-side {
+    font-weight: 700;
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .trade-side.buy { background: var(--green-dim); color: var(--green); }
+  .trade-side.sell { background: var(--red-dim); color: var(--red); }
+  .trade-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; }
+  .trade-price { text-align: right; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .trade-check { color: var(--green); text-align: center; font-size: 12px; }
+  .trade-rejected { color: var(--red); text-align: center; font-size: 10px; }
+
+  /* Parameter controls */
+  .param-group {
+    margin-bottom: 16px;
+  }
+  .param-label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .param-value {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    color: var(--green);
+    font-weight: 700;
+  }
+  .param-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--border-light);
+    outline: none;
+  }
+  .param-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,229,155,0.4);
+    transition: box-shadow 0.2s;
+  }
+  .param-slider::-webkit-slider-thumb:hover {
+    box-shadow: 0 0 16px rgba(0,229,155,0.6);
+  }
+  .param-slider::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--green);
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 0 10px rgba(0,229,155,0.4);
+  }
+
+  .btn {
+    padding: 8px 20px;
+    border: 1px solid var(--border-light);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    transition: all 0.2s;
+    width: 100%;
+    margin-top: 8px;
+  }
+  .btn:hover { background: var(--border); color: var(--text); }
+  .btn-success { border-color: rgba(0,229,155,0.3); color: var(--green); }
+  .btn-success:hover { background: var(--green-dim); }
+
+  /* ============ MODAL ============ */
+  .modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(8,9,13,0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.active { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    width: 720px;
+    max-width: 95vw;
+    max-height: 85vh;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent-gradient);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: var(--surface-2);
+    color: var(--text-dim);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    transition: all 0.2s;
+  }
+  .modal-close:hover { background: var(--border); color: var(--text); }
+  .modal-body {
+    padding: 20px 24px 24px;
+    overflow-y: auto;
+    max-height: calc(85vh - 80px);
+  }
+
+  /* Modal tables */
+  .data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  .data-table th {
+    text-align: left;
+    padding: 8px 10px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--surface);
+  }
+  .data-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  .data-table tr:last-child td { border: none; }
+  .data-table tr:hover td { background: var(--surface-2); }
+
+  /* Reputation gauge */
+  .rep-gauge-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  .rep-gauge {
+    position: relative;
+    width: 140px; height: 140px;
+  }
+  .rep-gauge canvas { width: 100%; height: 100%; }
+  .rep-gauge-label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .rep-gauge-score {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--green);
+  }
+  .rep-gauge-max {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 600;
+  }
+
+  .rep-breakdown {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .rep-bar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .rep-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .rep-bar-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .rep-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: var(--accent-gradient);
+    transition: width 0.5s ease;
+  }
+
+  /* Flash loan flow */
+  .flash-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 0;
+    flex-wrap: wrap;
+  }
+  .flash-step {
+    padding: 10px 18px;
+    border: 1px solid var(--border-light);
+    border-radius: 8px;
+    background: var(--surface-2);
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+  }
+  .flash-arrow {
+    color: var(--green);
+    font-size: 18px;
+  }
+
+  /* Metric stat pairs in modal */
+  .modal-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .modal-stat {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .modal-stat:nth-child(odd) { border-right: 1px solid var(--border); }
+  .modal-stat-label { color: var(--text-dim); }
+  .modal-stat-value { font-weight: 700; font-variant-numeric: tabular-nums; }
+
+  /* ============ FOOTER ============ */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    gap: 10px;
+  }
+  .footer svg { opacity: 0.5; }
+  .footer-sep { color: var(--border-light); }
+  .footer a {
+    color: var(--purple);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .footer a:hover { opacity: 0.8; }
+
+  /* ============ EMPTY ============ */
+  .empty {
+    color: var(--text-muted);
+    font-size: 11px;
+    padding: 20px 0;
+    text-align: center;
+    font-style: italic;
+  }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 1200px) {
+    .features-grid { grid-template-columns: repeat(2, 1fr); }
+    .metrics-bar { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 768px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .metrics-bar { grid-template-columns: repeat(2, 1fr); }
+    .bottom-grid { grid-template-columns: 1fr; }
+    .header-center { display: none; }
+    .pipeline-viz { flex-direction: column; }
+    .pipeline-arrow { width: 2px; height: 40px; }
+    .pipeline-arrow::after {
+      right: auto; top: auto;
+      bottom: -1px; left: -4px;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 8px solid var(--border-light);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== BOOT OVERLAY ====== -->
+<div class="boot-overlay" id="bootOverlay">
+  <div class="boot-terminal">
+    <div class="boot-titlebar">
+      <span class="boot-dot r"></span>
+      <span class="boot-dot y"></span>
+      <span class="boot-dot g"></span>
+      <span class="boot-titlebar-text">oracle3 — demo engine</span>
+    </div>
+    <div class="boot-body" id="bootBody">
+      <div class="boot-line" style="animation-delay:0s"><span class="status-info">$</span> oracle3 demo --init</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div class="header-left">
+    <div>
+      <div class="logo">Oracle3</div>
+      <div class="logo-sub">Web3 Agent Demo</div>
+    </div>
+    <div class="solana-badge">
+      <svg width="14" height="11" viewBox="0 0 508 398" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M81.4 334.4c3-3 7-4.7 11.3-4.7h404.6c7.1 0 10.7 8.6 5.7 13.7l-79.3 79.3c-3 3-7 4.7-11.3 4.7H7.8c-7.1 0-10.7-8.6-5.7-13.7l79.3-79.3z" fill="url(#sol1)"/>
+        <path d="M81.4 4.7C84.5 1.7 88.5 0 92.7 0h404.6c7.1 0 10.7 8.6 5.7 13.7l-79.3 79.3c-3 3-7 4.7-11.3 4.7H7.8c-7.1 0-10.7-8.6-5.7-13.7L81.4 4.7z" fill="url(#sol2)"/>
+        <path d="M424.4 168.2c-3-3-7-4.7-11.3-4.7H8.5c-7.1 0-10.7 8.6-5.7 13.7l79.3 79.3c3 3 7 4.7 11.3 4.7h404.6c7.1 0 10.7-8.6 5.7-13.7l-79.3-79.3z" fill="url(#sol3)"/>
+        <defs>
+          <linearGradient id="sol1" x1="462" y1="-22" x2="149" y2="462" gradientUnits="userSpaceOnUse"><stop stop-color="#00FFA3"/><stop offset="1" stop-color="#DC1FFF"/></linearGradient>
+          <linearGradient id="sol2" x1="462" y1="-22" x2="149" y2="462" gradientUnits="userSpaceOnUse"><stop stop-color="#00FFA3"/><stop offset="1" stop-color="#DC1FFF"/></linearGradient>
+          <linearGradient id="sol3" x1="462" y1="-22" x2="149" y2="462" gradientUnits="userSpaceOnUse"><stop stop-color="#00FFA3"/><stop offset="1" stop-color="#DC1FFF"/></linearGradient>
+        </defs>
+      </svg>
+      Powered by Solana
+    </div>
+    <div class="network-badge">
+      <span class="network-dot"></span>
+      <span>Solana Mainnet</span>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="header-stat">
+      <div class="header-stat-value" id="slotNum">---</div>
+      <div class="header-stat-label">Slot</div>
+    </div>
+    <div class="header-stat">
+      <div class="header-stat-value" id="phaseNum">0/8</div>
+      <div class="header-stat-label">Features</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <a id="walletLink" class="wallet-link" href="#" target="_blank" rel="noopener" title="View on Solscan">---</a>
+  </div>
+</div>
+
+<!-- ====== METRICS BAR ====== -->
+<div class="metrics-bar">
+  <div class="metric-card">
+    <div class="metric-card-value" id="metEquity">$10,000</div>
+    <div class="metric-card-label">Equity</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-card-value" id="metPnl">$0.00</div>
+    <div class="metric-card-label">Total P&L</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-card-value" id="metReturn">0.00%</div>
+    <div class="metric-card-label">Return</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-card-value" id="metSharpe">0.00</div>
+    <div class="metric-card-label">Sharpe</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-card-value" id="metWinRate">-</div>
+    <div class="metric-card-label">Win Rate</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-card-value" id="metTrades">0</div>
+    <div class="metric-card-label">Trades</div>
+  </div>
+</div>
+
+<!-- ====== EQUITY CHART ====== -->
+<div class="chart-section">
+  <div class="chart-header">
+    <span class="chart-title">Equity Curve</span>
+    <span class="chart-value" id="chartValue">$10,000.00</span>
+  </div>
+  <div class="chart-canvas-wrap">
+    <canvas id="equityChart"></canvas>
+  </div>
+</div>
+
+<!-- ====== FEATURE CARDS ====== -->
+<div class="features-section">
+  <div class="section-title">On-Chain Agent Capabilities</div>
+  <div class="features-grid" id="featuresGrid"></div>
+</div>
+
+<!-- ====== PIPELINE VIZ ====== -->
+<div class="pipeline-section">
+  <div class="section-title">Multi-Agent Pipeline</div>
+  <div class="pipeline-viz" id="pipelineViz">
+    <div class="pipeline-node" id="pipeSignal">
+      <div class="pipeline-node-title">Signal Agent</div>
+      <div class="pipeline-node-value" id="pipeSignalVal">Waiting...</div>
+    </div>
+    <div class="pipeline-arrow"><div class="pipeline-flow-dot"></div></div>
+    <div class="pipeline-node" id="pipeRisk">
+      <div class="pipeline-node-title">Risk Agent</div>
+      <div class="pipeline-node-value" id="pipeRiskVal">Waiting...</div>
+    </div>
+    <div class="pipeline-arrow"><div class="pipeline-flow-dot" style="animation-delay:0.7s"></div></div>
+    <div class="pipeline-node" id="pipeExec">
+      <div class="pipeline-node-title">Execution Agent</div>
+      <div class="pipeline-node-value" id="pipeExecVal">Waiting...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== BOTTOM: TRADES + CONTROLS ====== -->
+<div class="bottom-grid">
+  <div class="bottom-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="panel-title-icon" style="background:var(--yellow-dim);color:var(--yellow)">T</span>
+        Live Trade Feed
+      </div>
+      <span class="panel-count" id="tradeCount">0</span>
+    </div>
+    <div class="trade-feed" id="tradeFeed">
+      <div class="empty">Waiting for trade replay...</div>
+    </div>
+  </div>
+  <div class="bottom-panel">
+    <div class="panel-header">
+      <div class="panel-title">
+        <span class="panel-title-icon" style="background:var(--purple-dim);color:var(--purple)">P</span>
+        Parameter Controls
+      </div>
+    </div>
+    <div class="param-group">
+      <div class="param-label"><span>min_edge</span><span class="param-value" id="paramEdgeVal">0.02</span></div>
+      <input type="range" class="param-slider" id="paramEdge" min="0.005" max="0.10" step="0.005" value="0.02">
+    </div>
+    <div class="param-group">
+      <div class="param-label"><span>trade_size</span><span class="param-value" id="paramSizeVal">50</span></div>
+      <input type="range" class="param-slider" id="paramSize" min="10" max="500" step="10" value="50">
+    </div>
+    <div class="param-group">
+      <div class="param-label"><span>max_borrow</span><span class="param-value" id="paramBorrowVal">10000</span></div>
+      <input type="range" class="param-slider" id="paramBorrow" min="1000" max="50000" step="1000" value="10000">
+    </div>
+    <button class="btn btn-success" onclick="rerunAll()">Re-run All Features</button>
+  </div>
+</div>
+
+<!-- ====== FOOTER ====== -->
+<div class="footer">
+  <svg width="12" height="10" viewBox="0 0 508 398" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M81.4 334.4c3-3 7-4.7 11.3-4.7h404.6c7.1 0 10.7 8.6 5.7 13.7l-79.3 79.3c-3 3-7 4.7-11.3 4.7H7.8c-7.1 0-10.7-8.6-5.7-13.7l79.3-79.3z" fill="var(--text-muted)"/>
+    <path d="M81.4 4.7C84.5 1.7 88.5 0 92.7 0h404.6c7.1 0 10.7 8.6 5.7 13.7l-79.3 79.3c-3 3-7 4.7-11.3 4.7H7.8c-7.1 0-10.7-8.6-5.7-13.7L81.4 4.7z" fill="var(--text-muted)"/>
+    <path d="M424.4 168.2c-3-3-7-4.7-11.3-4.7H8.5c-7.1 0-10.7 8.6-5.7 13.7l79.3 79.3c3 3 7 4.7 11.3 4.7h404.6c7.1 0 10.7-8.6 5.7-13.7l-79.3-79.3z" fill="var(--text-muted)"/>
+  </svg>
+  Built on Solana
+  <span class="footer-sep">|</span>
+  DFlow Markets
+  <span class="footer-sep">|</span>
+  <a href="#" id="solscanFooter" target="_blank" rel="noopener">View on Solscan</a>
+</div>
+
+<!-- ====== MODAL ====== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Feature Detail</span>
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ====== Feature definitions ====== */
+const FEATURES = {
+  '1': { name: 'Cross-Market Arbitrage', icon: '&#9878;',  color: 'var(--blue)',   btnLabel: 'Explore' },
+  '2': { name: 'On-Chain Risk Manager',  icon: '&#9888;',  color: 'var(--red)',    btnLabel: 'Check' },
+  '3': { name: 'On-Chain Signal Source', icon: '&#9783;',  color: 'var(--cyan)',   btnLabel: 'Scan' },
+  '4': { name: 'MEV Protection (Jito)',  icon: '&#9889;',  color: 'var(--yellow)', btnLabel: 'Status' },
+  '5': { name: 'Agent Reputation',       icon: '&#9733;',  color: 'var(--purple)', btnLabel: 'View' },
+  '6': { name: 'Multi-Agent Pipeline',   icon: '&#9881;',  color: 'var(--green)',  btnLabel: 'Run' },
+  '7': { name: 'Flash Loan Arbitrage',   icon: '&#9889;',  color: 'var(--cyan)',   btnLabel: 'Execute' },
+  '8': { name: 'Atomic Multi-Leg',       icon: '&#10070;', color: 'var(--blue)',   btnLabel: 'Build' },
+};
+
+/* ====== State ====== */
+let currentState = null;
+let bootRendered = 0;
+let bootDismissed = false;
+
+/* ====== Helpers ====== */
+function fmt$(v) {
+  const n = parseFloat(v) || 0;
+  return '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function fmtPct(v) {
+  const n = parseFloat(v) || 0;
+  return (n >= 0 ? '+' : '') + n.toFixed(2) + '%';
+}
+function pnlClass(v) {
+  const n = parseFloat(v) || 0;
+  return n > 0 ? 'positive' : n < 0 ? 'negative' : '';
+}
+function esc(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+/* ====== Init feature cards ====== */
+function initFeatureCards() {
+  const grid = document.getElementById('featuresGrid');
+  grid.innerHTML = '';
+  for (const [id, f] of Object.entries(FEATURES)) {
+    grid.innerHTML += `
+      <div class="feature-card" id="fcard${id}" onclick="openModal('${id}')">
+        <div class="feature-card-header">
+          <div class="feature-icon" style="background:${f.color}22;color:${f.color}">${f.icon}</div>
+          <div class="feature-status-dot" id="fdot${id}"></div>
+        </div>
+        <div class="feature-name">${f.name}</div>
+        <div class="feature-summary" id="fsum${id}">Pending...</div>
+        <button class="feature-btn" onclick="event.stopPropagation();rerunFeature('${id}')">${f.btnLabel}</button>
+      </div>`;
+  }
+}
+
+/* ====== Equity Chart ====== */
+function drawEquityChart(curve) {
+  const canvas = document.getElementById('equityChart');
+  if (!canvas || curve.length < 2) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+
+  const values = curve.map(p => parseFloat(p));
+  const min = Math.min(...values);
+  const max = Math.max(...values);
+  const range = max - min || 1;
+  const pad = 4;
+
+  const isUp = values[values.length - 1] >= values[0];
+  const lineColor = isUp ? 'rgba(0,229,155,0.9)' : 'rgba(255,77,106,0.9)';
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  if (isUp) {
+    grad.addColorStop(0, 'rgba(0,229,155,0.15)');
+    grad.addColorStop(1, 'rgba(0,229,155,0)');
+  } else {
+    grad.addColorStop(0, 'rgba(255,77,106,0.15)');
+    grad.addColorStop(1, 'rgba(255,77,106,0)');
+  }
+
+  ctx.beginPath();
+  for (let i = 0; i < values.length; i++) {
+    const x = (i / (values.length - 1)) * W;
+    const y = H - pad - ((values[i] - min) / range) * (H - pad * 2);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.lineTo(W, H);
+  ctx.lineTo(0, H);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  ctx.beginPath();
+  for (let i = 0; i < values.length; i++) {
+    const x = (i / (values.length - 1)) * W;
+    const y = H - pad - ((values[i] - min) / range) * (H - pad * 2);
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.stroke();
+
+  const lastX = W;
+  const lastY = H - pad - ((values[values.length - 1] - min) / range) * (H - pad * 2);
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, 3, 0, Math.PI * 2);
+  ctx.fillStyle = lineColor;
+  ctx.fill();
+}
+
+/* ====== Boot Overlay ====== */
+function updateBoot(bootLog) {
+  if (bootDismissed) return;
+  const body = document.getElementById('bootBody');
+  if (!body) return;
+
+  while (bootRendered < bootLog.length) {
+    const entry = bootLog[bootRendered];
+    const statusClass = 'status-' + (entry.status || 'ok');
+    const line = document.createElement('div');
+    line.className = 'boot-line';
+    line.style.animationDelay = (bootRendered * 0.15) + 's';
+    line.innerHTML = `<span class="${statusClass}">[${esc(entry.ts)}]</span> ${esc(entry.msg)}`;
+    body.appendChild(line);
+    body.scrollTop = body.scrollHeight;
+    bootRendered++;
+  }
+}
+
+function dismissBoot() {
+  if (bootDismissed) return;
+  bootDismissed = true;
+  document.getElementById('bootOverlay').classList.add('hidden');
+}
+
+/* ====== Update Dashboard ====== */
+function updateDashboard(s) {
+  currentState = s;
+
+  // Boot overlay
+  if (s.boot_log) updateBoot(s.boot_log);
+  if (s.boot_complete && !bootDismissed) {
+    setTimeout(dismissBoot, 1500);
+  }
+  // Auto-dismiss after first feature completes
+  if (s.phase >= 2 && !bootDismissed) {
+    setTimeout(dismissBoot, 800);
+  }
+
+  // Header
+  document.getElementById('slotNum').textContent = s.solana?.slot || '---';
+  const completedCount = Object.values(s.features || {}).filter(f => f.status === 'complete').length;
+  document.getElementById('phaseNum').textContent = completedCount + '/8';
+
+  if (s.solana?.wallet) {
+    const w = s.solana.wallet;
+    const ws = s.solana.wallet_short || w;
+    document.getElementById('walletLink').textContent = ws;
+    document.getElementById('walletLink').href = 'https://solscan.io/account/' + w;
+    document.getElementById('walletLink').title = w;
+    document.getElementById('solscanFooter').href = 'https://solscan.io/account/' + w;
+  }
+
+  // Metrics bar
+  const port = s.portfolio || {};
+  const equity = parseFloat(port.equity) || 10000;
+  const initial = parseFloat(port.initial_capital) || 10000;
+  const pnl = equity - initial;
+  const retPct = initial > 0 ? (pnl / initial * 100) : 0;
+
+  document.getElementById('metEquity').textContent = fmt$(equity);
+  const pnlEl = document.getElementById('metPnl');
+  pnlEl.textContent = (pnl >= 0 ? '+' : '') + fmt$(pnl);
+  pnlEl.className = 'metric-card-value ' + pnlClass(pnl);
+  const retEl = document.getElementById('metReturn');
+  retEl.textContent = fmtPct(retPct);
+  retEl.className = 'metric-card-value ' + pnlClass(retPct);
+  document.getElementById('metSharpe').textContent = (parseFloat(port.sharpe) || 0).toFixed(2);
+  const wr = parseFloat(port.win_rate);
+  document.getElementById('metWinRate').textContent = !isNaN(wr) ? (wr * 100).toFixed(0) + '%' : '-';
+  document.getElementById('metTrades').textContent = port.total_trades || s.trades?.length || 0;
+
+  // Equity chart
+  if (s.equity_curve && s.equity_curve.length >= 2) {
+    drawEquityChart(s.equity_curve);
+    const cv = document.getElementById('chartValue');
+    const lastEq = s.equity_curve[s.equity_curve.length - 1];
+    cv.textContent = fmt$(lastEq);
+    cv.className = 'chart-value ' + pnlClass(parseFloat(lastEq) - parseFloat(s.equity_curve[0]));
+  }
+
+  // Feature cards
+  for (const [id, f] of Object.entries(s.features || {})) {
+    const card = document.getElementById('fcard' + id);
+    const dot = document.getElementById('fdot' + id);
+    const sum = document.getElementById('fsum' + id);
+    if (!card) continue;
+
+    card.className = 'feature-card status-' + f.status;
+    dot.className = 'feature-status-dot ' + f.status;
+    sum.textContent = f.summary || 'Pending...';
+  }
+
+  // Pipeline
+  if (s.pipeline && s.pipeline.signal) {
+    const sig = s.pipeline.signal;
+    const risk = s.pipeline.risk;
+    const exec = s.pipeline.execution;
+
+    document.getElementById('pipeSignal').classList.add('active');
+    document.getElementById('pipeSignalVal').textContent = (sig.ticker || '').substring(0, 20) + ' / ' + (sig.side || '');
+
+    document.getElementById('pipeRisk').classList.add('active');
+    document.getElementById('pipeRiskVal').textContent = risk.approved ? 'Approved' : 'Reviewing';
+
+    document.getElementById('pipeExec').classList.add('active');
+    document.getElementById('pipeExecVal').textContent = exec.success ? 'Executed' : (exec.error || 'Pending').substring(0, 20);
+  }
+
+  // Trade feed
+  if (s.trades && s.trades.length > 0) {
+    document.getElementById('tradeCount').textContent = s.trades.length;
+    const feed = document.getElementById('tradeFeed');
+    const reversed = [...s.trades].reverse().slice(0, 50);
+    feed.innerHTML = reversed.map((t, i) => {
+      const sideClass = (t.side || '').toLowerCase().includes('buy') ? 'buy' : 'sell';
+      const isOk = (t.status || '').toUpperCase() === 'FILLED';
+      return `<div class="trade-row">
+        <span class="trade-num">#${s.trades.length - i}</span>
+        <span class="trade-side ${sideClass}">${esc(t.side)}</span>
+        <span class="trade-name" title="${esc(t.ticker)}">${esc((t.ticker||'').substring(0,30))}</span>
+        <span class="trade-price">${fmt$(t.price)}</span>
+        ${isOk ? '<span class="trade-check">&#10003;</span>' : '<span class="trade-rejected">REJ</span>'}
+      </div>`;
+    }).join('');
+  }
+}
+
+/* ====== Param Sliders ====== */
+function setupParams() {
+  const edge = document.getElementById('paramEdge');
+  const size = document.getElementById('paramSize');
+  const borrow = document.getElementById('paramBorrow');
+
+  edge.addEventListener('input', () => {
+    document.getElementById('paramEdgeVal').textContent = parseFloat(edge.value).toFixed(3);
+  });
+  size.addEventListener('input', () => {
+    document.getElementById('paramSizeVal').textContent = size.value;
+  });
+  borrow.addEventListener('input', () => {
+    document.getElementById('paramBorrowVal').textContent = parseInt(borrow.value).toLocaleString();
+  });
+
+  // Debounced POST on change
+  let paramTimer = null;
+  function postParams() {
+    clearTimeout(paramTimer);
+    paramTimer = setTimeout(() => {
+      fetch('/api/params', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          min_edge: parseFloat(edge.value),
+          trade_size: parseFloat(size.value),
+          max_borrow: parseFloat(borrow.value),
+        }),
+      }).catch(() => {});
+    }, 300);
+  }
+  edge.addEventListener('change', postParams);
+  size.addEventListener('change', postParams);
+  borrow.addEventListener('change', postParams);
+}
+
+/* ====== Re-run controls ====== */
+function rerunFeature(id) {
+  const dot = document.getElementById('fdot' + id);
+  if (dot) { dot.className = 'feature-status-dot running'; }
+  const sum = document.getElementById('fsum' + id);
+  if (sum) sum.textContent = 'Re-running...';
+  fetch('/api/run/' + id, { method: 'POST' }).catch(() => {});
+}
+
+function rerunAll() {
+  for (const id of Object.keys(FEATURES)) {
+    const dot = document.getElementById('fdot' + id);
+    if (dot) dot.className = 'feature-status-dot running';
+    const sum = document.getElementById('fsum' + id);
+    if (sum) sum.textContent = 'Re-running...';
+  }
+  fetch('/api/rerun-all', { method: 'POST' }).catch(() => {});
+}
+
+/* ====== Modal ====== */
+function openModal(featureId) {
+  if (!currentState || !currentState.features) return;
+  const f = currentState.features[featureId];
+  if (!f) return;
+
+  document.getElementById('modalTitle').textContent = f.name;
+  const body = document.getElementById('modalBody');
+  body.innerHTML = renderModalContent(featureId, f);
+  document.getElementById('modalOverlay').classList.add('active');
+
+  // Draw reputation gauge if feature 5
+  if (featureId === '5' && f.metrics) {
+    setTimeout(() => drawRepGauge(f.metrics.score || 0), 50);
+  }
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+
+function renderModalContent(id, f) {
+  const m = f.metrics || {};
+  const d = f.data || [];
+
+  switch (id) {
+    case '1': return renderArbitrageModal(m, d);
+    case '2': return renderRiskModal(m, d);
+    case '3': return renderSignalModal(m, d);
+    case '4': return renderMevModal(m, d);
+    case '5': return renderReputationModal(m, d);
+    case '6': return renderPipelineModal(m, d);
+    case '7': return renderFlashLoanModal(m, d);
+    case '8': return renderAtomicModal(m, d);
+    default:  return '<div class="empty">No data available</div>';
+  }
+}
+
+/* --- Feature 1: Arbitrage --- */
+function renderArbitrageModal(m, d) {
+  if (!d.length) return '<div class="empty">No arbitrage opportunities detected</div>';
+  let html = `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Total Opportunities</span><span class="modal-stat-value positive">${m.total || d.length}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Min Edge</span><span class="modal-stat-value">${m.min_edge || '-'}</span></div>
+  </div>`;
+  html += `<table class="data-table"><thead><tr>
+    <th>Market A</th><th>Market B</th><th>Price A</th><th>Price B</th><th>Spread</th><th>Profit</th>
+  </tr></thead><tbody>`;
+  for (const opp of d.slice(0, 15)) {
+    const mktA = (opp.market_a || '').substring(0, 25);
+    const mktB = (opp.market_b || '').substring(0, 25);
+    html += `<tr>
+      <td title="${esc(opp.market_a)}">${esc(mktA)}</td>
+      <td title="${esc(opp.market_b)}">${esc(mktB)}</td>
+      <td>${parseFloat(opp.price_a).toFixed(4)}</td>
+      <td>${parseFloat(opp.price_b).toFixed(4)}</td>
+      <td class="positive">${parseFloat(opp.spread).toFixed(4)}</td>
+      <td class="positive">${fmt$(opp.expected_profit)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+/* --- Feature 2: Risk --- */
+function renderRiskModal(m, d) {
+  let html = `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Max Single Trade</span><span class="modal-stat-value">${m.max_single_trade || '-'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Max Position</span><span class="modal-stat-value">${m.max_position_size || '-'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Max Exposure</span><span class="modal-stat-value">${m.max_total_exposure || '-'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Daily Used</span><span class="modal-stat-value">${m.daily_volume_used || '0'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Daily Remaining</span><span class="modal-stat-value positive">${m.daily_remaining || '-'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Simulation</span><span class="modal-stat-value">${m.onchain_simulation_enabled ? 'Enabled' : 'Disabled'}</span></div>
+  </div>`;
+  if (d.length) {
+    html += '<table class="data-table"><thead><tr><th>Test</th><th>Result</th></tr></thead><tbody>';
+    for (const t of d) {
+      const cls = t.result === 'PASS' ? 'positive' : t.result === 'BLOCKED' ? 'positive' : 'negative';
+      html += `<tr><td>${esc(t.test)}</td><td class="${cls}">${esc(t.result)}</td></tr>`;
+    }
+    html += '</tbody></table>';
+  }
+  return html;
+}
+
+/* --- Feature 3: Signals --- */
+function renderSignalModal(m, d) {
+  if (!d.length) return '<div class="empty">No signals detected</div>';
+  let html = `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Total Signals</span><span class="modal-stat-value">${m.total_signals || d.length}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Sources</span><span class="modal-stat-value">Wallet + TVL</span></div>
+  </div>`;
+  html += '<table class="data-table"><thead><tr><th>Type</th><th>Wallet</th><th>Amount</th><th>Token</th><th>Direction</th></tr></thead><tbody>';
+  for (const sig of d) {
+    const typeBadge = sig.signal_type === 'whale_transfer'
+      ? '<span style="color:var(--red)">&#9888; whale</span>'
+      : sig.signal_type === 'tvl_change'
+        ? '<span style="color:var(--cyan)">&#9783; tvl</span>'
+        : '<span style="color:var(--yellow)">&#10132; transfer</span>';
+    const wallet = (sig.wallet || '').substring(0, 12) + '...';
+    const walletFull = sig.wallet || '';
+    const dirClass = sig.direction === 'outflow' || sig.direction === 'decrease' ? 'negative' : 'positive';
+    html += `<tr>
+      <td>${typeBadge}</td>
+      <td><a href="https://solscan.io/account/${esc(walletFull)}" target="_blank" rel="noopener" style="color:var(--purple);text-decoration:none;font-family:monospace;font-size:11px">${esc(wallet)}</a></td>
+      <td>${parseFloat(sig.amount).toLocaleString()}</td>
+      <td>${esc(sig.token)}</td>
+      <td class="${dirClass}">${esc(sig.direction)}</td>
+    </tr>`;
+  }
+  html += '</tbody></table>';
+  return html;
+}
+
+/* --- Feature 4: MEV --- */
+function renderMevModal(m) {
+  return `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Jito Enabled</span><span class="modal-stat-value positive">${m.enabled ? 'Yes' : 'No'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Tip (lamports)</span><span class="modal-stat-value">${(m.tip_lamports || 0).toLocaleString()}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Total Submitted</span><span class="modal-stat-value">${m.total_submitted || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Jito Success Rate</span><span class="modal-stat-value">${m.jito_success_rate || '0%'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Fallback Count</span><span class="modal-stat-value">${m.fallback_count || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Block Engine</span><span class="modal-stat-value" style="font-size:10px">${(m.jito_url || '').substring(0, 35)}...</span></div>
+  </div>
+  <p style="font-size:12px;color:var(--text-dim);margin-top:12px">
+    Jito Block Engine provides MEV protection by bundling transactions and routing them through a private mempool,
+    preventing sandwich attacks and front-running on Solana.
+  </p>`;
+}
+
+/* --- Feature 5: Reputation --- */
+function renderReputationModal(m) {
+  const score = m.score || 0;
+  const wr = ((m.win_rate || 0) * 100).toFixed(1);
+  const sh = (m.sharpe || 0).toFixed(3);
+  const con = ((m.consistency || 0) * 100).toFixed(0);
+  const trades = m.total_trades || 0;
+
+  return `
+    <div class="rep-gauge-wrap">
+      <div class="rep-gauge">
+        <canvas id="repGaugeCanvas" width="280" height="280"></canvas>
+        <div class="rep-gauge-label">
+          <div class="rep-gauge-score">${score.toFixed(0)}</div>
+          <div class="rep-gauge-max">/100</div>
+        </div>
+      </div>
+    </div>
+    <div class="rep-breakdown">
+      <div class="rep-bar-item">
+        <div class="rep-bar-label"><span>Win Rate (30%)</span><span>${wr}%</span></div>
+        <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${wr}%"></div></div>
+      </div>
+      <div class="rep-bar-item">
+        <div class="rep-bar-label"><span>Sharpe (30%)</span><span>${sh}</span></div>
+        <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${Math.min(100, Math.max(0, (m.sharpe||0)/3*100))}%"></div></div>
+      </div>
+      <div class="rep-bar-item">
+        <div class="rep-bar-label"><span>Trade Count (20%)</span><span>${trades}</span></div>
+        <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${Math.min(100, trades/100*100)}%"></div></div>
+      </div>
+      <div class="rep-bar-item">
+        <div class="rep-bar-label"><span>Consistency (20%)</span><span>${con}%</span></div>
+        <div class="rep-bar-track"><div class="rep-bar-fill" style="width:${con}%"></div></div>
+      </div>
+    </div>
+    <div class="modal-stats" style="margin-top:16px">
+      <div class="modal-stat"><span class="modal-stat-label">Wallet</span><span class="modal-stat-value" style="font-family:monospace;font-size:10px">${(m.wallet || '').substring(0, 20)}...</span></div>
+      <div class="modal-stat"><span class="modal-stat-label">Total Trades</span><span class="modal-stat-value">${trades}</span></div>
+    </div>`;
+}
+
+function drawRepGauge(score) {
+  const canvas = document.getElementById('repGaugeCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = 280 * dpr;
+  canvas.height = 280 * dpr;
+  ctx.scale(dpr, dpr);
+  const cx = 140, cy = 140, r = 110;
+  const startAngle = Math.PI * 0.75;
+  const endAngle = Math.PI * 2.25;
+  const pct = Math.min(1, Math.max(0, score / 100));
+
+  // Track
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startAngle, endAngle);
+  ctx.strokeStyle = 'rgba(30,32,48,0.8)';
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Fill
+  const fillEnd = startAngle + (endAngle - startAngle) * pct;
+  const grad = ctx.createLinearGradient(0, 0, 280, 280);
+  grad.addColorStop(0, '#4d8eff');
+  grad.addColorStop(0.5, '#a78bfa');
+  grad.addColorStop(1, '#00e59b');
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startAngle, fillEnd);
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 10;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+}
+
+/* --- Feature 6: Pipeline --- */
+function renderPipelineModal(m, d) {
+  let html = `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Ticker</span><span class="modal-stat-value">${esc((m.ticker || '').substring(0, 25))}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Side</span><span class="modal-stat-value">${esc(m.side || '-')}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Quantity</span><span class="modal-stat-value">${m.quantity || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Price</span><span class="modal-stat-value">${m.price || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Success</span><span class="modal-stat-value ${m.success ? 'positive' : ''}">${m.success ? 'Yes' : 'No'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Agents</span><span class="modal-stat-value">Signal + Risk + Exec</span></div>
+  </div>`;
+
+  if (d.length && d[0]) {
+    const p = d[0];
+    html += '<h4 style="font-size:12px;color:var(--text-dim);margin:16px 0 8px;font-weight:700;text-transform:uppercase;letter-spacing:1px">Agent Outputs</h4>';
+    html += '<table class="data-table"><thead><tr><th>Agent</th><th>Output</th></tr></thead><tbody>';
+    if (p.signal) html += `<tr><td style="color:var(--cyan)">Signal</td><td>${esc(p.signal.ticker || '')} / ${esc(p.signal.side || '')}</td></tr>`;
+    if (p.risk) html += `<tr><td style="color:var(--yellow)">Risk</td><td>${p.risk.approved ? '<span class="positive">Approved</span>' : 'Reviewing'}</td></tr>`;
+    if (p.execution) html += `<tr><td style="color:var(--green)">Execution</td><td>${p.execution.success ? '<span class="positive">Executed</span>' : esc(p.execution.error || 'Pending')}</td></tr>`;
+    html += '</tbody></table>';
+  }
+  return html;
+}
+
+/* --- Feature 7: Flash Loan --- */
+function renderFlashLoanModal(m, d) {
+  let html = `
+    <div class="flash-flow">
+      <div class="flash-step" style="border-color:var(--cyan)">&#9889; Borrow</div>
+      <span class="flash-arrow">&#10132;</span>
+      <div class="flash-step" style="border-color:var(--green)">&#128176; Buy (Market A)</div>
+      <span class="flash-arrow">&#10132;</span>
+      <div class="flash-step" style="border-color:var(--blue)">&#128176; Sell (Market B)</div>
+      <span class="flash-arrow">&#10132;</span>
+      <div class="flash-step" style="border-color:var(--purple)">&#10003; Repay</div>
+    </div>`;
+  html += `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Total Attempts</span><span class="modal-stat-value">${m.total_attempts || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Successes</span><span class="modal-stat-value positive">${m.successes || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Protocol</span><span class="modal-stat-value">${esc(m.protocol || 'marginfi')}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Success Rate</span><span class="modal-stat-value">${m.success_rate || '0%'}</span></div>
+  </div>`;
+  if (d.length) {
+    html += '<table class="data-table"><thead><tr><th>Amount</th><th>Protocol</th><th>Success</th><th>Error</th></tr></thead><tbody>';
+    for (const r of d) {
+      html += `<tr>
+        <td>${parseFloat(r.amount).toLocaleString()} USDC</td>
+        <td>${esc(r.protocol)}</td>
+        <td class="${r.success ? 'positive' : 'negative'}">${r.success ? 'Yes' : 'No'}</td>
+        <td style="color:var(--text-dim);font-size:11px">${esc(r.error || '-')}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+  }
+  return html;
+}
+
+/* --- Feature 8: Atomic --- */
+function renderAtomicModal(m, d) {
+  let html = `<div class="modal-stats">
+    <div class="modal-stat"><span class="modal-stat-label">Total Attempts</span><span class="modal-stat-value">${m.total_attempts || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Successes</span><span class="modal-stat-value positive">${m.successes || 0}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Success Rate</span><span class="modal-stat-value">${m.success_rate || '0%'}</span></div>
+    <div class="modal-stat"><span class="modal-stat-label">Instruments</span><span class="modal-stat-value">Jupiter / Drift</span></div>
+  </div>`;
+  if (d.length) {
+    html += '<table class="data-table"><thead><tr><th>Instrument</th><th>Ticker</th><th>Side</th><th>Qty</th><th>Price</th></tr></thead><tbody>';
+    for (const leg of d) {
+      const sideColor = (leg.side || '').toLowerCase() === 'buy' ? 'positive' : 'negative';
+      html += `<tr>
+        <td>${esc(leg.instrument_type)}</td>
+        <td>${esc((leg.ticker || '').substring(0, 25))}</td>
+        <td class="${sideColor}">${esc(leg.side)}</td>
+        <td>${leg.qty}</td>
+        <td>${fmt$(leg.price)}</td>
+      </tr>`;
+    }
+    html += '</tbody></table>';
+  }
+  return html;
+}
+
+/* ====== Polling ====== */
+function poll() {
+  fetch('/api/state')
+    .then(r => r.json())
+    .then(d => { try { updateDashboard(d); } catch(e) { console.error(e); } })
+    .catch(() => {});
+}
+
+/* ====== Init ====== */
+initFeatureCards();
+setupParams();
+poll();
+setInterval(poll, 1500);
+window.addEventListener('resize', () => {
+  if (currentState?.equity_curve?.length >= 2) {
+    drawEquityChart(currentState.equity_curve);
+  }
+});
+</script>
+</body>
+</html>

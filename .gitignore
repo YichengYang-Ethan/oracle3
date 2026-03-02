@@ -164,5 +164,13 @@ cython_debug/
 **/*.jsonl
 !data/backtest_sample.jsonl
 
+# Secrets
+keypair.json
+*.keypair
+
+# Runtime
+session_logs/
+logs/
+
 # MkDocs
 site/

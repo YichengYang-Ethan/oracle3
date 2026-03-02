@@ -1,5 +1,7 @@
 """Main CLI entry point for Oracle3."""
 
+from typing import Any
+
 import click
 
 from oracle3.cli.agent_commands import backtest, live, paper, strategy
@@ -38,7 +40,7 @@ def blinks(host: str, port: int) -> None:
     show_default=True,
 )
 @click.option('--duration', type=float, default=None, help='Seconds to run (default: forever)')
-@click.option('--initial-capital', default='1000', show_default=True)
+@click.option('--initial-capital', default='10000', show_default=True)
 @click.option(
     '--strategy-ref',
     default=None,
@@ -47,6 +49,15 @@ def blinks(host: str, port: int) -> None:
 @click.option(
     '--strategy-kwargs-json', default=None, help='JSON object for strategy constructor kwargs.'
 )
+@click.option(
+    '--episode-dir',
+    default=None,
+    type=click.Path(exists=True, file_okay=False),
+    help='Replay DFlow episode directory containing dflow_events.parquet (Solana backtest mode).',
+)
+@click.option(
+    '--max-events', default=None, type=int, help='Limit events for episode replay.'
+)
 def dashboard(
     port: int,
     exchange: str,
@@ -54,6 +65,8 @@ def dashboard(
     initial_capital: str,
     strategy_ref: str | None,
     strategy_kwargs_json: str | None,
+    episode_dir: str | None,
+    max_events: int | None,
 ) -> None:
     """Launch the web dashboard with paper trading (open browser to http://localhost:PORT)."""
     import asyncio
@@ -73,7 +86,16 @@ def dashboard(
         strategy_obj = _IdleStrategy()
 
     capital = Decimal(initial_capital)
-    data_source = _build_news_augmented_source(exchange)
+    is_backtest = episode_dir is not None
+
+    # Build data source: episode replay or live
+    if episode_dir:
+        from oracle3.data.backtest.kalshi_replay_data_source import SolanaReplayDataSource
+
+        data_source = SolanaReplayDataSource(episode_dir, max_events=max_events)
+        exchange = 'solana'  # force Solana for DFlow episodes
+    else:
+        data_source = _build_news_augmented_source(exchange)
 
     async def _run() -> None:
         from oracle3.cli.control import ControlServer
@@ -84,7 +106,11 @@ def dashboard(
         from oracle3.ticker.ticker import CashTicker
         from oracle3.trader.paper_trader import PaperTrader
 
-        market_data = MarketDataManager()
+        market_data = MarketDataManager(
+            spread=Decimal('0') if is_backtest else Decimal('0.01'),
+            max_history_per_ticker=None,
+            max_timeline_events=None,
+        )
         position_manager = PositionManager()
 
         # Set up initial cash based on exchange
@@ -104,21 +130,101 @@ def dashboard(
             )
         )
 
+        # --- Feature 2: On-Chain Risk Manager ---
+        risk_manager: Any = NoRiskManager()
+        try:
+            from oracle3.risk.onchain_risk_manager import OnChainRiskManager
+            risk_manager = OnChainRiskManager(
+                position_manager=position_manager,
+                market_data=market_data,
+                initial_capital=capital,
+                enable_simulation=False,  # paper mode — skip real RPC sim
+            )
+            click.echo('  [✓] On-Chain Risk Manager loaded')
+        except Exception as exc:
+            click.echo(f'  [–] On-Chain Risk Manager skipped: {exc}')
+
         trader = PaperTrader(
             market_data=market_data,
-            risk_manager=NoRiskManager(),
+            risk_manager=risk_manager,
             position_manager=position_manager,
-            min_fill_rate=Decimal('0.5'),
+            min_fill_rate=Decimal('0.8'),
             max_fill_rate=Decimal('1.0'),
             commission_rate=Decimal('0.0'),
         )
+
+        # --- Feature 4: MEV Protection (Jito) ---
+        jito_submitter = None
+        try:
+            from oracle3.trader.jito_submitter import JitoSubmitter
+            jito_submitter = JitoSubmitter(keypair=None)
+            trader._jito_submitter = jito_submitter  # type: ignore[attr-defined]
+            click.echo('  [✓] Jito MEV Protection loaded')
+        except Exception as exc:
+            click.echo(f'  [–] Jito MEV Protection skipped: {exc}')
+
+        # --- Feature 3: On-Chain Signal Source ---
+        if not is_backtest and exchange in ('solana', 'dflow'):
+            try:
+                from oracle3.data.live.onchain_signal_source import (
+                    OnChainSignalSource,
+                    WatchedWallet,
+                )
+                signal_source = OnChainSignalSource(
+                    watched_wallets=[
+                        WatchedWallet(
+                            address='7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae',
+                            label='oracle3-agent',
+                        ),
+                    ],
+                    polling_interval=60.0,
+                )
+                # Add to composite data source
+                if hasattr(data_source, 'sources'):
+                    data_source.sources.append(signal_source)
+                click.echo('  [✓] On-Chain Signal Source loaded')
+            except Exception as exc:
+                click.echo(f'  [–] On-Chain Signal Source skipped: {exc}')
 
         engine = TradingEngine(
             data_source=data_source,
             strategy=strategy_obj,
             trader=trader,
-            continuous=True,
+            continuous=not is_backtest,
         )
+
+        # --- Feature 5: Agent Reputation ---
+        try:
+            from oracle3.onchain.reputation import ReputationManager
+            rep_mgr = ReputationManager()
+            engine._reputation_manager = rep_mgr
+            click.echo('  [✓] Agent Reputation loaded')
+        except Exception as exc:
+            click.echo(f'  [–] Agent Reputation skipped: {exc}')
+
+        # --- Feature 7: Flash Loan Arbitrage ---
+        try:
+            from oracle3.trader.flash_loan import FlashLoanArbitrage
+            flash_loan = FlashLoanArbitrage(
+                jito_submitter=jito_submitter,
+                max_borrow=float(capital),
+            )
+            engine._flash_loan = flash_loan
+            # Also link to strategy if it supports it
+            if hasattr(strategy_obj, 'flash_loan_handler'):
+                strategy_obj.flash_loan_handler = flash_loan
+            click.echo('  [✓] Flash Loan Arbitrage loaded')
+        except Exception as exc:
+            click.echo(f'  [–] Flash Loan Arbitrage skipped: {exc}')
+
+        # --- Feature 8: Atomic Multi-Leg Trader ---
+        try:
+            from oracle3.trader.atomic_trader import AtomicTrader
+            atomic_trader = AtomicTrader(jito_submitter=jito_submitter)
+            engine._atomic_trader = atomic_trader
+            click.echo('  [✓] Atomic Multi-Leg Trader loaded')
+        except Exception as exc:
+            click.echo(f'  [–] Atomic Multi-Leg Trader skipped: {exc}')
 
         # Start dashboard server (background thread)
         dash = DashboardServer(engine, port=port)
@@ -128,7 +234,8 @@ def dashboard(
         ctrl = ControlServer(engine)
         await ctrl.start()
 
-        click.echo(f'Dashboard running at http://localhost:{port}')
+        mode_label = 'Solana Backtest' if is_backtest else 'Paper Trading'
+        click.echo(f'{mode_label} Dashboard running at http://localhost:{port}')
         click.echo('Press Ctrl+C to stop.\n')
 
         try:
@@ -136,6 +243,12 @@ def dashboard(
                 await asyncio.wait_for(engine.start(), timeout=duration)
             else:
                 await engine.start()
+
+            if is_backtest:
+                click.echo('\nBacktest complete. Dashboard still running for review.')
+                click.echo('Press Ctrl+C to stop.\n')
+                while True:
+                    await asyncio.sleep(1)
         except asyncio.TimeoutError:
             click.echo(f'\nDuration reached ({duration}s). Stopping...')
         except asyncio.CancelledError:
@@ -197,6 +310,60 @@ def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool)
         sig = t.get('signature', '')[:16]
         click.echo(f'  [{i}] {market} {side.upper()} x{qty} @ {price}  {ts}  tx:{sig}...')
     click.echo()
+
+
+@cli.command()
+@click.option(
+    '--keypair-path', default=None, help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)'
+)
+@click.option(
+    '--rpc-url',
+    default='https://api.mainnet-beta.solana.com',
+    show_default=True,
+    help='Solana RPC URL',
+)
+@click.option('--wallet', default=None, help='Wallet address to check (defaults to own wallet)')
+@click.option('--json', 'as_json', is_flag=True, default=False, help='Output as JSON')
+def reputation(keypair_path: str | None, rpc_url: str, wallet: str | None, as_json: bool) -> None:
+    """Show agent reputation score from on-chain trading history."""
+    import json as json_lib
+
+    from oracle3.onchain.reputation import ReputationManager
+
+    # Build reputation manager
+    rep_mgr: ReputationManager
+    if keypair_path or not wallet:
+        try:
+            from oracle3.onchain.logger import OnChainLogger
+            from oracle3.trader.solana_trader import _load_keypair
+
+            kp = _load_keypair(keypair_path=keypair_path)
+            logger = OnChainLogger(keypair=kp, rpc_url=rpc_url)
+            rep_mgr = ReputationManager(on_chain_logger=logger)
+        except (ValueError, Exception) as exc:
+            if wallet:
+                rep_mgr = ReputationManager()
+            else:
+                raise click.ClickException(str(exc)) from exc
+    else:
+        rep_mgr = ReputationManager()
+
+    target_wallet = wallet or rep_mgr.wallet
+    if not target_wallet:
+        raise click.ClickException('No wallet specified. Pass --wallet or configure a keypair.')
+
+    rep = rep_mgr.get_agent_reputation(target_wallet)
+
+    if as_json:
+        click.echo(json_lib.dumps(rep))
+        return
+
+    click.echo(f'Agent Reputation: {target_wallet[:8]}...{target_wallet[-4:]}')
+    click.echo(f'  Score:       {rep.get("score", 0):.1f} / 100')
+    click.echo(f'  Win Rate:    {rep.get("win_rate", 0):.2%}')
+    click.echo(f'  Sharpe:      {rep.get("sharpe", 0):.4f}')
+    click.echo(f'  Total Trades: {rep.get("total_trades", 0)}')
+    click.echo(f'  Consistency: {rep.get("consistency", 0):.4f}')
 
 
 cli.add_command(monitor)

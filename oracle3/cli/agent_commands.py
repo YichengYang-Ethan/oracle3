@@ -15,7 +15,9 @@ from oracle3.backtest.backtester import run_backtest
 from oracle3.cli.utils import _emit
 from oracle3.data.backtest.historical_data_source import HistoricalDataSource
 from oracle3.data.composite_data_source import CompositeDataSource
+from oracle3.data.live.coingecko_x402_data_source import CoinGeckoX402DataSource
 from oracle3.data.live.dflow_data_source import DFlowDataSource
+from oracle3.data.live.dflow_ws_data_source import DFlowWebSocketDataSource
 from oracle3.data.live.google_news_data_source import GoogleNewsDataSource
 from oracle3.data.live.kalshi_data_source import LiveKalshiDataSource
 from oracle3.data.live.live_data_source import (
@@ -81,7 +83,22 @@ def _confirm_live_trading(*, as_json: bool) -> None:
 
 
 def _build_news_augmented_source(exchange: str):
-    """Build market + Google/RSS news composite for paper trading."""
+    """Build market + news composite for paper trading.
+
+    For solana/dflow: fully Solana-native pipeline (DFlow REST + WS + CoinGecko).
+    For polymarket/kalshi: existing Google News + RSS pipeline.
+    """
+    if exchange in ('solana', 'dflow'):
+        # Solana-native data sources — no Google/RSS scraping needed.
+        dflow_rest = DFlowDataSource(
+            event_cache_file='dflow_events_cache.jsonl',
+            polling_interval=60.0,
+            reprocess_on_start=True,
+        )
+        dflow_ws = DFlowWebSocketDataSource()
+        coingecko = CoinGeckoX402DataSource()
+        return CompositeDataSource([dflow_rest, dflow_ws, coingecko])
+
     if exchange == 'polymarket':
         market_source = LivePolyMarketDataSource(
             event_cache_file='events_cache.jsonl',
@@ -92,12 +109,6 @@ def _build_news_augmented_source(exchange: str):
     elif exchange == 'kalshi':
         market_source = LiveKalshiDataSource(
             event_cache_file='kalshi_events_cache.jsonl',
-            polling_interval=60.0,
-            reprocess_on_start=False,
-        )
-    elif exchange in ('solana', 'dflow'):
-        market_source = DFlowDataSource(
-            event_cache_file='dflow_events_cache.jsonl',
             polling_interval=60.0,
             reprocess_on_start=False,
         )
@@ -113,24 +124,19 @@ def _build_news_augmented_source(exchange: str):
         'geopolitics world events',
         'crypto regulation SEC CFTC',
     ]
-    if exchange in ('solana', 'dflow'):
-        queries.extend([
-            'solana prediction market',
-            'dflow prediction market',
-        ])
     google_source = GoogleNewsDataSource(
         queries=queries,
         cache_file='google_news_cache.jsonl',
-        polling_interval=600.0,
-        max_articles_per_poll=8,
+        polling_interval=120.0,
+        max_articles_per_poll=10,
         max_pages=1,
-        min_delay=3.0,
-        max_delay=8.0,
+        min_delay=2.0,
+        max_delay=5.0,
     )
     rss_source = LiveRSSNewsDataSource(
         cache_file='rss_news_cache.jsonl',
-        polling_interval=600.0,
-        max_articles_per_poll=8,
+        polling_interval=120.0,
+        max_articles_per_poll=10,
         categories=['world', 'business', 'finance', 'politics', 'economy', 'sports'],
     )
     return CompositeDataSource([market_source, google_source, rss_source])
@@ -521,7 +527,7 @@ def backtest() -> None:
     '--risk-profile',
     default='none',
     show_default=True,
-    type=click.Choice(['none', 'standard']),
+    type=click.Choice(['none', 'standard', 'onchain']),
 )
 @click.option(
     '--all-markets-context/--primary-market-context',
@@ -864,6 +870,21 @@ def live() -> None:
 @click.option(
     '--monitor', '-m', is_flag=True, default=False, help='Show live TUI dashboard'
 )
+@click.option(
+    '--use-jito', is_flag=True, default=False, help='Enable Jito MEV protection'
+)
+@click.option(
+    '--jito-tip', default=10000, show_default=True, type=int, help='Jito tip in lamports'
+)
+@click.option(
+    '--onchain-signals', is_flag=True, default=False, help='Enable on-chain signal monitoring'
+)
+@click.option(
+    '--whale-wallets', default=None, help='Comma-separated whale wallet addresses to monitor'
+)
+@click.option(
+    '--multi-agent', is_flag=True, default=False, help='Enable multi-agent coordination pipeline'
+)
 def live_run(
     exchange: str,
     duration: float | None,
@@ -878,6 +899,11 @@ def live_run(
     solana_keypair_path: str | None,
     solana_rpc_url: str,
     monitor: bool,
+    use_jito: bool,
+    jito_tip: int,
+    onchain_signals: bool,
+    whale_wallets: str | None,
+    multi_agent: bool,
 ) -> None:
     """Run live mode with real order placement."""
     _confirm_live_trading(as_json=as_json)

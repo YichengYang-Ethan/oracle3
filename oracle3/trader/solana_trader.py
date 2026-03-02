@@ -96,6 +96,8 @@ class SolanaTrader(Trader):
         commission_rate: Decimal = Decimal('0.0'),
         alerter: Alerter | None = None,
         trade_api_base: str = DEFAULT_TRADE_API_BASE,
+        use_jito: bool = False,
+        jito_tip_lamports: int = 10_000,
     ):
         super().__init__(market_data, risk_manager, position_manager, alerter=alerter)
         self.commission_rate = commission_rate
@@ -103,6 +105,18 @@ class SolanaTrader(Trader):
         self.trade_api_base = trade_api_base
         self._keypair = _load_keypair(keypair, keypair_path)
         self.orders: list[Order] = []
+
+        # Jito MEV protection
+        self.use_jito = use_jito
+        self._jito_submitter: Any | None = None
+        if use_jito:
+            from oracle3.trader.jito_submitter import JitoSubmitter
+
+            self._jito_submitter = JitoSubmitter(
+                keypair=self._keypair,
+                rpc_url=rpc_url,
+                tip_lamports=jito_tip_lamports,
+            )
 
     @property
     def public_key(self) -> str:
@@ -154,7 +168,24 @@ class SolanaTrader(Trader):
         signed_tx = VersionedTransaction(tx.message, [self._keypair])
         raw = bytes(signed_tx)
 
-        # Submit via RPC
+        # Pre-submission risk hook: simulate transaction if OnChainRiskManager
+        from oracle3.risk.onchain_risk_manager import OnChainRiskManager
+
+        if isinstance(self.risk_manager, OnChainRiskManager):
+            sim_ok = await self.risk_manager.simulate_transaction(raw)
+            if not sim_ok:
+                raise RuntimeError('Transaction simulation failed — risk check blocked submission')
+
+        # Submit via Jito if enabled, otherwise standard RPC
+        if self._jito_submitter is not None:
+            result = await self._jito_submitter.submit_with_jito(raw)
+            if result.success:
+                logger.info('Transaction submitted via Jito: %s (bundle=%s)', result.signature, result.bundle_id)
+                return result.signature
+            logger.warning('Jito submission failed, signature from fallback: %s', result.signature)
+            return result.signature
+
+        # Standard RPC submission
         tx_b64 = base64.b64encode(raw).decode('ascii')
         rpc_payload = {
             'jsonrpc': '2.0',
