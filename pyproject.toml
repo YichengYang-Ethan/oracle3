@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "oracle3"
 version = "1.0.0"
-description = "AI-native prediction market agent on Solana — trade DFlow markets with LLM-driven strategies"
+description = "Autonomous on-chain trading agent for Solana prediction markets — LLM reasoning, quantitative signals, and atomic execution"
 authors = ["Yicheng Yang <yy85@illinois.edu>"]
 license = "Apache-2.0"
 readme = "README.md"

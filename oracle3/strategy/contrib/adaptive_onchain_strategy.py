@@ -35,7 +35,7 @@ class AdaptiveOnChainStrategy(QuantStrategy):
 
     name = 'adaptive_onchain'
     version = '0.2.0'
-    author = 'Oracle3 Team'
+    author = 'Yicheng Yang'
 
     def __init__(
         self,

@@ -29,7 +29,7 @@ class SolanaAgentStrategy(AgentStrategy):
 
     name = 'SolanaAgentStrategy'
     version = '1.1.0'
-    author = 'Oracle3 Team'
+    author = 'Yicheng Yang'
 
     agent_name = 'oracle3-solana-agent'
     agent_model = 'deepseek-chat'

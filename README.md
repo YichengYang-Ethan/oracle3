@@ -4,7 +4,7 @@
 
 <h1 align="center">Oracle3</h1>
 <p align="center">
-  <strong>AI-Native Prediction Market Agent on Solana</strong>
+  <strong>Autonomous On-Chain Trading Agent for Prediction Markets</strong>
 </p>
 
 <p align="center">
@@ -14,27 +14,29 @@
   <img src="https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/solana-mainnet--beta-9945FF?logo=solana&logoColor=white" alt="Solana">
   <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
-  <img src="https://img.shields.io/badge/HackIllinois-2026-orange" alt="HackIllinois 2026">
 </p>
 
 <p align="center">
-  <em>An autonomous AI trading agent that analyzes prediction markets, signs Solana transactions, and manages risk — all from a single CLI.</em>
+  <em>A fully autonomous agent that reads on-chain data, generates trade signals, signs Solana transactions, and manages risk end-to-end — no human in the loop.</em>
 </p>
 
 ---
 
-## What is Oracle3?
+## Why On-Chain Agents?
 
-Oracle3 is an **autonomous AI trading agent** for Solana prediction markets. It combines LLM-powered analysis with quantitative strategies to trade prediction markets on [DFlow](https://dflow.net) (Solana), Polymarket, and Kalshi.
+DeFi is shifting from human-operated dashboards to **autonomous agents** that perceive, decide, and execute entirely on-chain. Prediction markets are the ideal proving ground: discrete outcomes, transparent order books, and real-money accountability force an agent to be right — not just convincing.
+
+Oracle3 is built on this thesis. It treats the Solana blockchain as the agent's native runtime: reading on-chain state for signals, simulating transactions before committing capital, writing an immutable audit trail via the Memo program, and composing instructions atomically so complex multi-leg trades either fully succeed or fully revert. Every capability — from MEV protection to flash-loan arbitrage — is designed around on-chain primitives rather than off-chain workarounds.
 
 ### Why Solana?
 
-| Feature | Benefit |
-|---------|---------|
-| **Instant settlement** | Trades finalize on-chain in seconds |
-| **On-chain transparency** | Every trade logged via Solana Memo program |
-| **Composable** | Solana Blinks let anyone execute trades from a URL |
-| **Zero API keys** | DFlow dev tier requires no authentication |
+| Property | Why it matters for agents |
+|----------|--------------------------|
+| **Sub-second finality** | Agents can observe → decide → execute within a single block window |
+| **Transaction simulation** | `simulateTransaction` lets agents dry-run before committing capital |
+| **Atomic composability** | Multiple instructions in one transaction — all-or-nothing execution |
+| **On-chain transparency** | Every trade is publicly verifiable; builds agent reputation over time |
+| **Low fees** | Enables high-frequency micro-strategies that would be cost-prohibitive on L1 Ethereum |
 
 ## Architecture
 
@@ -75,7 +77,7 @@ Oracle3 is an **autonomous AI trading agent** for Solana prediction markets. It 
 
 ### 8 On-Chain Agent Capabilities
 
-Oracle3 ships with 8 production-ready on-chain features, all visible in the live dashboard:
+Oracle3 implements 8 core capabilities that a production-grade on-chain agent needs — from perception to execution to self-assessment. All are observable in real time through the live dashboard:
 
 | # | Feature | Description |
 |---|---------|-------------|
@@ -308,9 +310,17 @@ ruff check . && ruff format .
 mypy oracle3/
 ```
 
-## Team
+## Motivation
 
-Built by the Oracle3 team at UIUC for **HackIllinois 2026**.
+On-chain autonomous agents represent the next evolution of crypto infrastructure. Today's DeFi is overwhelmingly human-operated — users manually swap tokens, rebalance portfolios, and chase yield across protocols. The future is **agentic**: software that holds its own keys, perceives market microstructure directly from blockchain state, makes decisions under uncertainty, and executes atomically — all while building a verifiable, on-chain track record.
+
+Oracle3 is my exploration of what that future looks like in practice. Prediction markets are the sharpest testbed because they provide:
+
+- **Binary accountability** — the agent is either right or wrong, no narrative hedging
+- **Rich signal diversity** — order books, news, whale flows, cross-market spreads
+- **Composable execution** — flash loans, atomic multi-leg, MEV protection all compose natively on Solana
+
+The goal is not just a profitable bot, but a reference architecture for how LLM reasoning, quantitative signals, and on-chain primitives can be unified into a single autonomous system.
 
 ## License
 
@@ -319,5 +329,5 @@ Apache 2.0 — see [LICENSE](LICENSE) for details.
 ---
 
 <p align="center">
-  <sub>This software is for educational and research purposes. Live trading carries financial risk.</sub>
+  <sub>This software is for research and educational purposes. Trading on prediction markets involves financial risk.</sub>
 </p>

@@ -2,8 +2,8 @@
 set -euo pipefail
 
 # ============================================================
-#  Oracle3 — Hackathon Demo Script
-#  AI-Native Prediction Market Agent on Solana
+#  Oracle3 — Interactive Demo Script
+#  Autonomous On-Chain Trading Agent for Prediction Markets
 # ============================================================
 
 # Colors
@@ -132,7 +132,7 @@ echo -e "  ${C_PURPLE}Transparent${C_RESET}      On-chain logging via Memo progr
 echo -e "  ${C_PURPLE}Shareable${C_RESET}        Solana Blinks for URL-based trades"
 echo ""
 echo -e "${C_BLUE}${C_BOLD}  ──────────────────────────────────────────────${C_RESET}"
-echo -e "${C_BLUE}${C_BOLD}   Built for HackIllinois 2026${C_RESET}"
+echo -e "${C_BLUE}${C_BOLD}   Exploring Crypto & Prediction Markets${C_RESET}"
 echo -e "${C_BLUE}${C_BOLD}   https://github.com/YichengYang-Ethan/oracle3${C_RESET}"
 echo -e "${C_BLUE}${C_BOLD}  ──────────────────────────────────────────────${C_RESET}"
 echo ""
