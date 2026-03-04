@@ -31,7 +31,7 @@ classifiers = [
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Typing :: Typed",
 ]
-packages = [{include = "oracle3"}]
+packages = [{include = "oracle3"}, {include = "coinjure"}]
 
 
 [tool.poetry.dependencies]

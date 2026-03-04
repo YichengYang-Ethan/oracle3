@@ -3,17 +3,19 @@
 
 Steps:
 1. Fetch active markets from both platforms (public APIs, no auth needed).
-2. Fuzzy-match markets by keyphrase overlap + SequenceMatcher.
+2. Match markets using the coinjure multi-stage pipeline (or fallback to legacy).
 3. For each matched pair, fetch price history from both platforms.
 4. Write an interleaved JSONL file suitable for cross-platform backtest.
 
 Usage:
     python scripts/crawl_cross_platform_data.py [--output data/cross_platform/matched.jsonl]
+    python scripts/crawl_cross_platform_data.py --use-pipeline  # use coinjure pipeline
 """
 
 from __future__ import annotations
 
 import argparse
+import asyncio
 import json
 import re
 import sys
@@ -440,6 +442,56 @@ def fetch_histories_for_matches(
 # ---------------------------------------------------------------------------
 
 
+def _run_pipeline_scan() -> list[dict]:
+    """Run the coinjure matching pipeline and convert results to legacy format."""
+    from coinjure.matching import MarketMatchingPipeline
+
+    pipeline = MarketMatchingPipeline()
+    results = asyncio.run(pipeline.scan())
+
+    matches: list[dict] = []
+    for i, r in enumerate(results):
+        matches.append({
+            'match_id': f'match_{i + 1:03d}',
+            'similarity': r.score,
+            'poly': {
+                'platform': 'polymarket',
+                'event_id': r.poly_market.event_id,
+                'market_id': r.poly_market.market_id,
+                'question': r.poly_market.title,
+                'norm': '',
+                'keyphrases': set(),
+                'token_id': r.poly_market.extra.get('token_id', ''),
+                'no_token_id': r.poly_market.extra.get('no_token_id', ''),
+                'volume': r.poly_market.extra.get('volume', 0),
+            },
+            'kalshi': {
+                'platform': 'kalshi',
+                'event_ticker': r.kalshi_market.event_id,
+                'market_ticker': r.kalshi_market.market_id,
+                'title': r.kalshi_market.title,
+                'norm': '',
+                'keyphrases': set(),
+                'volume': r.kalshi_market.extra.get('volume', 0),
+            },
+            'label': r.label,
+            'confidence': r.confidence.value,
+        })
+
+    print(f'  Pipeline found {len(matches)} matched pairs')
+    for m in matches[:15]:
+        conf = m.get('confidence', '?')
+        print(
+            f'    [{m["similarity"]:.2f}|{conf}] '
+            f'{m["poly"]["question"][:55]}'
+            f'\n           <-> {m["kalshi"]["title"][:55]}'
+        )
+    if len(matches) > 15:
+        print(f'    ... and {len(matches) - 15} more')
+
+    return matches
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description='Crawl cross-platform market data')
     parser.add_argument(
@@ -454,6 +506,11 @@ def main() -> None:
     )
     parser.add_argument('--max-matches', type=int, default=50)
     parser.add_argument('--interval', default='max', choices=['max', '1h', '6h', '1d'])
+    parser.add_argument(
+        '--use-pipeline',
+        action='store_true',
+        help='Use coinjure matching pipeline instead of legacy matcher',
+    )
     args = parser.parse_args()
 
     print('=' * 64)
@@ -461,19 +518,27 @@ def main() -> None:
     print('=' * 64)
     print()
 
-    # 1. Fetch markets
-    poly_markets = fetch_polymarket_markets()
-    kalshi_markets = fetch_kalshi_markets()
+    if args.use_pipeline:
+        # Use coinjure multi-stage pipeline
+        print('[Pipeline] Using coinjure matching pipeline...')
+        matches = _run_pipeline_scan()
+    else:
+        # Legacy path
+        # 1. Fetch markets
+        poly_markets = fetch_polymarket_markets()
+        kalshi_markets = fetch_kalshi_markets()
 
-    if not poly_markets:
-        print('ERROR: No Polymarket markets fetched.')
-        sys.exit(1)
-    if not kalshi_markets:
-        print('ERROR: No Kalshi markets fetched.')
-        sys.exit(1)
+        if not poly_markets:
+            print('ERROR: No Polymarket markets fetched.')
+            sys.exit(1)
+        if not kalshi_markets:
+            print('ERROR: No Kalshi markets fetched.')
+            sys.exit(1)
 
-    # 2. Match
-    matches = match_markets(poly_markets, kalshi_markets, min_sim=args.min_similarity)
+        # 2. Match
+        matches = match_markets(
+            poly_markets, kalshi_markets, min_sim=args.min_similarity
+        )
 
     if not matches:
         print('\nNo matches found. Try lowering --min-similarity.')
