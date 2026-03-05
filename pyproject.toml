@@ -192,6 +192,8 @@ max-complexity = 10
 "oracle3/strategy/market_making_strategy.py" = ["C901"]
 "oracle3/strategy/orderbook_imbalance_strategy.py" = ["C901"]
 "oracle3/strategy/contrib/debate_strategy.py" = ["C901"]
+"coinjure/matching/_category.py" = ["C901"]
+"coinjure/matching/_pipeline.py" = ["C901"]
 
 [tool.commitizen]
 name = "cz_conventional_commits"
