@@ -21,7 +21,10 @@ import re
 from dataclasses import dataclass
 from decimal import Decimal
 from difflib import SequenceMatcher
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from coinjure.matching import MarketMatchingPipeline
 
 from oracle3.events.events import Event, OrderBookEvent, PriceChangeEvent
 from oracle3.strategy.strategy import Strategy
@@ -48,6 +51,15 @@ def _normalize(text: str) -> str:
     return ' '.join(tokens)
 
 
+_CONFIDENCE_MULTIPLIER: dict[str, float] = {
+    'HIGH': 1.0,
+    'MEDIUM': 0.5,
+    'LOW': 0.25,
+}
+
+_CONFIDENCE_ORDER = ['LOW', 'MEDIUM', 'HIGH']
+
+
 @dataclass
 class MatchedMarket:
     """A pair of tickers that refer to the same real-world event."""
@@ -56,6 +68,7 @@ class MatchedMarket:
     kalshi_ticker: KalshiTicker
     similarity: float  # 0-1 SequenceMatcher ratio
     label: str = ''  # human-readable name
+    confidence: str = ''  # 'HIGH', 'MEDIUM', 'LOW' from pipeline
 
 
 class MarketMatcher:
@@ -225,24 +238,67 @@ class CrossPlatformArbStrategy(Strategy):
     def __init__(
         self,
         matcher: MarketMatcher | None = None,
+        pipeline: MarketMatchingPipeline | None = None,
         min_edge: float = 0.02,
         trade_size: Decimal = Decimal('10'),
         cooldown_seconds: int = 30,
+        min_confidence: str = 'MEDIUM',
     ) -> None:
         super().__init__()
         self.matcher = matcher or MarketMatcher()
+        self.pipeline = pipeline  # coinjure.matching.MarketMatchingPipeline
         self.min_edge = min_edge
         self.trade_size = trade_size
         self.cooldown_seconds = cooldown_seconds
+        self.min_confidence = min_confidence
+
+        # Pipeline refresh tracking
+        self._pipeline_refresh_interval = 300.0
+        self._last_pipeline_refresh = 0.0
 
         # symbol -> last YES price
         self._prices: dict[str, Decimal] = {}
         # symbol -> last arb attempt time
         self._last_arb_time: dict[str, float] = {}
 
+    async def refresh_matches_from_pipeline(self) -> int:
+        """Scan the pipeline and populate matcher._matches with results.
+
+        Returns the number of matches populated.
+        """
+        if self.pipeline is None:
+            return 0
+
+        from coinjure.matching import match_result_to_matched_market
+
+        results = await self.pipeline.scan()
+        count = 0
+        for result in results:
+            matched = match_result_to_matched_market(result)
+            if isinstance(matched, MatchedMarket):
+                # Filter by min_confidence
+                conf = matched.confidence
+                if conf and conf in _CONFIDENCE_ORDER:
+                    if _CONFIDENCE_ORDER.index(conf) < _CONFIDENCE_ORDER.index(self.min_confidence):
+                        continue
+                self.matcher._matches[matched.poly_ticker.symbol] = matched
+                count += 1
+
+        logger.info('Pipeline refresh: populated %d matches from %d results', count, len(results))
+        return count
+
     async def process_event(self, event: Event, trader: Trader) -> None:
         if self.is_paused():
             return
+
+        # Periodic pipeline refresh
+        if self.pipeline is not None:
+            import time as _time
+
+            now = _time.time()
+            if now - self._last_pipeline_refresh >= self._pipeline_refresh_interval:
+                self._last_pipeline_refresh = now
+                await self.refresh_matches_from_pipeline()
 
         ticker: Ticker | None = None
         price: Decimal | None = None
@@ -275,6 +331,11 @@ class CrossPlatformArbStrategy(Strategy):
         match = self.matcher.get_match(ticker.symbol)
         if match is None:
             return
+
+        # Confidence-scaled trade sizing
+        conf = match.confidence
+        confidence_mult = _CONFIDENCE_MULTIPLIER.get(conf, 1.0) if conf else 1.0
+        effective_size = Decimal(str(float(self.trade_size) * confidence_mult))
 
         # Get Kalshi YES price for the same event
         kalshi_price = self._prices.get(match.kalshi_ticker.symbol)
@@ -320,6 +381,7 @@ class CrossPlatformArbStrategy(Strategy):
                     TradeSide.BUY,
                     price,
                     f'Arb: buy Poly YES @ {poly_yes:.4f}',
+                    size=effective_size,
                 )
 
                 # Buy NO on Kalshi (expensive side → sell YES equivalent)
@@ -332,6 +394,7 @@ class CrossPlatformArbStrategy(Strategy):
                         TradeSide.BUY,
                         no_price,
                         f'Arb: buy Kalshi NO @ {float(no_price):.4f}',
+                        size=effective_size,
                     )
 
                 self.record_decision(
@@ -364,6 +427,7 @@ class CrossPlatformArbStrategy(Strategy):
                     TradeSide.BUY,
                     kalshi_price,
                     f'Arb: buy Kalshi YES @ {kalshi_yes:.4f}',
+                    size=effective_size,
                 )
 
                 # Buy NO on Polymarket (expensive side → sell YES equivalent)
@@ -376,6 +440,7 @@ class CrossPlatformArbStrategy(Strategy):
                         TradeSide.BUY,
                         no_price,
                         f'Arb: buy Poly NO @ {float(no_price):.4f}',
+                        size=effective_size,
                     )
 
                 self.record_decision(
@@ -412,14 +477,16 @@ class CrossPlatformArbStrategy(Strategy):
         side: TradeSide,
         price: Decimal,
         reason: str,
+        size: Decimal | None = None,
     ) -> None:
         """Place one leg of the arbitrage trade."""
+        qty = size if size is not None else self.trade_size
         try:
             result = await trader.place_order(
                 side=side,
                 ticker=ticker,
                 limit_price=price,
-                quantity=self.trade_size,
+                quantity=qty,
             )
             if result.failure_reason:
                 logger.warning('Arb leg failed: %s - %s', reason, result.failure_reason)

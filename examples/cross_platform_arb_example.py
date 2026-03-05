@@ -129,11 +129,19 @@ async def run_cross_platform_arb(duration: float = 300) -> None:
 
     # ── Strategy ──────────────────────────────────────────────────
     matcher = MarketMatcher(min_similarity=0.55)
+
+    # Optional: use the coinjure matching pipeline for higher-quality matches
+    # from coinjure.matching import MarketMatchingPipeline
+    # pipeline = MarketMatchingPipeline(min_volume=100.0)
+    pipeline = None  # set to a MarketMatchingPipeline instance to enable
+
     strategy = CrossPlatformArbStrategy(
         matcher=matcher,
+        pipeline=pipeline,
         min_edge=0.02,  # 2 cent minimum edge
         trade_size=Decimal('10'),  # 10 shares per leg
         cooldown_seconds=30,  # 30 s between arb attempts
+        min_confidence='MEDIUM',  # skip LOW confidence matches from pipeline
     )
 
     print()
