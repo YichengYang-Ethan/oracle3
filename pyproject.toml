@@ -67,7 +67,7 @@ nbmake = "^1.5.0"
 types-setuptools = "^69.0.0.0"
 types-requests = "^2.31.0"
 ruff = "^0.3.0"
-commitizen = "^3.14.1"
+commitizen = "^4.13.9"
 mypy = "^1.15.0"
 
 [tool.poetry.group.test.dependencies]
