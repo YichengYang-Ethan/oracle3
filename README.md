@@ -17,7 +17,7 @@
 </p>
 
 <p align="center">
-  <em>A fully autonomous agent that reads on-chain data, generates trade signals, signs Solana transactions, and manages risk end-to-end — no human in the loop.</em>
+  <em>A fully autonomous agent that reads on-chain data, exploits structural mispricings across prediction markets, signs Solana transactions, and manages risk end-to-end — no human in the loop.</em>
 </p>
 
 ---
@@ -25,14 +25,14 @@
 <p align="center">
   <img src="assets/dashboard-live.png" alt="Oracle3 Live Dashboard" width="800">
   <br>
-  <sub>Live trading dashboard — 8 on-chain agent capabilities, real-time equity curve, execution pipeline</sub>
+  <sub>Live trading dashboard — real-time equity curve, execution pipeline, 8 on-chain agent capabilities</sub>
 </p>
 
 ## Why On-Chain Agents?
 
 DeFi is shifting from human-operated dashboards to **autonomous agents** that perceive, decide, and execute entirely on-chain. Prediction markets are the ideal proving ground: discrete outcomes, transparent order books, and real-money accountability force an agent to be right — not just convincing.
 
-Oracle3 is built on this thesis. It treats the Solana blockchain as the agent's native runtime: reading on-chain state for signals, simulating transactions before committing capital, writing an immutable audit trail via the Memo program, and composing instructions atomically so complex multi-leg trades either fully succeed or fully revert. Every capability — from MEV protection to flash-loan arbitrage — is designed around on-chain primitives rather than off-chain workarounds.
+Oracle3 is built on this thesis. It treats the Solana blockchain as the agent's native runtime: reading on-chain state for signals, simulating transactions before committing capital, writing an immutable audit trail via the Memo program, and composing instructions atomically so complex multi-leg trades either fully succeed or fully revert.
 
 ### Why Solana?
 
@@ -47,89 +47,163 @@ Oracle3 is built on this thesis. It treats the Solana blockchain as the agent's 
 ## Architecture
 
 ```
-                              ┌──────────────────────┐
-                              │    Oracle3 CLI        │
-                              │  paper│live│blinks    │
-                              └──────────┬───────────┘
-                                         │
-                    ┌────────────────────┬┴──────────────────────┐
-                    │                    │                        │
-           ┌────────▼────────┐  ┌────────▼────────┐  ┌──────────▼─────────┐
-           │  Agent Strategy │  │ Quant Strategy   │  │  Contrib Strategies│
-           │  (LLM + Tools)  │  │ (Momentum/MR/MM) │  │  (Debate/News/Arb) │
-           └────────┬────────┘  └────────┬────────┘  └──────────┬─────────┘
-                    └────────────────────┼──────────────────────┘
-                                         │
-                              ┌──────────▼───────────┐
-                              │    Trading Engine     │
-                              │  Event Loop + Risk    │
-                              │  + Position Manager   │
-                              └──────────┬───────────┘
-                                         │
-                    ┌────────────────────┬┴──────────────────────┐
-                    │                    │                        │
-           ┌────────▼────────┐  ┌────────▼────────┐  ┌──────────▼─────────┐
-           │  Solana/DFlow   │  │   Polymarket     │  │      Kalshi        │
-           │  SPL Tokens     │  │   CLOB API       │  │    REST API        │
-           └─────────────────┘  └─────────────────┘  └────────────────────┘
-                    │
-           ┌────────▼────────┐
-           │  Solana Blinks  │  ← Shareable trade URLs
-           │  On-Chain Logs  │  ← Memo program audit trail
-           └─────────────────┘
+                    ┌───────────────────────────────────────────────┐
+                    │              Oracle3 CLI                      │
+                    │   paper │ live │ blinks │ monitor │ control   │
+                    └───────────────────┬───────────────────────────┘
+                                        │
+          ┌─────────────────────────────┼─────────────────────────────┐
+          │                             │                             │
+ ┌────────▼────────┐         ┌──────────▼──────────┐       ┌─────────▼─────────┐
+ │  Agent Strategy │         │   Quant Strategy    │       │ Arbitrage Suite   │
+ │  (LLM + Tools)  │         │  (Momentum/MR/MM)   │       │ (8 strategies)    │
+ └────────┬────────┘         └──────────┬──────────┘       └─────────┬─────────┘
+          └─────────────────────────────┼─────────────────────────────┘
+                                        │
+                    ┌───────────────────▼───────────────────────────┐
+                    │             Trading Engine                    │
+                    │  Event Loop • Risk Manager • Position Tracker │
+                    │  SpreadExecutor • Control Server • Registry   │
+                    └───────────────────┬───────────────────────────┘
+                                        │
+          ┌─────────────────────────────┼─────────────────────────────┐
+          │                             │                             │
+ ┌────────▼────────┐         ┌──────────▼──────────┐       ┌─────────▼─────────┐
+ │  Solana / DFlow │         │    Polymarket       │       │      Kalshi       │
+ │  SPL Tokens     │         │    CLOB API         │       │    REST API       │
+ └────────┬────────┘         └─────────────────────┘       └───────────────────┘
+          │
+ ┌────────▼────────┐
+ │  Solana Blinks  │  ← Shareable trade URLs
+ │  On-Chain Logs  │  ← Memo program audit trail
+ │  Jito Bundles   │  ← MEV protection
+ └─────────────────┘
 ```
 
-## Key Features
+## Arbitrage Strategy Suite
 
-### 8 On-Chain Agent Capabilities
+Oracle3 ships with **8 production-ready arbitrage strategies** that systematically exploit structural mispricings in prediction markets. Each strategy formalizes a specific mathematical invariant that markets must satisfy, then trades the violation when the edge exceeds fees.
 
-Oracle3 implements 8 core capabilities that a production-grade on-chain agent needs — from perception to execution to self-assessment. All are observable in real time through the live dashboard:
+### Constraint-Based Arbitrage
+
+These strategies exploit violations of probability axioms — fundamental laws that prediction market prices must obey. When prices drift out of bounds, profit is mathematically guaranteed at settlement.
+
+| Strategy | Invariant | Entry Signal | Legs |
+|----------|-----------|--------------|------|
+| **Cross-Market Arb** | Same event, same price | Price gap across DFlow/Polymarket/Kalshi exceeds fees | 2 |
+| **Exclusivity Arb** | P(A) + P(B) ≤ 1 | Sum of mutually exclusive event prices > 1 | 2 |
+| **Implication Arb** | P(A) ≤ P(B) | Implied event priced higher than its parent | 2 |
+| **Conditional Arb** | P(A\|B) ∈ [L, U] | Conditional probability bounds violated | 2 |
+| **Event Sum Arb** | Σ P(outcome) = 1 | Within-event outcome prices don't sum to 1 | N |
+| **Structural Arb** | P(A) = β·P(B) + α | Price deviates from calibrated linear model | 2 |
+
+### Statistical Arbitrage
+
+These strategies use quantitative signals rather than hard constraints — profiting from mean-reversion and temporal patterns.
+
+| Strategy | Method | Edge Source |
+|----------|--------|------------|
+| **Cointegration Spread** | Self-calibrating z-score bands | Mean-reverting spread between cointegrated markets |
+| **Lead-Lag** | Rolling cross-correlation | Follower market lags leader's price movements |
+
+### Strategy Design Principles
+
+Every strategy follows the same battle-tested pattern:
+
+- **Position state machine** — explicit `flat → open → flat` lifecycle prevents phantom positions
+- **Fee-aware edge** — conservative 0.5% per-side fee buffer; only trades when `net_edge = gross_edge - 2×fee > threshold`
+- **Cooldown windows** — prevents rapid-fire re-entry on the same signal
+- **Fill-guarded transitions** — state only changes when orders actually execute (no phantom positions on failed fills)
+- **Audit trail** — every decision (trade or hold) recorded via `record_decision()` for post-hoc analysis
+
+## Market Relation Graph
+
+Oracle3 maintains a **persistent knowledge graph** of market relationships at `~/.oracle3/relations.json`. This graph powers the arbitrage strategies by storing discovered, validated, and deployed market pairs.
+
+```
+Discovery → Validation → Deployment → Monitoring
+   │            │             │            │
+   │   ┌────────▼────────┐   │   ┌────────▼────────┐
+   │   │ Engle-Granger   │   │   │ Live constraint │
+   │   │ Cointegration   │   │   │ checking        │
+   │   │ ADF stationarity│   │   │ Drift detection │
+   │   │ OLS hedge ratio │   │   │ Auto-invalidate │
+   │   │ OU half-life    │   │   └─────────────────┘
+   │   │ Pearson correl. │   │
+   │   │ Lead-lag detect. │   │
+   │   └─────────────────┘   │
+   │                         │
+   └─── Lifecycle: discovered → validated → deployed → retired
+```
+
+**Relation types**: same-event, cross-platform, implication, exclusivity, conditional, structural, cointegration, complement
+
+## Safe Multi-Leg Execution
+
+The **SpreadExecutor** handles multi-leg arbitrage with automatic protection against partial fills:
+
+```
+Leg 1: BUY A_YES @ 0.45  →  ✅ Filled
+Leg 2: BUY B_NO  @ 0.52  →  ❌ Failed
+                               │
+                     ┌─────────▼──────────┐
+                     │ Auto-Unwind Leg 1  │
+                     │ SELL A_YES @ bid   │
+                     │ (market price)     │
+                     └────────────────────┘
+```
+
+No naked positions. No manual intervention. Failed legs are unwound in reverse LIFO order at market prices.
+
+## 8 On-Chain Agent Capabilities
+
+Beyond arbitrage, Oracle3 implements 8 core on-chain agent capabilities for production trading:
 
 | # | Feature | Description |
 |---|---------|-------------|
-| 1 | **Cross-Market Arbitrage** | Detects same-event price discrepancies across DFlow, Polymarket, and Kalshi; trades when spread exceeds configurable threshold |
-| 2 | **On-Chain Risk Manager** | Dual-layer risk: local limits (position size, exposure, drawdown) + Solana `simulateTransaction` pre-flight check |
-| 3 | **On-Chain Signal Source** | Polls Solana RPC for whale wallet movements, large SPL transfers, and DFlow TVL changes as trading signals |
-| 4 | **MEV Protection (Jito)** | Wraps transactions in Jito Bundles with tip for frontrunning protection; auto-fallback to standard RPC |
-| 5 | **Agent Reputation** | Computes 0–100 on-chain reputation score from win rate, Sharpe, consistency; writes periodic summaries via Memo program |
-| 6 | **Multi-Agent Pipeline** | SignalAgent → RiskAgent → ExecutionAgent coordination pipeline for complex multi-step trade decisions |
-| 7 | **Flash Loan Arbitrage** | Atomic borrow → buy → sell → repay within a single Solana transaction via MarginFi/Solend |
-| 8 | **Atomic Multi-Leg Trader** | Packs DFlow + Jupiter + Drift instructions into one all-or-nothing Solana transaction |
+| 1 | **Cross-Market Arbitrage** | Detects same-event price discrepancies across DFlow, Polymarket, and Kalshi |
+| 2 | **On-Chain Risk Manager** | Dual-layer: local limits (position, exposure, drawdown) + Solana `simulateTransaction` |
+| 3 | **On-Chain Signal Source** | Whale wallet movements, large SPL transfers, DFlow TVL changes |
+| 4 | **MEV Protection (Jito)** | Jito Bundle submission with tip; auto-fallback to standard RPC |
+| 5 | **Agent Reputation** | 0–100 on-chain score from win rate, Sharpe, consistency via Memo program |
+| 6 | **Multi-Agent Pipeline** | SignalAgent → RiskAgent → ExecutionAgent coordination |
+| 7 | **Flash Loan Arbitrage** | Atomic borrow → buy → sell → repay in one Solana transaction |
+| 8 | **Atomic Multi-Leg** | DFlow + Jupiter + Drift instructions packed into one all-or-nothing tx |
 
-### AI-Powered Trading
+## Engine Control & Portfolio Management
+
+### Runtime Control Server
+
+Oracle3 runs a Unix socket control server alongside each strategy, enabling hot management without process restarts:
+
+```bash
+oracle3 engine pause  --id my-strategy    # Pause event ingestion
+oracle3 engine resume --id my-strategy    # Resume trading
+oracle3 engine stop   --id my-strategy    # Graceful shutdown
+oracle3 engine status --id my-strategy    # Runtime stats
+oracle3 engine killswitch                 # Emergency stop all + sentinel file
+```
+
+### Strategy Registry
+
+The portfolio registry at `~/.oracle3/portfolio.json` tracks every strategy's lifecycle:
+
+```
+paper_trading → live_trading → retired
+```
+
+```bash
+oracle3 engine list                       # All registered strategies
+oracle3 engine report --check-health      # Health check (PID, socket, PnL)
+oracle3 engine allocate --method kelly    # Capital allocation
+```
+
+## AI-Powered Trading
+
 - **LLM Agent Strategies** via OpenAI Agents SDK with 8 built-in tools (place trades, read order books, check positions, fetch news)
 - **Adaptive Quant Strategies** — OB imbalance + EMA momentum with self-tuning weights
 - **Hybrid approach** — LLM for news analysis, heuristics for order book/price events
 - **Multi-provider support** — OpenAI, DeepSeek, or any LiteLLM-compatible model
-
-### Solana Integration
-- **Native transaction signing** — builds, signs, and submits Solana transactions
-- **On-chain trade logging** — every trade logged to Solana via Memo program
-- **Jito MEV protection** — optional bundle submission with configurable tips
-- **Solana Blinks** — share trades as clickable URLs anyone can execute
-
-### Multi-Exchange
-- **Solana/DFlow** — SPL token prediction markets on mainnet-beta (REST + WebSocket + CoinGecko)
-- **Polymarket** — CLOB API with USDC collateral
-- **Kalshi** — regulated US prediction markets
-- **Cross-platform arbitrage** — detect price differences across exchanges
-
-### Risk Management
-- **On-chain risk manager** with dual-layer validation (local + RPC simulation)
-- Per-trade size limits, position limits, exposure caps
-- Max drawdown monitoring with auto-pause
-- Daily loss limits and kill switch
-- Portfolio health gate with auto-degradation
-
-### Live Trading Dashboard
-- **`/live` dashboard** — real-time single-page app at `http://localhost:3000/live`
-- **8 feature cards** — click any card to see detailed modal with live data
-- **Equity chart** — Canvas-based line chart with gradient fill
-- **Execution pipeline** — animated Signal → Risk → Decision → Execution flow
-- **Controls** — Pause / Resume / E-Stop buttons via REST API
-- **Responsive** — 4 → 2 → 1 column layout at different viewports
-- **Classic dashboard** at `/` — original terminal-style monitoring
-- **Terminal TUI** with Rich/Textual for headless environments
 
 ## Quick Start
 
@@ -144,30 +218,34 @@ poetry install
 ### Browse Markets
 
 ```bash
-# List Solana/DFlow prediction markets
 oracle3 market list --exchange solana --limit 10
-
-# Search Polymarket
 oracle3 market search --query "bitcoin" --exchange polymarket
 ```
 
 ### Paper Trading (with Live Dashboard)
 
 ```bash
-# Launch with adaptive quant strategy — all 8 on-chain features auto-load
 oracle3 dashboard --exchange solana \
   --strategy-ref oracle3.strategy.contrib.adaptive_onchain_strategy:AdaptiveOnChainStrategy \
   --initial-capital 10000
 ```
 
-Open **`http://localhost:3000/live`** for the full live dashboard, or `/` for the classic view.
+Open **`http://localhost:3000/live`** for the full live dashboard.
 
-### Backtest with DFlow Episodes
+### Run an Arbitrage Strategy
 
 ```bash
+# Cross-market arbitrage between Polymarket and DFlow
 oracle3 dashboard --exchange solana \
-  --strategy-ref oracle3.strategy.contrib.cross_market_arbitrage_strategy:CrossMarketArbitrageStrategy \
-  --episode-dir data/episodes/dflow_15min
+  --strategy-ref oracle3.strategy.contrib.cross_market_arbitrage_strategy:CrossMarketArbitrageStrategy
+
+# Cointegration spread trading
+oracle3 dashboard --exchange solana \
+  --strategy-ref oracle3.strategy.contrib.coint_spread_strategy:CointSpreadStrategy
+
+# Exclusivity constraint arbitrage
+oracle3 dashboard --exchange solana \
+  --strategy-ref oracle3.strategy.contrib.exclusivity_arb_strategy:ExclusivityArbStrategy
 ```
 
 ### Live Trading (Solana)
@@ -182,97 +260,87 @@ oracle3 live run \
   --monitor
 ```
 
-### Agent Reputation
+### Backtest with DFlow Episodes
 
 ```bash
-oracle3 reputation --wallet 7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae
-```
-
-### Solana Blinks
-
-```bash
-# Start the Solana Actions server
-oracle3 blinks --port 8080
-
-# Generate a shareable Blink URL
-curl http://localhost:8080/api/trade/MARKET_TICKER
-```
-
-### On-Chain Trade Log
-
-```bash
-# View trades logged to Solana blockchain
-oracle3 trade-log --limit 20 --json
-```
-
-### Run the Demo
-
-```bash
-./demo.sh
+oracle3 dashboard --exchange solana \
+  --strategy-ref oracle3.strategy.contrib.cross_market_arbitrage_strategy:CrossMarketArbitrageStrategy \
+  --episode-dir data/episodes/dflow_15min
 ```
 
 ## How It Works
 
 ```
-1. Data Sources fetch live market data + news + on-chain signals (#3)
+1. Data Sources fetch live market data + news + on-chain signals
           ↓
-2. AI Agent / Quant Strategy analyzes events (multi-agent pipeline #6)
+2. Market Relation Graph identifies structural mispricings
           ↓
-3. Strategy generates trade signals with confidence scores
+3. Arbitrage / AI / Quant Strategy generates trade signals
           ↓
-4. On-Chain Risk Manager (#2) validates against portfolio limits + simulates tx
+4. On-Chain Risk Manager validates (local limits + tx simulation)
           ↓
-5. Trader signs tx, optionally via Jito Bundle (#4) for MEV protection
-          ↓  May use Flash Loan (#7) or Atomic Multi-Leg (#8) execution
-6. On-Chain Logger writes trade to Solana Memo + updates Reputation (#5)
+5. SpreadExecutor places multi-leg trades with auto-unwind protection
           ↓
-7. Live Dashboard shows real-time P&L, equity curve, 8 feature cards
+6. Jito Bundle submission for MEV protection (optional)
+          ↓
+7. On-Chain Logger writes audit trail + updates Reputation score
+          ↓
+8. Control Server enables live pause/resume/killswitch
 ```
 
 ## Project Structure
 
 ```
 oracle3/
-├── agent/                # Multi-agent coordination (SignalAgent → RiskAgent → ExecutionAgent)
+├── agent/                # Multi-agent coordination pipeline
 ├── cli/                  # CLI commands (Click)
 ├── core/                 # Trading engine with event loop + snapshot system
+├── engine/               # Engine infrastructure
+│   ├── control.py        # Unix socket runtime control (pause/resume/stop)
+│   └── registry.py       # Strategy portfolio registry + lifecycle
+├── market/               # Market structure & knowledge
+│   ├── relations.py      # Persistent market relation graph
+│   └── validation.py     # Quantitative validation (cointegration, ADF, hedge ratio)
 ├── strategy/             # Strategy framework
 │   ├── agent_strategy.py # LLM agent with tool calling
-│   ├── quant_strategy.py # Quantitative strategies
-│   └── contrib/          # Contributed strategies
-│       ├── adaptive_onchain_strategy.py  # OB imbalance + EMA momentum (self-tuning)
-│       ├── cross_market_arbitrage_strategy.py  # Cross-exchange arb
-│       ├── multi_agent_strategy.py       # Multi-agent pipeline strategy
-│       └── solana_agent_strategy.py      # LLM-driven Solana agent
+│   ├── quant_strategy.py # Quantitative strategy base
+│   └── contrib/          # Production strategies
+│       ├── cross_market_arbitrage_strategy.py   # Cross-exchange arb
+│       ├── exclusivity_arb_strategy.py          # A+B≤1 constraint arb
+│       ├── implication_arb_strategy.py          # A≤B constraint arb
+│       ├── conditional_arb_strategy.py          # p(A|B) bounds arb
+│       ├── event_sum_arb_strategy.py            # Σ(YES)=1 arb
+│       ├── structural_arb_strategy.py           # Linear relationship arb
+│       ├── coint_spread_strategy.py             # Cointegration spread trading
+│       ├── lead_lag_strategy.py                 # Lead-lag temporal trading
+│       ├── adaptive_onchain_strategy.py         # Self-tuning OB+EMA
+│       ├── solana_agent_strategy.py             # LLM-driven Solana agent
+│       └── multi_agent_strategy.py              # Multi-agent pipeline
 ├── trader/               # Exchange-specific traders
-│   ├── solana_trader.py  # Solana/DFlow transaction signing + Jito
-│   ├── jito_submitter.py # Jito Bundle MEV protection (#4)
-│   ├── flash_loan.py     # Flash loan arbitrage (#7)
-│   ├── atomic_trader.py  # Atomic multi-leg trades (#8)
-│   ├── polymarket_trader.py
-│   └── kalshi_trader.py
+│   ├── solana_trader.py        # Solana/DFlow transaction signing
+│   ├── spread_executor.py      # Multi-leg execution + auto-unwind
+│   ├── jito_submitter.py       # Jito Bundle MEV protection
+│   ├── flash_loan.py           # Flash loan arbitrage
+│   ├── atomic_trader.py        # Atomic multi-leg trades
+│   ├── polymarket_trader.py    # Polymarket CLOB
+│   └── kalshi_trader.py        # Kalshi REST
 ├── data/                 # Data sources (live + backtest)
 │   └── live/
-│       ├── dflow_data_source.py         # DFlow REST polling
-│       ├── dflow_ws_data_source.py      # DFlow WebSocket streaming
-│       ├── coingecko_x402_data_source.py # CoinGecko SOL/crypto prices
-│       └── onchain_signal_source.py     # Whale wallet + TVL signals (#3)
-├── blinks/               # Solana Blinks/Actions server
-├── onchain/              # On-chain trade logging + reputation (#5)
-├── dashboard/            # Web dashboard (FastAPI + WebSocket)
-│   └── static/
-│       ├── index.html    # Classic terminal dashboard (/)
-│       ├── live.html     # Live trading dashboard (/live) with 8 feature cards
-│       └── demo.html     # Interactive demo
-├── risk/                 # Risk management framework
-│   ├── risk_manager.py   # Standard risk manager
-│   └── onchain_risk_manager.py  # Dual-layer on-chain risk (#2)
+│       ├── dflow_data_source.py         # DFlow REST + WebSocket
+│       ├── polymarket_orderflow.py      # Polymarket CLOB
+│       ├── kalshi_data_source.py        # Kalshi REST
+│       ├── onchain_signal_source.py     # Whale + TVL signals
+│       └── google_news_data_source.py   # News feed
+├── risk/                 # Dual-layer risk management
 ├── position/             # Position & P&L tracking
-├── analytics/            # Performance analysis (Sharpe, drawdown, etc.)
+├── onchain/              # On-chain logging + reputation
+├── dashboard/            # Web dashboard (FastAPI + WebSocket)
+├── blinks/               # Solana Blinks/Actions server
+├── analytics/            # Performance analysis (Sharpe, drawdown)
 ├── backtest/             # Backtesting engine
-└── events/               # Event types (OrderBook, Price, News, OnChainSignal)
+└── events/               # Event types
 
-tests/                    # Test suite
+tests/                    # 553 tests (pytest + pytest-asyncio)
 data/episodes/            # DFlow backtest episodes (parquet)
 ```
 
@@ -281,15 +349,15 @@ data/episodes/            # DFlow backtest episodes (parquet)
 | Component | Technology |
 |-----------|------------|
 | Language | Python 3.10+ (async/await) |
-| Solana | solders + solana-py |
-| DFlow | REST API (Metadata + Trade) |
-| LLM | OpenAI Agents SDK + LiteLLM |
+| Blockchain | Solana (solders + solana-py) |
+| Exchanges | DFlow, Polymarket, Kalshi |
+| AI | OpenAI Agents SDK + LiteLLM |
+| Quantitative | statsmodels, scipy, numpy (optional) |
 | Web UI | FastAPI + WebSocket |
 | Terminal UI | Textual + Rich |
 | CLI | Click |
-| Testing | pytest + pytest-asyncio |
-| Linting | Ruff + MyPy + pre-commit |
-| Types | Pydantic + Beartype |
+| Testing | pytest + pytest-asyncio + hypothesis |
+| Quality | Ruff + MyPy + Beartype + pre-commit |
 
 ## Environment Variables
 
@@ -324,9 +392,10 @@ Oracle3 is my exploration of what that future looks like in practice. Prediction
 
 - **Binary accountability** — the agent is either right or wrong, no narrative hedging
 - **Rich signal diversity** — order books, news, whale flows, cross-market spreads
+- **Structural alpha** — probability axioms create mathematically guaranteed arbitrage when prices misbehave
 - **Composable execution** — flash loans, atomic multi-leg, MEV protection all compose natively on Solana
 
-The goal is not just a profitable bot, but a reference architecture for how LLM reasoning, quantitative signals, and on-chain primitives can be unified into a single autonomous system.
+The goal is not just a profitable bot, but a reference architecture for how LLM reasoning, quantitative signals, constraint-based arbitrage, and on-chain primitives can be unified into a single autonomous system.
 
 ## License
 
