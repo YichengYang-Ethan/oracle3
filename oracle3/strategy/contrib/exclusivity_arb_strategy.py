@@ -235,9 +235,9 @@ class ExclusivityArbStrategy(QuantStrategy):
             action='ENTER_ARB',
             executed=executed_legs > 0,
             reasoning=(
-                f'Constraint violated: A={float(self._price_a):.4f} + '
-                f'B={float(self._price_b):.4f} = '
-                f'{float(self._price_a + self._price_b):.4f} > 1  '
+                f'Constraint violated: A={float(self._price_a or 0):.4f} + '
+                f'B={float(self._price_b or 0):.4f} = '
+                f'{float((self._price_a or 0) + (self._price_b or 0)):.4f} > 1  '
                 f'legs={executed_legs}/2'
             ),
             signal_values={
@@ -277,8 +277,8 @@ class ExclusivityArbStrategy(QuantStrategy):
             action='EXIT_ARB',
             executed=executed_legs > 0,
             reasoning=(
-                f'Constraint restored: A={float(self._price_a):.4f} + '
-                f'B={float(self._price_b):.4f} <= 1'
+                f'Constraint restored: A={float(self._price_a or 0):.4f} + '
+                f'B={float(self._price_b or 0):.4f} <= 1'
             ),
             signal_values={
                 'price_a': float(self._price_a or 0),

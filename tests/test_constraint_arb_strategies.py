@@ -6,11 +6,7 @@ ConditionalArbStrategy, EventSumArbStrategy, StructuralArbStrategy.
 
 from __future__ import annotations
 
-import time
 from decimal import Decimal
-from unittest.mock import patch
-
-import pytest
 
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.events.events import NewsEvent, PriceChangeEvent
@@ -32,8 +28,6 @@ from oracle3.strategy.contrib.structural_arb_strategy import (
 )
 from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
 from oracle3.trader.paper_trader import PaperTrader
-from oracle3.trader.types import TradeSide
-
 
 # ---------------------------------------------------------------------------
 # Fixtures

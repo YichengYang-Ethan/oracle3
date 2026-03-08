@@ -14,7 +14,6 @@ from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from oracle3.trader.types import (
-    OrderFailureReason,
     PlaceOrderResult,
     TradeSide,
 )

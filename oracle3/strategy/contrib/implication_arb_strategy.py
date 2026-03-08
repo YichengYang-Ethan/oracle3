@@ -223,8 +223,8 @@ class ImplicationArbStrategy(QuantStrategy):
             action='ENTER_ARB',
             executed=executed_legs > 0,
             reasoning=(
-                f'Constraint violated: A={float(self._price_a):.4f} > '
-                f'B={float(self._price_b):.4f}, '
+                f'Constraint violated: A={float(self._price_a or 0):.4f} > '
+                f'B={float(self._price_b or 0):.4f}, '
                 f'violation={float(violation):.4f}  legs={executed_legs}/2'
             ),
             signal_values={
@@ -264,8 +264,8 @@ class ImplicationArbStrategy(QuantStrategy):
             action='EXIT_ARB',
             executed=executed_legs > 0,
             reasoning=(
-                f'Constraint restored: A={float(self._price_a):.4f} <= '
-                f'B={float(self._price_b):.4f}'
+                f'Constraint restored: A={float(self._price_a or 0):.4f} <= '
+                f'B={float(self._price_b or 0):.4f}'
             ),
             signal_values={
                 'price_a': float(self._price_a or 0),

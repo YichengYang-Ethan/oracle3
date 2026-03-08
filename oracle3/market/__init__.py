@@ -7,11 +7,11 @@ Provides:
 """
 
 from oracle3.market.relations import (
+    SPREAD_TYPES,
+    STATUS_LIFECYCLE,
     MarketRelation,
     RelationStore,
     ValidationResult,
-    SPREAD_TYPES,
-    STATUS_LIFECYCLE,
 )
 from oracle3.market.validation import validate_relation
 

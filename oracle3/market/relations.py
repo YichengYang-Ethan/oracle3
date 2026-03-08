@@ -22,6 +22,7 @@ Status lifecycle:
 
 from __future__ import annotations
 
+import builtins
 import json
 import logging
 from dataclasses import asdict, dataclass, field
@@ -317,19 +318,19 @@ class RelationStore:
             relations = [r for r in relations if r.status == status]
         return relations
 
-    def list_by_type(self, spread_type: str) -> list[MarketRelation]:
+    def list_by_type(self, spread_type: str) -> builtins.list[MarketRelation]:
         """Convenience: list relations of a specific spread type."""
         return self.list(spread_type=spread_type)
 
-    def list_by_status(self, status: str) -> list[MarketRelation]:
+    def list_by_status(self, status: str) -> builtins.list[MarketRelation]:
         """Convenience: list relations with a specific status."""
         return self.list(status=status)
 
     # ── Graph queries ─────────────────────────────────────────────────
 
-    def find_by_market(self, market_id: str) -> list[MarketRelation]:
+    def find_by_market(self, market_id: str) -> builtins.list[MarketRelation]:
         """Return all relations involving a given market (by any id field)."""
-        results: list[MarketRelation] = []
+        results: builtins.list[MarketRelation] = []
         for r in self.list():
             a_ids = {
                 r.market_a.get("market_id", ""),
@@ -351,17 +352,17 @@ class RelationStore:
 
     def strongest(
         self, n: int = 10, status: str | None = None
-    ) -> list[MarketRelation]:
+    ) -> builtins.list[MarketRelation]:
         """Return the N highest-confidence relations."""
         relations = self.list(status=status)
         relations.sort(key=lambda r: r.confidence, reverse=True)
         return relations[:n]
 
-    def validated(self) -> list[MarketRelation]:
+    def validated(self) -> builtins.list[MarketRelation]:
         """Return relations that passed quantitative validation."""
         return self.list(status="validated")
 
-    def deployed(self) -> list[MarketRelation]:
+    def deployed(self) -> builtins.list[MarketRelation]:
         """Return relations currently deployed for trading."""
         return self.list(status="deployed")
 

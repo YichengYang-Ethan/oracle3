@@ -453,7 +453,7 @@ class CrossMarketArbitrageStrategy(QuantStrategy):
         now = time.monotonic()
         for opp_dict in opps:
             label = opp_dict.get('label', '')
-            direction = opp_dict.get('direction', '')
+            opp_dict.get('direction', '')
 
             # Skip if we already have a position on this pair
             if label in self._positions and self._positions[label].state != 'flat':
