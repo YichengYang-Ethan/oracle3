@@ -8,8 +8,6 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-import pytest
-
 from oracle3.data.market_data_manager import MarketDataManager
 from oracle3.order.order_book import Level, OrderBook
 from oracle3.position.position_manager import Position, PositionManager
@@ -22,7 +20,6 @@ from oracle3.trader.spread_executor import (
     SpreadOrderResult,
 )
 from oracle3.trader.types import OrderFailureReason, PlaceOrderResult, TradeSide
-
 
 # ---------------------------------------------------------------------------
 # Helpers

@@ -19,9 +19,7 @@ from __future__ import annotations
 
 import logging
 import math
-from typing import Sequence
-
-import numpy as np
+from collections.abc import Sequence
 
 from oracle3.market.relations import ValidationResult
 
@@ -29,6 +27,18 @@ logger = logging.getLogger(__name__)
 
 
 # ── Dependency helpers ────────────────────────────────────────────────────
+
+
+def _require_numpy():  # type: ignore[return]
+    """Lazy-import numpy and return the module."""
+    try:
+        import numpy as np
+        return np
+    except ImportError:
+        raise ImportError(
+            "numpy is required for quantitative validation. "
+            "Install with: pip install numpy"
+        ) from None
 
 
 def _require_statsmodels() -> bool:
@@ -39,7 +49,7 @@ def _require_statsmodels() -> bool:
         raise ImportError(
             "statsmodels is required for quantitative validation. "
             "Install with: pip install statsmodels"
-        )
+        ) from None
 
 
 def _require_scipy() -> bool:
@@ -50,7 +60,7 @@ def _require_scipy() -> bool:
         raise ImportError(
             "scipy is required for correlation analysis. "
             "Install with: pip install scipy"
-        )
+        ) from None
 
 
 # ── Hedge Ratio ──────────────────────────────────────────────────────────
@@ -64,6 +74,7 @@ def estimate_hedge_ratio(
 
     Returns beta.  For a simple spread, beta ~ 1.0 for same-event pairs.
     """
+    np = _require_numpy()
     _require_statsmodels()
     from statsmodels.regression.linear_model import OLS
     from statsmodels.tools import add_constant
@@ -97,6 +108,7 @@ def adf_test(
 
     Returns (test_statistic, p_value, is_stationary).
     """
+    np = _require_numpy()
     _require_statsmodels()
     from statsmodels.tsa.stattools import adfuller
 
@@ -126,6 +138,7 @@ def engle_granger_test(
 
     Returns (test_statistic, p_value, is_cointegrated).
     """
+    np = _require_numpy()
     _require_statsmodels()
     from statsmodels.tsa.stattools import coint
 
@@ -153,6 +166,7 @@ def estimate_half_life(spread: Sequence[float]) -> float:
 
     Returns half-life in bars (NaN if not mean-reverting).
     """
+    np = _require_numpy()
     _require_statsmodels()
     from statsmodels.regression.linear_model import OLS
     from statsmodels.tools import add_constant
@@ -183,6 +197,7 @@ def pearson_correlation(
     prices_b: Sequence[float],
 ) -> float:
     """Compute Pearson correlation between two price series."""
+    np = _require_numpy()
     a = np.array(prices_a, dtype=float)
     b = np.array(prices_b, dtype=float)
     mask = ~(np.isnan(a) | np.isnan(b))
@@ -211,6 +226,7 @@ def detect_lead_lag(
 
     Returns (optimal_lag, correlation_at_optimal_lag).
     """
+    np = _require_numpy()
     a = np.array(prices_a, dtype=float)
     b = np.array(prices_b, dtype=float)
     n = min(len(a), len(b))
@@ -405,6 +421,7 @@ def _validate_cointegration(
     corr = pearson_correlation(a, b)
     lag, lag_corr = detect_lead_lag(a, b)
 
+    np = _require_numpy()
     spread_arr = np.array(spread, dtype=float)
     mean_s = float(np.nanmean(spread_arr))
     std_s = float(np.nanstd(spread_arr))

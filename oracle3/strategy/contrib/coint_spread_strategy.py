@@ -113,7 +113,7 @@ class CointSpreadStrategy(QuantStrategy):
 
         # Position state machine: flat -> long_spread / short_spread -> flat
         self._position_state = 'flat'
-        self._last_entry_time: float = 0.0
+        self._last_entry_time: float = float('-inf')
 
     # -- Ticker matching -----------------------------------------------------
 

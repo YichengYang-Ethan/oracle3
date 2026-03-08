@@ -97,7 +97,7 @@ class StructuralArbStrategy(QuantStrategy):
         self._price_b: Decimal | None = None
         # flat | long_a_short_b (A underpriced) | short_a_long_b (A overpriced)
         self._position_state = 'flat'
-        self._last_entry_time: float = 0.0
+        self._last_entry_time: float = float('-inf')
 
     # -- Ticker matching -----------------------------------------------------
 

@@ -10,7 +10,7 @@ from decimal import Decimal
 import pytest
 
 from oracle3.data.market_data_manager import MarketDataManager
-from oracle3.events.events import NewsEvent, OrderBookEvent, PriceChangeEvent
+from oracle3.events.events import NewsEvent, PriceChangeEvent
 from oracle3.order.order_book import Level, OrderBook
 from oracle3.position.position_manager import Position, PositionManager
 from oracle3.risk.risk_manager import NoRiskManager
@@ -18,7 +18,6 @@ from oracle3.strategy.contrib.coint_spread_strategy import CointSpreadStrategy
 from oracle3.strategy.contrib.lead_lag_strategy import LeadLagStrategy
 from oracle3.ticker.ticker import CashTicker, PolyMarketTicker
 from oracle3.trader.paper_trader import PaperTrader
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -175,7 +174,7 @@ class TestCointSpreadWarmup:
         trader = _make_trader([ticker_a, ticker_b])
 
         # Send exactly 10 pairs -- spread should be 0 with hedgeratio=1
-        for i in range(10):
+        for _i in range(10):
             price = Decimal(str(0.50))
             await s.process_event(_price_event(ticker_a, price), trader)
             await s.process_event(_price_event(ticker_b, price), trader)
@@ -198,7 +197,7 @@ class TestCointSpreadSignalGeneration:
         base_price: float = 0.50,
     ) -> None:
         """Helper: push n price events to calibrate the strategy."""
-        for i in range(n):
+        for _i in range(n):
             p = Decimal(str(base_price))
             await s.process_event(_price_event(ticker_a, p), trader)
             await s.process_event(_price_event(ticker_b, p), trader)
@@ -396,7 +395,7 @@ class TestLeadLagWarmup:
         trader = _make_trader([leader, follower])
 
         # Build warmup with stable prices
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -448,7 +447,7 @@ class TestLeadLagSignalGeneration:
         )
 
         # Warmup
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -493,7 +492,7 @@ class TestLeadLagSignalGeneration:
         )
 
         # Warmup
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -521,7 +520,7 @@ class TestLeadLagSignalGeneration:
         )
         trader = _make_trader([leader, follower])
 
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -567,7 +566,7 @@ class TestLeadLagPositionStateMachine:
         )
 
         # Warmup
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -615,7 +614,7 @@ class TestLeadLagPositionStateMachine:
         )
 
         # Warmup
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -630,7 +629,7 @@ class TestLeadLagPositionStateMachine:
         assert s._position_state == 'long_follower'
 
         # Send max_hold follower updates without catching up
-        for i in range(6):
+        for _i in range(6):
             await s.process_event(
                 _price_event(follower, Decimal('0.50')), trader
             )
@@ -693,7 +692,7 @@ class TestLeadLagFeeAware:
         )
         trader = _make_trader([leader, follower])
 
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -764,7 +763,7 @@ class TestLeadLagCooldown:
         )
 
         # Warmup
-        for i in range(10):
+        for _i in range(10):
             await s.process_event(
                 _price_event(leader, Decimal('0.50')), trader
             )
@@ -779,7 +778,7 @@ class TestLeadLagCooldown:
         assert s._position_state == 'long_follower'
 
         # Force exit via timeout
-        for i in range(3):
+        for _i in range(3):
             await s.process_event(
                 _price_event(follower, Decimal('0.50')), trader
             )
