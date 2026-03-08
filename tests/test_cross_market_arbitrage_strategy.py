@@ -74,7 +74,7 @@ class TestCrossMarketArbitrageStrategy:
         assert s.find_arbitrage_opportunities() == []
 
     def test_find_opportunities_with_edge(self):
-        s = CrossMarketArbitrageStrategy(min_edge=0.03, fee_rate=0.0)
+        s = CrossMarketArbitrageStrategy(min_edge=0.03, fee_per_side=0.0)
         t1 = PolyMarketTicker(
             symbol='EVT_POLY', name='Same Event',
             token_id='a', market_id='b', event_id='c',
@@ -88,7 +88,7 @@ class TestCrossMarketArbitrageStrategy:
 
         opps = s.find_arbitrage_opportunities()
         assert len(opps) >= 1
-        assert opps[0]['spread'] != 0
+        assert opps[0]['gross_edge'] != 0
 
     def test_no_opportunity_when_edge_too_small(self):
         s = CrossMarketArbitrageStrategy(min_edge=0.20)
