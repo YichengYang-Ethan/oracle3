@@ -82,7 +82,7 @@ class ImplicationArbStrategy(QuantStrategy):
         self._price_b: Decimal | None = None
         # Position state machine: flat -> short_a_long_b -> flat
         self._position_state = 'flat'  # flat | short_a_long_b
-        self._last_entry_time: float = 0.0
+        self._last_entry_time: float = float('-inf')
 
     # -- Ticker matching -----------------------------------------------------
 

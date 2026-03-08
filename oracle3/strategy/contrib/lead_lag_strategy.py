@@ -151,7 +151,7 @@ class LeadLagStrategy(QuantStrategy):
         self._hold_count: int = 0  # follower updates since entry
 
         # ---- Cooldown ----
-        self._last_entry_time: float = 0.0
+        self._last_entry_time: float = float('-inf')
 
     # ------------------------------------------------------------------
     # Symbol matching

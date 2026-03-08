@@ -86,7 +86,7 @@ class ExclusivityArbStrategy(QuantStrategy):
         self._price_b: Decimal | None = None
         # Position state machine: flat -> short_both -> flat
         self._position_state = 'flat'  # flat | short_both
-        self._last_entry_time: float = 0.0
+        self._last_entry_time: float = float('-inf')
 
     # -- Ticker matching -----------------------------------------------------
 
