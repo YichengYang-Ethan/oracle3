@@ -208,9 +208,7 @@ class TestPipelineBridge:
         )
 
         strategy = CrossPlatformArbStrategy(pipeline=None)
-        count = asyncio.get_event_loop().run_until_complete(
-            strategy.refresh_matches_from_pipeline()
-        )
+        count = asyncio.run(strategy.refresh_matches_from_pipeline())
         assert count == 0
 
 
