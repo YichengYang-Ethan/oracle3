@@ -155,18 +155,6 @@ On-chain autonomous agents represent the next evolution of crypto infrastructure
   <a href="https://jito.network"><img src="https://img.shields.io/badge/Jito-00C7B7?style=for-the-badge&logoColor=white" alt="Jito"></a>
 </p>
 
-## Star History
-
-<p align="center">
-  <a href="https://star-history.com/#YichengYang-Ethan/oracle3&Date">
-    <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date" />
-      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date" width="600" />
-    </picture>
-  </a>
-</p>
-
 ## Community
 
 <p align="center">
