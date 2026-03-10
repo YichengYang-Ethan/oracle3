@@ -29,6 +29,16 @@
   <sub>Live trading dashboard — real-time equity curve, execution pipeline, 8 on-chain agent capabilities</sub>
 </p>
 
+## What's New
+
+| Date | Update |
+|------|--------|
+| **2026-03-09** | v1.0.0 released — 8 arbitrage strategies, market relation graph, SpreadExecutor, engine control server |
+| **2026-03-06** | Matching pipeline optimization — resolution filter, volume filter, confidence sizing |
+| **2026-03-04** | Live trading dashboard with 8 on-chain feature cards and real-time equity curve |
+| **2026-03-01** | Solana integration — native tx signing, Jito MEV protection, on-chain trade logging |
+| **2026-02-28** | Initial commit — trading engine, multi-exchange support, AI agent strategies |
+
 ## Why On-Chain Agents?
 
 DeFi is shifting from human-operated dashboards to **autonomous agents** that perceive, decide, and execute entirely on-chain. Prediction markets are the ideal proving ground: discrete outcomes, transparent order books, and real-money accountability force an agent to be right — not just convincing.
@@ -398,13 +408,62 @@ Oracle3 is my exploration of what that future looks like in practice. Prediction
 
 The goal is not just a profitable bot, but a reference architecture for how LLM reasoning, quantitative signals, constraint-based arbitrage, and on-chain primitives can be unified into a single autonomous system.
 
-## Contributing
+## Why Oracle3?
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+| Feature | Oracle3 | [Polymarket/agents](https://github.com/Polymarket/agents) | [freqtrade](https://github.com/freqtrade/freqtrade) |
+|---------|---------|-------------------|-----------|
+| Prediction markets | Solana/DFlow + Polymarket + Kalshi | Polymarket only | Crypto spot/futures only |
+| On-chain atomic execution | Solana native | Off-chain | Off-chain |
+| Constraint-based arbitrage | 8 strategies with formal invariants | None | None |
+| Statistical arbitrage | Cointegration + Lead-lag | None | FreqAI (ML-based) |
+| Cross-market arbitrage | 3 exchanges | Single exchange | Single exchange |
+| LLM agent with tools | OpenAI Agents SDK + LiteLLM | RAG pipeline | None |
+| Multi-leg auto-unwind | SpreadExecutor with LIFO unwind | None | None |
+| MEV protection | Jito Bundles | N/A | N/A |
+| On-chain audit trail | Solana Memo program | None | None |
+| Risk simulation | `simulateTransaction` pre-flight | None | None |
+| Live dashboard | Web + Terminal TUI | None | FreqUI |
+| Engine hot control | Unix socket (pause/resume/killswitch) | None | Telegram bot |
 
-## Security
+## Powered By
 
-For reporting vulnerabilities, please see [SECURITY.md](SECURITY.md).
+<p align="center">
+  <a href="https://solana.com"><img src="https://img.shields.io/badge/Solana-9945FF?style=for-the-badge&logo=solana&logoColor=white" alt="Solana"></a>
+  <a href="https://polymarket.com"><img src="https://img.shields.io/badge/Polymarket-0052FF?style=for-the-badge&logoColor=white" alt="Polymarket"></a>
+  <a href="https://kalshi.com"><img src="https://img.shields.io/badge/Kalshi-000000?style=for-the-badge&logoColor=white" alt="Kalshi"></a>
+  <a href="https://openai.com"><img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI"></a>
+  <a href="https://jito.network"><img src="https://img.shields.io/badge/Jito-00C7B7?style=for-the-badge&logoColor=white" alt="Jito"></a>
+</p>
+
+## Star History
+
+<p align="center">
+  <a href="https://star-history.com/#YichengYang-Ethan/oracle3&Date">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date" />
+      <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date" width="600" />
+    </picture>
+  </a>
+</p>
+
+## Community
+
+<p align="center">
+  <a href="https://github.com/YichengYang-Ethan/oracle3/discussions"><img src="https://img.shields.io/badge/GitHub_Discussions-181717?style=for-the-badge&logo=github&logoColor=white" alt="Discussions"></a>
+  <a href="https://github.com/YichengYang-Ethan/oracle3/issues"><img src="https://img.shields.io/badge/Issues-181717?style=for-the-badge&logo=github&logoColor=white" alt="Issues"></a>
+</p>
+
+- **Questions & Ideas** — [GitHub Discussions](https://github.com/YichengYang-Ethan/oracle3/discussions)
+- **Bug Reports** — [GitHub Issues](https://github.com/YichengYang-Ethan/oracle3/issues)
+- **Security** — see [SECURITY.md](SECURITY.md)
+- **Contributing** — see [CONTRIBUTING.md](CONTRIBUTING.md)
+
+## Contributors
+
+<a href="https://github.com/YichengYang-Ethan/oracle3/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=YichengYang-Ethan/oracle3" alt="Contributors" />
+</a>
 
 ## License
 
