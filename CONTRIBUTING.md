@@ -5,7 +5,7 @@ Thanks for your interest in contributing! Here is everything you need to get sta
 ## Setup
 
 ```bash
-git clone https://github.com/your-org/oracle3.git
+git clone https://github.com/YichengYang-Ethan/oracle3.git
 cd oracle3
 poetry install --with dev,test
 ```

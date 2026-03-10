@@ -14,6 +14,7 @@
   <img src="https://img.shields.io/badge/python-3.10%2B-blue?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/solana-mainnet--beta-9945FF?logo=solana&logoColor=white" alt="Solana">
   <img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License">
+  <a href="https://github.com/YichengYang-Ethan/oracle3/releases"><img src="https://img.shields.io/github/v/release/YichengYang-Ethan/oracle3?color=orange" alt="Release"></a>
 </p>
 
 <p align="center">
@@ -396,6 +397,14 @@ Oracle3 is my exploration of what that future looks like in practice. Prediction
 - **Composable execution** — flash loans, atomic multi-leg, MEV protection all compose natively on Solana
 
 The goal is not just a profitable bot, but a reference architecture for how LLM reasoning, quantitative signals, constraint-based arbitrage, and on-chain primitives can be unified into a single autonomous system.
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+## Security
+
+For reporting vulnerabilities, please see [SECURITY.md](SECURITY.md).
 
 ## License
 

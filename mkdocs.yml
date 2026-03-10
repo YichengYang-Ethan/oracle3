@@ -1,5 +1,5 @@
 site_name: Oracle3
-site_description: An intelligent trading agent for Polymarket & Kalshi prediction markets, powered by Social World Models and LLM-driven decision making.
+site_description: Autonomous on-chain trading agent for Solana prediction markets — LLM reasoning, quantitative signals, and atomic execution.
 site_url: https://yichengyang-ethan.github.io/oracle3
 repo_url: https://github.com/YichengYang-Ethan/oracle3
 repo_name: YichengYang-Ethan/oracle3
