@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0b10;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#12131d;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d8eff" />
+      <stop offset="50%" style="stop-color:#a78bfa" />
+      <stop offset="100%" style="stop-color:#00e59b" />
+    </linearGradient>
+    <linearGradient id="title-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#4d8eff" />
+      <stop offset="40%" style="stop-color:#a78bfa" />
+      <stop offset="100%" style="stop-color:#00e59b" />
+    </linearGradient>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1a1b2e" stroke-width="0.5"/>
+    </pattern>
+    <!-- Glow filter for title -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="url(#bg)"/>
+
+  <!-- Subtle grid overlay -->
+  <rect width="1280" height="640" fill="url(#grid)" opacity="0.4"/>
+
+  <!-- Top accent line -->
+  <rect x="0" y="0" width="1280" height="3" fill="url(#accent)" opacity="0.7"/>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="637" width="1280" height="3" fill="url(#accent)" opacity="0.7"/>
+
+  <!-- Decorative corner elements -->
+  <rect x="60" y="50" width="40" height="2" fill="#4d8eff" opacity="0.3"/>
+  <rect x="60" y="50" width="2" height="40" fill="#4d8eff" opacity="0.3"/>
+  <rect x="1180" y="50" width="40" height="2" fill="#00e59b" opacity="0.3"/>
+  <rect x="1218" y="50" width="2" height="40" fill="#00e59b" opacity="0.3"/>
+  <rect x="60" y="588" width="40" height="2" fill="#4d8eff" opacity="0.3"/>
+  <rect x="60" y="550" width="2" height="40" fill="#4d8eff" opacity="0.3"/>
+  <rect x="1180" y="588" width="40" height="2" fill="#00e59b" opacity="0.3"/>
+  <rect x="1218" y="550" width="2" height="40" fill="#00e59b" opacity="0.3"/>
+
+  <!-- Ambient glow behind title -->
+  <ellipse cx="640" cy="250" rx="300" ry="120" fill="#4d8eff" opacity="0.03"/>
+  <ellipse cx="640" cy="250" rx="200" ry="80" fill="#a78bfa" opacity="0.04"/>
+
+  <!-- Main title: Oracle3 -->
+  <text x="640" y="270" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', 'Consolas', monospace"
+        font-size="120" font-weight="800" fill="url(#title-grad)"
+        letter-spacing="-3" filter="url(#glow)">Oracle3</text>
+
+  <!-- Subtitle -->
+  <text x="640" y="340" text-anchor="middle"
+        font-family="'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif"
+        font-size="26" font-weight="400" fill="#8b8fa8"
+        letter-spacing="1">Autonomous On-Chain Trading Agent for Prediction Markets</text>
+
+  <!-- Divider line -->
+  <line x1="440" y1="385" x2="840" y2="385" stroke="url(#accent)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Tech badges row -->
+  <!-- Solana badge -->
+  <rect x="168" y="430" width="120" height="34" rx="17" fill="#9945FF" fill-opacity="0.12" stroke="#9945FF" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="228" y="452" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="13" font-weight="600" fill="#b87fff" letter-spacing="1">Solana</text>
+
+  <!-- Dot separator -->
+  <circle cx="320" cy="447" r="2.5" fill="#3a3d56"/>
+
+  <!-- Polymarket badge -->
+  <rect x="352" y="430" width="140" height="34" rx="17" fill="#4d8eff" fill-opacity="0.10" stroke="#4d8eff" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="422" y="452" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="13" font-weight="600" fill="#4d8eff" letter-spacing="1">Polymarket</text>
+
+  <!-- Dot separator -->
+  <circle cx="524" cy="447" r="2.5" fill="#3a3d56"/>
+
+  <!-- Kalshi badge -->
+  <rect x="556" y="430" width="110" height="34" rx="17" fill="#00e59b" fill-opacity="0.10" stroke="#00e59b" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="611" y="452" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="13" font-weight="600" fill="#00e59b" letter-spacing="1">Kalshi</text>
+
+  <!-- Dot separator -->
+  <circle cx="698" cy="447" r="2.5" fill="#3a3d56"/>
+
+  <!-- LLM Agent badge -->
+  <rect x="730" y="430" width="140" height="34" rx="17" fill="#a78bfa" fill-opacity="0.10" stroke="#a78bfa" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="800" y="452" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="13" font-weight="600" fill="#a78bfa" letter-spacing="1">LLM Agent</text>
+
+  <!-- Dot separator -->
+  <circle cx="902" cy="447" r="2.5" fill="#3a3d56"/>
+
+  <!-- 8 Arb Strategies badge -->
+  <rect x="934" y="430" width="200" height="34" rx="17" fill="#ff6b6b" fill-opacity="0.10" stroke="#ff6b6b" stroke-opacity="0.25" stroke-width="1"/>
+  <text x="1034" y="452" text-anchor="middle"
+        font-family="'SF Mono', 'Fira Code', monospace"
+        font-size="13" font-weight="600" fill="#ff6b6b" letter-spacing="1">8 Arb Strategies</text>
+
+  <!-- GitHub icon hint at bottom -->
+  <text x="640" y="560" text-anchor="middle"
+        font-family="'SF Pro Display', system-ui, sans-serif"
+        font-size="14" font-weight="400" fill="#3a3d56" letter-spacing="2">github.com</text>
+</svg>
