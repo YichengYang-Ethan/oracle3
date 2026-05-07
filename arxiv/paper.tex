@@ -1,0 +1,219 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- arXiv-style preamble -----------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[round,authoryear]{natbib}
+\usepackage{booktabs}
+\usepackage[hidelinks,colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+\bibliographystyle{plainnat}
+
+% --- Title and authors --------------------------------------------------------
+\title{Oracle3: An open-source autonomous trading agent for prediction markets
+       with a Wang Transform pricing engine}
+
+\author{%
+  Yicheng Yang\thanks{Corresponding author: \href{mailto:ethanyang85@outlook.com}{ethanyang85@outlook.com}. ORCID: \href{https://orcid.org/0009-0000-7973-6931}{0009-0000-7973-6931}.}\\
+  University of Illinois Urbana--Champaign, USA
+}
+
+\date{7 May 2026}
+
+% --- Document ------------------------------------------------------------------
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Prediction markets price binary contracts at systematically biased levels: a
+contract whose objective probability is 50\% trades on average around 57 cents,
+an empirical regularity known as the favorite--longshot bias
+\citep{thaler:1988}. Despite a long literature documenting this distortion,
+most open-source trading bots ignore it, treating market prices as unbiased
+estimates of probability. \texttt{Oracle3} is a Python framework that
+operationalizes a peer-reviewed risk-neutral pricing model for binary outcome
+contracts and uses it to drive automated trading across multiple venues
+(Kalshi, Polymarket, and Solana-based DFlow). At its core is a Wang Transform
+\citep{wang:2000,wang:2002} calibrated by maximum-likelihood estimation on
+291{,}309 resolved contracts spanning six platforms, with hierarchical
+covariates for volume, days-to-expiry, and contract moneyness. The library
+exposes the model as a fair-value engine and pairs it with eight
+constraint-based arbitrage strategies, statistical-arbitrage strategies,
+model-Greek-driven sizing, and a risk manager --- all wired into an
+event-driven async trading core with snapshot persistence, killswitch support,
+and on-chain audit trails. Source code is available at
+\url{https://github.com/YichengYang-Ethan/oracle3} under the Apache~2.0 license,
+with archived release at Zenodo (\href{https://doi.org/10.5281/zenodo.20062549}{10.5281/zenodo.20062549}).
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+Quantitative research on prediction-market pricing has accelerated, but the gap
+between empirical pricing literature and reproducible, deployable software
+remains wide. Existing open-source bots (e.g., \texttt{polymarket-py},
+\texttt{kalshi-python}) are thin client wrappers; they do not estimate fair
+value, do not operationalize known pricing distortions, and offer no shared
+abstraction across venues. Conversely, academic replication packages typically
+stop at calibration and rarely produce a runnable trading agent.
+\texttt{Oracle3} closes this gap by shipping the maximum-likelihood estimates
+from \citet{yang:2026} directly as a real-time pricing engine, exposing the
+same hierarchical covariate model used in the paper, and connecting it to live
+order-book data, execution, and risk management.
+
+The intended audience is twofold. For researchers studying prediction-market
+efficiency, the favorite--longshot bias \citep{thaler:1988,snowberg:2010}, and
+risk-neutral pricing \citep{harrison:1979,wang:2000}, \texttt{Oracle3}
+provides a reproducible, well-tested implementation of a multi-venue
+pricing-and-trading pipeline that can be used as a baseline for new strategies
+or as a calibration testbed. For practitioners, it provides a transparent,
+auditable agent whose every signal is grounded in an explicit pricing model
+rather than opaque heuristics.
+
+\paragraph{State of the field.}
+Several Python tools touch the prediction-market space, but each is partial.
+\texttt{py-clob-client} and \texttt{kalshi-python} are vendor SDKs without
+modeling. The \texttt{crypto-trading-bot} family targets centralized exchanges
+and currency markets, not binary outcome markets. Research code accompanying
+empirical-finance papers is typically Jupyter-driven, focused on calibration
+rather than deployment. Outside Python, decentralized-finance projects on
+Solana such as \texttt{dflow-program} provide on-chain primitives but no
+off-chain modeling layer. \texttt{Oracle3} is, to our knowledge, the first
+open-source library that combines (i) calibrated probabilistic pricing for
+binary contracts, (ii) constraint-based arbitrage detection across
+heterogeneous venues, and (iii) production-grade execution with on-chain
+settlement.
+
+\section{Methodology}
+\label{sec:method}
+
+The core pricing primitive is the Wang Transform applied to binary contracts:
+%
+\begin{equation}
+  p^{\mathrm{mkt}} \;=\; \Phi\!\left(\Phi^{-1}(p^{*}) + \lambda\right),
+  \label{eq:wang}
+\end{equation}
+%
+where $p^{*}$ is the objective (true) probability of the binary outcome,
+$p^{\mathrm{mkt}}$ is the market-clearing price, $\Phi$ is the standard normal
+CDF, and $\lambda$ is a market-price-of-risk parameter that absorbs systematic
+risk preferences and microstructure frictions. A positive $\lambda$ shifts
+prices toward 0.5 from below and toward 1 from above, capturing both the
+favorite--longshot bias documented by \citet{thaler:1988,snowberg:2010} and the
+risk-neutralization argument of \citet{wang:2000,wang:2002}, which generalizes
+the no-arbitrage pricing of \citet{harrison:1979} to incomplete markets.
+
+\paragraph{Calibration.}
+We estimate $\lambda$ by maximum likelihood on a panel of $N = 291{,}309$
+resolved contracts collected from six platforms. The pooled estimate is
+$\hat\lambda = 0.183$. To capture cross-sectional and lifecycle heterogeneity,
+we additionally fit a hierarchical covariate specification:
+%
+\begin{equation}
+  \lambda_i \;=\; 0.259 \;-\; 0.072\,\ln(1+V_i) \;+\; 0.143\,\ln(1+D_i)
+                    \;-\; 0.477\,\lvert p_i - 0.5 \rvert,
+  \label{eq:lambda}
+\end{equation}
+%
+where $V_i$ is daily traded volume, $D_i$ is days remaining to expiry, and
+$\lvert p_i - 0.5 \rvert$ is contract moneyness. All three covariates have
+signs consistent with the favorite--longshot literature
+\citep{thaler:1988,snowberg:2010,wolfers:2004,manski:2006,ottaviani:2007}: less
+liquid, longer-dated, and far-out-of-the-money contracts exhibit larger risk
+premia. The coefficient estimates and full replication procedure appear in the
+working paper \citep{yang:2026}.
+
+\paragraph{Streaming recalibration.}
+A production trading agent must adapt to regime change without forgetting
+historical structure. \texttt{Oracle3}'s online recalibrator combines the
+batch MLE estimate with an exponentially weighted moving-average (EWMA)
+estimator over recent resolutions, and applies category-level shrinkage so
+sparse subgroups (e.g., a freshly listed event class) inherit prior pooled
+$\lambda$ until enough data accumulates. This bridges the academic batch
+calibration of \citet{yang:2026} with a real-time deployment.
+
+\paragraph{Sizing and risk.}
+Position sizing follows a fractional Kelly criterion \citep{kelly:1956}
+applied to the model-implied edge $p^{*} - p^{\mathrm{mkt}}$, capped by a risk
+budget. Multi-leg arbitrage trades are sized so that worst-case loss across
+all legs respects the agent's drawdown limits.
+
+\section{Implementation}
+\label{sec:impl}
+
+\texttt{Oracle3} is organized as four layers.
+
+\paragraph{1. Pricing engine (\texttt{oracle3/pricing/}).}
+Implements equations \eqref{eq:wang} and \eqref{eq:lambda} as a vectorized
+NumPy/PyTorch module, with the global $\hat\lambda = 0.183$ available as a
+fast path and the hierarchical covariate model used when contract metadata
+are present. The online recalibrator combines batch MLE with a streaming EWMA
+estimator and category shrinkage, so the model adapts to regime change
+without forgetting prior data.
+
+\paragraph{2. Strategy layer (\texttt{oracle3/strategy/}).}
+Eight constraint-based strategies each enforce a probability-axiom invariant
+(cross-market identity, exclusivity bound $P(A) + P(B) \le 1$, implication
+monotonicity, conditional bounds, event-sum unity, and structural
+relationships derived from the calibrated model) and emit signals when
+violations exceed configurable thresholds. Two model-driven strategies trade
+fair-value divergence and a ``premium decay'' lifecycle effect predicted by
+the $D$-coefficient in equation \eqref{eq:lambda}. Statistical-arbitrage
+strategies (cointegration spread, lead-lag) provide complementary signals.
+
+\paragraph{3. Trading core (\texttt{oracle3/core/}, \texttt{oracle3/trader/}).}
+An async event loop dispatches strategy signals to a \texttt{SpreadExecutor}
+that posts multi-leg orders atomically and unwinds via LIFO on partial fills,
+eliminating naked legs. A dual-layer risk manager enforces position,
+drawdown, and exposure limits locally, and additionally calls the Solana
+\texttt{simulateTransaction} RPC for pre-flight on-chain checks before any
+DFlow submission.
+
+\paragraph{4. Infrastructure (\texttt{oracle3/cli/}, \texttt{oracle3/data/}).}
+A Click-based CLI exposes market discovery, live dashboards, backtests, and
+paper-run modes. Snapshot persistence and a Unix-socket control plane enable
+pause/resume/killswitch operations on long-running agents. Solana submissions
+go through Jito bundles, with a Memo-program audit trail for every fill.
+
+\paragraph{Quality and reproducibility.}
+The codebase is type-checked with \texttt{mypy}, linted with \texttt{ruff},
+and validated by 633 unit and integration tests on every push, enforced by
+GitHub Actions. The design has been used to run paper-trading sessions on
+Polymarket and Kalshi, and the pricing engine is shared with the replication
+package of \citet{yang:2026}.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+\texttt{Oracle3} narrows the gap between empirical prediction-market pricing
+research and deployable open-source trading software. By packaging a
+peer-reviewed Wang Transform calibration as a real-time engine, wiring it
+into multi-venue execution with on-chain settlement, and exposing every
+signal through an auditable strategy layer, the library provides a common
+substrate for both empirical research and live experimentation in
+prediction-market microstructure.
+
+\section*{Acknowledgements}
+
+The author thanks the maintainers of the Polymarket, Kalshi, and DFlow APIs
+for documentation; the prediction-market research community whose empirical
+work motivates this software; and contributors who reported issues and
+suggested strategies. Any errors are the author's own.
+
+\section*{Code and data availability}
+
+The complete source code is available at
+\url{https://github.com/YichengYang-Ethan/oracle3} under the Apache~2.0
+license. An archived release with persistent identifier is deposited at
+Zenodo, DOI \href{https://doi.org/10.5281/zenodo.20062549}{10.5281/zenodo.20062549}.
+The companion empirical paper is available as an SSRN working paper:
+\url{https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338}.
+
+\bibliography{paper}
+
+\end{document}
