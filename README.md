@@ -19,6 +19,18 @@ Prediction markets price binary contracts at systematically biased levels — a 
 
 This system deploys the exact $\lambda$ estimates and covariate model from [prediction-market-pricing](https://github.com/YichengYang-Ethan/prediction-market-pricing) (Yang, 2026) as its real-time pricing engine.
 
+## How oracle3 differs from existing prediction-market tools
+
+| | Oracle3 | polymarket-whales | prediction-market-maker | py-clob-client |
+|---|---------|-------------------|-------------------------|----------------|
+| Pricing model | Wang Transform (calibrated MLE) | None | Bid-ask MM | None |
+| Constraint-based arbitrage | 8 strategies | None | None | N/A |
+| Multi-venue | Kalshi + Polymarket + Solana | Polymarket only | Polymarket only | Polymarket only |
+| On-chain execution | Solana via DFlow + Jito | No | No | N/A (SDK) |
+| Working paper | Yang (2026), SSRN | No | No | No |
+| Tests | 633 | 0 | 0 | 50+ |
+| License | Apache 2.0 | MIT | MIT | MIT |
+
 ## Architecture
 
 ```mermaid
