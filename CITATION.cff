@@ -11,6 +11,11 @@ authors:
     orcid: 'https://orcid.org/0009-0000-7973-6931'
 repository-code: 'https://github.com/YichengYang-Ethan/oracle3'
 url: 'https://yichengyang-ethan.github.io/oracle3/'
+doi: 10.5281/zenodo.20062549
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.20062549
+    description: Software DOI (Zenodo) for v1.1.1 and later releases
 abstract: >-
   Oracle3 is an open-source autonomous trading agent that operationalizes the
   Wang Transform pricing model across multiple prediction-market venues
@@ -30,7 +35,7 @@ keywords:
   - autonomous-agent
   - arbitrage
 license: Apache-2.0
-version: 1.1.0
+version: 1.1.1
 date-released: '2026-05-07'
 preferred-citation:
   type: article

@@ -1,0 +1,9 @@
+<svg width="1280" height="640" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1280" height="640" fill="#0a0e27"/>
+  <text x="640" y="200" font-family="JetBrains Mono, monospace" font-size="80" font-weight="bold" fill="white" text-anchor="middle">Oracle3</text>
+  <text x="640" y="280" font-family="sans-serif" font-size="36" fill="#7aa2f7" text-anchor="middle">Wang Transform Pricing for Prediction Markets</text>
+  <text x="640" y="380" font-family="monospace" font-size="32" fill="#a9b1d6" text-anchor="middle">p_market = &#934;(&#934;&#8315;&#185;(p_true) + &#955;&#770;)</text>
+  <text x="640" y="440" font-family="monospace" font-size="48" fill="#9ece6a" text-anchor="middle">&#955;&#770; = 0.183</text>
+  <text x="640" y="520" font-family="sans-serif" font-size="28" fill="#a9b1d6" text-anchor="middle">Kalshi &#183; Polymarket &#183; Solana DFlow</text>
+  <text x="640" y="580" font-family="sans-serif" font-size="22" fill="#565f89" text-anchor="middle">github.com/YichengYang-Ethan/oracle3 &#183; 633 tests &#183; Apache 2.0</text>
+</svg>
