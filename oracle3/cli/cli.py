@@ -387,7 +387,7 @@ def _empty_calibration_rows() -> dict[str, list[float]]:
 def _parse_calibration_row(row: dict[str, str], row_number: int) -> dict[str, float]:
     try:
         price = float(row['price'])
-        outcome = int(row['outcome'])
+        outcome = float(row['outcome'])
     except (TypeError, ValueError) as exc:
         raise click.ClickException(
             f'Invalid price/outcome at CSV row {row_number}'
@@ -397,7 +397,7 @@ def _parse_calibration_row(row: dict[str, str], row_number: int) -> dict[str, fl
         raise click.ClickException(
             f'Invalid price at CSV row {row_number}: expected value in (0, 1)'
         )
-    if outcome not in (0, 1):
+    if outcome not in (0.0, 1.0):
         raise click.ClickException(
             f'Invalid outcome at CSV row {row_number}: expected 0 or 1'
         )
@@ -533,8 +533,14 @@ def calibrate(
             prices=rows['price'],
             spreads=rows['spread'],
         )
-        covariate_names = getattr(mle, '_last_covariate_names', None)
-        initial_beta.extend([0.0] * (len(covariate_names or []) - 1))
+        covariate_names = [
+            'constant',
+            'ln(1+volume)',
+            'ln(1+duration)',
+            '|p-0.5|',
+            'spread',
+        ]
+        initial_beta.extend([0.0] * (covariates.shape[1] - 1))
 
     result = mle.fit(
         prices=rows['price'],
