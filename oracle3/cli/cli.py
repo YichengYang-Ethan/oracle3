@@ -374,6 +374,189 @@ def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool)
     click.echo()
 
 
+def _empty_calibration_rows() -> dict[str, list[float]]:
+    return {
+        'price': [],
+        'outcome': [],
+        'volume': [],
+        'duration_hours': [],
+        'spread': [],
+    }
+
+
+def _parse_calibration_row(row: dict[str, str], row_number: int) -> dict[str, float]:
+    try:
+        price = float(row['price'])
+        outcome = float(row['outcome'])
+    except (TypeError, ValueError) as exc:
+        raise click.ClickException(
+            f'Invalid price/outcome at CSV row {row_number}'
+        ) from exc
+
+    if not 0 < price < 1:
+        raise click.ClickException(
+            f'Invalid price at CSV row {row_number}: expected value in (0, 1)'
+        )
+    if outcome not in (0.0, 1.0):
+        raise click.ClickException(
+            f'Invalid outcome at CSV row {row_number}: expected 0 or 1'
+        )
+
+    parsed = {'price': price, 'outcome': float(outcome)}
+    for optional in ('volume', 'duration_hours', 'spread'):
+        value = row.get(optional)
+        if value not in (None, ''):
+            try:
+                parsed[optional] = float(value)
+            except ValueError as exc:
+                raise click.ClickException(
+                    f'Invalid {optional} at CSV row {row_number}'
+                ) from exc
+    return parsed
+
+
+def _load_calibration_csv(csv_path: str) -> dict[str, list[float]]:
+    import csv
+
+    rows = _empty_calibration_rows()
+
+    with open(csv_path, newline='', encoding='utf-8') as handle:
+        reader = csv.DictReader(handle)
+        if reader.fieldnames is None:
+            raise click.ClickException('CSV file has no header row')
+
+        fieldnames = set(reader.fieldnames)
+        required = {'price', 'outcome'}
+        missing = sorted(required - fieldnames)
+        if missing:
+            raise click.ClickException(
+                f'CSV is missing required column(s): {", ".join(missing)}'
+            )
+
+        for row_number, row in enumerate(reader, start=2):
+            parsed = _parse_calibration_row(row, row_number)
+            rows['price'].append(parsed['price'])
+            rows['outcome'].append(parsed['outcome'])
+            for optional in ('volume', 'duration_hours', 'spread'):
+                if optional in parsed:
+                    rows[optional].append(parsed[optional])
+
+    if not rows['price']:
+        raise click.ClickException('CSV file has no data rows')
+
+    return rows
+
+
+def _mle_result_to_json_dict(result: Any) -> dict[str, Any]:
+    return {
+        'beta': result.beta,
+        'lambda_hat': result.lambda_hat,
+        'se_fisher': result.se_fisher,
+        'se_robust': result.se_robust,
+        'se_cluster': result.se_cluster,
+        'log_likelihood': result.log_likelihood,
+        'n_obs': result.n_obs,
+        'n_params': result.n_params,
+        'converged': result.converged,
+        'aic': result.aic,
+        'bic': result.bic,
+        'pseudo_r2': result.pseudo_r2,
+        'covariate_names': result.covariate_names,
+    }
+
+
+@cli.command()
+@click.option(
+    '--csv',
+    'csv_path',
+    required=True,
+    type=click.Path(exists=True, dir_okay=False),
+    help='Resolved-contract CSV with price and outcome columns.',
+)
+@click.option(
+    '--platform',
+    type=click.Choice(['polymarket', 'kalshi', 'metaculus', 'manifold', 'default']),
+    default='default',
+    show_default=True,
+    help='Platform prior used as the optimizer warm start.',
+)
+@click.option(
+    '--hierarchical',
+    is_flag=True,
+    default=False,
+    help='Fit a covariate model using volume, duration_hours, and spread columns.',
+)
+@click.option('--json', 'as_json', is_flag=True, default=False, help='Output as JSON')
+def calibrate(
+    csv_path: str,
+    platform: str,
+    hierarchical: bool,
+    as_json: bool,
+) -> None:
+    """Estimate Wang Transform lambda from a resolved-contract CSV."""
+    import json as json_lib
+
+    from oracle3.pricing.wang_mle import (
+        LAMBDA_KALSHI,
+        LAMBDA_MANIFOLD,
+        LAMBDA_METACULUS,
+        LAMBDA_POLYMARKET,
+        LAMBDA_POOLED,
+        WangMLE,
+    )
+
+    platform_priors = {
+        'polymarket': LAMBDA_POLYMARKET,
+        'kalshi': LAMBDA_KALSHI,
+        'metaculus': LAMBDA_METACULUS,
+        'manifold': LAMBDA_MANIFOLD,
+        'default': LAMBDA_POOLED,
+    }
+    rows = _load_calibration_csv(csv_path)
+    mle = WangMLE()
+
+    covariates = None
+    covariate_names = None
+    initial_beta: list[float] = [platform_priors[platform]]
+    if hierarchical:
+        optional_columns = ('volume', 'duration_hours', 'spread')
+        missing = [
+            name for name in optional_columns if len(rows[name]) != len(rows['price'])
+        ]
+        if missing:
+            raise click.ClickException(
+                '--hierarchical requires complete CSV column(s): ' + ', '.join(missing)
+            )
+        covariates = mle.build_design_matrix(
+            volumes=rows['volume'],
+            durations_hours=rows['duration_hours'],
+            prices=rows['price'],
+            spreads=rows['spread'],
+        )
+        covariate_names = [
+            'constant',
+            'ln(1+volume)',
+            'ln(1+duration)',
+            '|p-0.5|',
+            'spread',
+        ]
+        initial_beta.extend([0.0] * (covariates.shape[1] - 1))
+
+    result = mle.fit(
+        prices=rows['price'],
+        outcomes=rows['outcome'],
+        covariates=covariates,
+        covariate_names=covariate_names,
+        initial_beta=initial_beta,
+    )
+
+    if as_json:
+        click.echo(json_lib.dumps(_mle_result_to_json_dict(result)))
+        return
+
+    click.echo(result.summary_table())
+
+
 @cli.command()
 @click.option(
     '--keypair-path', default=None, help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)'
