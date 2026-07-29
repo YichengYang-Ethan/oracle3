@@ -58,6 +58,8 @@ def blinks(host: str, port: int) -> None:
 @click.option(
     '--max-events', default=None, type=int, help='Limit events for episode replay.'
 )
+@click.option('--snapshot-json', default=None, type=str, help='Write periodic JSON state snapshot to PATH')
+@click.option('--snapshot-interval', default=5, type=int, show_default=True, help='Seconds between snapshot writes')
 def dashboard(  # noqa: C901
     port: int,
     exchange: str,
@@ -67,10 +69,13 @@ def dashboard(  # noqa: C901
     strategy_kwargs_json: str | None,
     episode_dir: str | None,
     max_events: int | None,
+    snapshot_json: str | None,
+    snapshot_interval: int,
 ) -> None:
     """Launch the web dashboard with paper trading (open browser to http://localhost:PORT)."""
     import asyncio
     import json as json_lib
+    import os
     from decimal import Decimal
     from pathlib import Path
 
@@ -287,12 +292,76 @@ def dashboard(  # noqa: C901
         dash = DashboardServer(engine, port=port)
         dash.start()
 
-        # Start control server
+        # Start control server (Unix socket; gracefully skipped on Windows)
         ctrl = ControlServer(engine)
-        await ctrl.start()
+        try:
+            await ctrl.start()
+        except AttributeError:
+            click.echo('  [–] Control server skipped (Windows — no Unix socket support)')
 
         if coordinator is not None:
             await coordinator.start()
+
+        # --- Snapshot writer (background) ---
+        snapshot_task: asyncio.Task[None] | None = None
+        if snapshot_json:
+            from datetime import datetime, timezone
+
+            async def _write_snapshot() -> None:
+                """Periodically write a JSON state snapshot to PATH (atomically)."""
+                while True:
+                    await asyncio.sleep(snapshot_interval)
+
+                    # Build non-cash positions list
+                    positions_list = [
+                        {
+                            'ticker': pos.ticker.symbol,
+                            'quantity': pos.quantity,
+                            'average_cost': pos.average_cost,
+                            'realized_pnl': pos.realized_pnl,
+                        }
+                        for pos in position_manager.positions.values()
+                        if not isinstance(pos.ticker, CashTicker)
+                    ]
+
+                    # Cash balance
+                    cash_positions = position_manager.get_cash_positions()
+                    cash = cash_positions[0].quantity if cash_positions else Decimal('0')
+
+                    # Last prices (mid-price from order books, YES-side only)
+                    last_prices: dict[str, Decimal] = {}
+                    for ticker in sorted(market_data.order_books, key=lambda t: t.symbol):
+                        if isinstance(ticker, CashTicker):
+                            continue
+                        if getattr(ticker, 'is_no_side', False):
+                            continue
+                        best_bid = market_data.get_best_bid(ticker)
+                        best_ask = market_data.get_best_ask(ticker)
+                        if best_bid is not None and best_ask is not None:
+                            last_prices[ticker.symbol] = (
+                                best_bid.price + best_ask.price
+                            ) / Decimal('2')
+                        elif best_bid is not None:
+                            last_prices[ticker.symbol] = best_bid.price
+                        elif best_ask is not None:
+                            last_prices[ticker.symbol] = best_ask.price
+
+                    snapshot = {
+                        'timestamp': datetime.now(timezone.utc).isoformat(),
+                        'exchange': exchange,
+                        'positions': positions_list,
+                        'cash': cash,
+                        'last_prices': last_prices,
+                    }
+
+                    # Atomic write: tmp → replace
+                    tmp_path = f'{snapshot_json}.tmp'
+                    with open(tmp_path, 'w') as f:
+                        json_lib.dump(snapshot, f, default=str, indent=2)
+                    os.replace(tmp_path, snapshot_json)
+
+            snapshot_task = asyncio.create_task(_write_snapshot())
+            click.echo(f'  [✓] JSON snapshots every {snapshot_interval}s → {snapshot_json}')
 
         mode_label = 'Solana Backtest' if is_backtest else 'Paper Trading'
         click.echo(f'{mode_label} Dashboard running at http://localhost:{port}')
@@ -314,10 +383,15 @@ def dashboard(  # noqa: C901
         except asyncio.CancelledError:
             pass
         finally:
+            if snapshot_task is not None:
+                snapshot_task.cancel()
             if coordinator is not None:
                 await coordinator.stop()
             await engine.stop()
-            await ctrl.stop()
+            try:
+                await ctrl.stop()
+            except Exception:
+                pass
             dash.stop()
 
     try:

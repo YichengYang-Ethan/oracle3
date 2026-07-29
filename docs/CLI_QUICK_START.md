@@ -171,6 +171,21 @@ oracle3 monitor > session_report.txt
 - Reduce terminal window size
 - Use snapshot mode instead of live
 
+### JSON Snapshots
+
+The `dashboard` command can write periodic JSON state snapshots for external monitoring:
+
+```bash
+# Write state snapshots every 5 seconds
+oracle3 dashboard --snapshot-json snapshot.json
+
+# Custom interval (2 seconds)
+oracle3 dashboard --snapshot-json snapshot.json --snapshot-interval 2
+
+# Watch the snapshot file live
+watch -n 1 jq . snapshot.json
+```
+
 ## Next Steps
 
 - Read [Full CLI Documentation](CLI_MONITORING.md) for advanced features
