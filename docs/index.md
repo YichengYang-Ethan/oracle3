@@ -39,8 +39,12 @@ oracle3 dashboard --exchange solana \
 
 Open `http://localhost:3000/live` for the live dashboard.
 
+## Architecture
+
+- [Solana Pre-flight Risk and Submission](architecture.md) — local limits, transaction simulation, Jito fallback, and failure handling
+- [Project Specification](PROJECT_SPECIFICATION.md) — complete system design and module reference
+
 ## Next Steps
 
 - [Quick Start Guide](CLI_QUICK_START.md) — installation and first commands
 - [CLI Monitoring](CLI_MONITORING.md) — monitor your trading sessions
-- [Architecture](PROJECT_SPECIFICATION.md) — system design and module reference
