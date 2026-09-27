@@ -13,6 +13,10 @@
 [![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://yichengyang-ethan.github.io/oracle3/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20062548.svg)](https://doi.org/10.5281/zenodo.20062548)
 
+## Origin and attribution
+
+Oracle3 began as `ulab-uiuc/oracle3`, developed by Haofei Yu at U Lab (University of Illinois Urbana-Champaign) under the MIT License, and it bundles the [`coinjure`](https://github.com/ulab-uiuc/prediction-market-cli) package from the same lab. The strategy, pricing, risk, dashboard, and test layers in this repository were added on top of that base; see [NOTICE](NOTICE) for the retained license text.
+
 ## Why this exists
 
 Prediction markets price binary contracts at systematically biased levels — a true 50/50 contract typically trades around **0.57** (favorite-longshot bias, $\hat{\lambda} \approx 0.183$). Most trading bots ignore this distortion entirely. Oracle3 operationalizes a peer-reviewed pricing model, calibrated on **291,309 resolved contracts** across six venues, to systematically harvest the bias through arbitrage detection and Kelly-sized model trades.
