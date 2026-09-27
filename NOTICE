@@ -1,9 +1,9 @@
 Oracle3
 Copyright 2026 Yicheng Yang
 
-This product includes software originally developed by Haofei Yu at U Lab,
-University of Illinois Urbana-Champaign, and published as ulab-uiuc/oracle3
-under the MIT License. It also bundles the `coinjure` package from
+This product includes software originally developed by Yicheng Yang and
+Haofei Yu at U Lab, University of Illinois Urbana-Champaign, and published as
+ulab-uiuc/oracle3 under the MIT License. It also bundles the `coinjure` package from
 ulab-uiuc/prediction-market-cli (Coinjure), released under the MIT License,
 Copyright (c) 2024 Haofei Yu.
 
