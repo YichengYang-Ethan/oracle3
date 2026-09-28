@@ -1,52 +1,54 @@
 ---
 name: pm-quant-strategy-authoring
-description: 用于把 agent 的量化想法实现为 Strategy 代码，并形成可调参数接口与可验证行为。
+description: Turn an agent's quantitative idea into Strategy code with tunable parameters and verifiable behavior.
 ---
 
 # PM Quant Strategy Authoring
 
-当用户要求“让 agent 自己想策略并写代码”时，使用这个技能。
+Use this skill when the user asks the agent to come up with a strategy and write the code.
 
-## 目标
+## Goals
 
-- 产出可运行的策略类（`Strategy` 子类）
-- 暴露参数（用于 `auto-tune`）
-- 保证 `strategy validate` 与 `backtest` 可执行
+- A runnable strategy class (a `QuantStrategy` subclass).
+- Exposed numeric parameters, so the strategy can be auto-tuned.
+- `strategy validate` and `backtest run` both succeed.
 
-## 代码入口
+## Code entry points
 
-- 基类契约：`oracle3/strategy/strategy.py`
-- 示例策略：`examples/strategies/*.py`, `strategies/*.py`
-- 新策略目录：`strategies/`
+- Base class contract: `oracle3/strategy/quant_strategy.py` (`QuantStrategy`).
+- For LLM-driven strategies use `AgentStrategy` instead (see `pm-agent-strategy-authoring`).
+- Example strategies: `examples/strategies/*.py`, `strategies/*.py`.
+- New strategies go in `strategies/`.
 
-## 实施流程
+## Steps
 
-1. 创建骨架
+1. Create the skeleton
 
-- `oracle3 strategy create --output strategies/<name>.py --class-name <ClassName>`
+- `oracle3 strategy create --output strategies/<name>.py --class-name <ClassName> --type quant`
 
-2. 实现策略
+2. Implement the strategy
 
-- 在 `process_event` 中只处理你需要的事件类型（常见是 `PriceChangeEvent`）
-- 参数放在构造函数（数值参数用于调优）
-- 决策时调用 `trader.place_order(...)`
-- 用 `self.record_decision(...)` 记录动作和信号
+- In `process_event`, handle only the event types you need (usually `PriceChangeEvent`).
+- Put parameters in the constructor; numeric parameters are what tuning searches over.
+- Call `trader.place_order(...)` to act.
+- Record actions and signals with `self.record_decision(...)`.
 
-3. 快速验证
+3. Quick validation
 
 - `oracle3 strategy validate --strategy-ref strategies/<name>.py:<ClassName> --strategy-kwargs-json '<json>' --dry-run --events 10 --json`
 
-4. 单点回测验证
+4. Single-market backtest
 
 - `oracle3 backtest run --history-file <history.jsonl> --market-id <M> --event-id <E> --strategy-ref strategies/<name>.py:<ClassName> --strategy-kwargs-json '<json>' --json`
 
-5. 参数调优准备
+5. Prepare for tuning
 
-- 参数要有明确意义、边界、默认值
-- 参数类型保持可 JSON 序列化
+- Every parameter has a clear meaning, bounds and a default.
+- Parameter types stay JSON-serializable.
+- Tune with `oracle3 research auto-tune --param-grid-json '<json>' ...`.
 
-## Hard Rules
+## Hard rules
 
-- 不把策略逻辑写死在命令行脚本里，必须落到独立策略文件。
-- 不使用未来信息（禁止 look-ahead）。
-- 必须可复现：策略文件路径、类名、kwargs、命令都要明确。
+- Do not hard-code strategy logic in a command-line script; it belongs in its own strategy file.
+- Never use future information (no look-ahead).
+- Keep runs reproducible: record the strategy file path, class name, kwargs and command.
