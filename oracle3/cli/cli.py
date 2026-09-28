@@ -252,7 +252,7 @@ def dashboard(  # noqa: C901
 
         # --- Feature 7: Flash Loan Arbitrage ---
         try:
-            from oracle3.trader.flash_loan import FlashLoanArbitrage
+            from oracle3.experimental.flash_loan import FlashLoanArbitrage
             kp_for_features = onchain_logger._keypair if onchain_logger else None
             flash_loan = FlashLoanArbitrage(
                 keypair=kp_for_features,

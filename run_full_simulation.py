@@ -398,7 +398,7 @@ async def run_simulation() -> None:  # noqa: C901
     # ==================================================================
     section('Step 7: Feature 7 — 闪电贷套利')
 
-    from oracle3.trader.flash_loan import FlashLoanArbitrage
+    from oracle3.experimental.flash_loan import FlashLoanArbitrage
 
     flash_loan = FlashLoanArbitrage(
         keypair=None, rpc_url=RPC_URL,

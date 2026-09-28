@@ -6,7 +6,7 @@ from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from oracle3.trader.flash_loan import FlashLoanArbitrage, FlashLoanResult
+from oracle3.experimental.flash_loan import FlashLoanArbitrage, FlashLoanResult
 
 
 class MockKeypair:

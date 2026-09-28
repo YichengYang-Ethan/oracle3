@@ -166,5 +166,5 @@ Cross-platform market matching pipeline. Discovers relations (implication, exclu
 | 4 | MEV Protection (Jito) | `trader/jito_submitter.py` |
 | 5 | Agent Reputation | `onchain/` |
 | 6 | Multi-Agent Pipeline | `agent/`, `strategy/contrib/multi_agent_strategy.py` |
-| 7 | Flash Loan Arbitrage | `trader/flash_loan.py` |
+| 7 | Flash Loan Arbitrage (experimental prototype) | `experimental/flash_loan.py` |
 | 8 | Atomic Multi-Leg Trader | `trader/atomic_trader.py` |

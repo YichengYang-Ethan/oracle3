@@ -1,6 +1,6 @@
 {
   "title": "Oracle3: Autonomous Prediction Market Trading Agent",
-  "description": "Open-source Python framework that operationalizes a Wang Transform pricing engine — calibrated by hierarchical maximum-likelihood estimation on 291,309 resolved binary contracts — and drives automated trading across Kalshi, Polymarket, and Solana DFlow. Includes eight constraint-based arbitrage strategies, model Greeks, Kelly-sized execution, dual-layer risk management, and on-chain audit trails via Jito bundles and the Solana Memo program.",
+  "description": "Open-source Python framework that operationalizes a Wang Transform pricing engine — calibrated by hierarchical maximum-likelihood estimation on 291,309 resolved binary contracts — and drives automated trading across Kalshi, Polymarket, and Solana DFlow. Includes six constraint-based and two statistical-arbitrage strategies, two model-driven strategies, model Greeks, Kelly-sized execution, dual-layer risk management, and on-chain audit trails via Jito bundles and the Solana Memo program.",
   "creators": [
     {
       "name": "Yang, Yicheng",

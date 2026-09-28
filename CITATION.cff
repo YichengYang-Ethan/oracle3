@@ -20,9 +20,9 @@ abstract: >-
   Oracle3 is an open-source autonomous trading agent that operationalizes the
   Wang Transform pricing model across multiple prediction-market venues
   (Kalshi, Polymarket, Solana DFlow). It includes a hierarchical MLE estimator
-  calibrated on 291,309 resolved contracts, eight constraint-based arbitrage
-  strategies, model Greeks, Kelly-sized execution, and on-chain Solana
-  trading via Jito bundles.
+  calibrated on 291,309 resolved contracts, six constraint-based and two
+  statistical-arbitrage strategies, model Greeks, Kelly-sized execution, and
+  on-chain Solana trading via Jito bundles.
 keywords:
   - prediction-markets
   - wang-transform

@@ -7,11 +7,11 @@
 ![Solana](https://img.shields.io/badge/solana-mainnet--beta-9945FF?logo=solana&logoColor=white)
 ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
-**Oracle3** is an autonomous on-chain trading agent for prediction markets on Solana, Polymarket, and Kalshi. It combines LLM reasoning, quantitative signals, and atomic on-chain execution into a single autonomous system — no human in the loop.
+**Oracle3** is an autonomous trading agent for prediction markets on Solana, Polymarket, and Kalshi. It combines a Wang-Transform pricing engine, quantitative signals, and LLM reasoning across a multi-venue execution layer with pause/resume/killswitch control. Currently paper-traded — see [Status & Limitations](https://github.com/YichengYang-Ethan/oracle3#status--limitations).
 
 ## Highlights
 
-- **8 on-chain agent capabilities** — arbitrage, risk management, MEV protection, reputation, flash loans, and more
+- **On-chain execution layer** — Solana/DFlow trading, Jito bundle submission (best-effort MEV protection with public-RPC fallback), and a Memo-program audit trail (flash-loan arbitrage and the multi-agent pipeline are experimental prototypes, not on the trading path)
 - **AI + Quant hybrid** — LLM agent strategies via OpenAI Agents SDK alongside adaptive quantitative strategies
 - **Multi-exchange** — Solana/DFlow, Polymarket (CLOB API), Kalshi (REST API)
 - **Cross-platform arbitrage** — detect and trade price discrepancies across exchanges

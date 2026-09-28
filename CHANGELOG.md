@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Documentation accuracy pass** — corrected claims to match the code exactly:
+  - "peer-reviewed pricing model" → the Wang Transform (Wang 2000) calibrated in the author's working paper (Yang 2026, SSRN). The calibration is an unrefereed working paper; only the transform itself is from the peer-reviewed Wang (2000).
+  - Strategy count restated as **6 constraint-based + 2 statistical-arbitrage + 2 model-driven** (10 total), replacing the ambiguous "8 constraint-based arbitrage strategies" phrasing in the README, paper, `CITATION.cff`, and `.zenodo.json`.
+  - Removed an inaccurate "vectorized NumPy/PyTorch module" description of the pricing engine from the preprint — the deployed path is dependency-light pure Python; NumPy/SciPy are used only by the optional batch MLE estimator.
+  - Softened `SpreadExecutor` ("being wired into the multi-leg strategies") and MEV-protection ("best-effort, with public-RPC fallback") descriptions to match their implemented status.
+  - Corrected the hierarchical `D` covariate description from "days remaining to expiry" to total contract duration (hours), matching the estimated model.
+- Added a **Status & Limitations** section to the README (paper-traded status, fee economics, roadmap to live).
+
+### Fixed
+
+- **Removed fabricated profit accounting** from the flash-loan prototype, which previously booked a placeholder `amount * 0.005` profit on a Memo-only transaction.
+
+### Moved
+
+- Relocated the flash-loan arbitrage prototype to `oracle3/experimental/` and labeled the multi-agent pipeline and on-chain reputation modules as non-production prototypes.
+
 ## [1.1.0] - 2026-03-28
 
 ### Added

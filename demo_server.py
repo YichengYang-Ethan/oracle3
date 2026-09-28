@@ -589,7 +589,7 @@ class DemoSimulation:
         self._log('Feature 7: Executing flash loan arbitrage...')
 
         try:
-            from oracle3.trader.flash_loan import FlashLoanArbitrage
+            from oracle3.experimental.flash_loan import FlashLoanArbitrage
 
             with self._lock:
                 max_borrow = self.params['max_borrow']

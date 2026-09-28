@@ -84,14 +84,14 @@ Click **Start new submission**. Choose:
   > bias. Despite a long literature documenting this distortion, most
   > open-source trading bots ignore it, treating market prices as unbiased
   > estimates of probability. Oracle3 is a Python framework that
-  > operationalizes a peer-reviewed risk-neutral pricing model for binary
+  > operationalizes a risk-neutral pricing model for binary
   > outcome contracts and uses it to drive automated trading across multiple
   > venues (Kalshi, Polymarket, and Solana-based DFlow). At its core is a
   > Wang Transform calibrated by maximum-likelihood estimation on 291,309
   > resolved contracts spanning six platforms, with hierarchical covariates
-  > for volume, days-to-expiry, and contract moneyness. The library exposes
-  > the model as a fair-value engine and pairs it with eight constraint-based
-  > arbitrage strategies, statistical-arbitrage strategies, model-Greek-
+  > for volume, contract duration, and contract moneyness. The library exposes
+  > the model as a fair-value engine and pairs it with six constraint-based
+  > arbitrage strategies, two statistical-arbitrage strategies, model-Greek-
   > driven sizing, and a risk manager - all wired into an event-driven async
   > trading core with snapshot persistence, killswitch support, and on-chain
   > audit trails. Source code is available at

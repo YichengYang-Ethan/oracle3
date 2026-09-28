@@ -1,9 +1,14 @@
-"""Flash loan arbitrage — atomic borrow → buy → sell → repay.
+"""Flash loan arbitrage — EXPERIMENTAL PROTOTYPE, NOT PRODUCTION.
 
-Uses DeFi lending protocols (MarginFi/Solend) to borrow, execute
-an arb trade, and repay within a single Solana transaction.
+STATUS: skeleton. The transaction built by this module contains only a Solana
+Memo instruction documenting intent — it does **not** contain real borrow,
+buy, sell, or repay CPI instructions for any lending protocol or DEX. It
+therefore does not execute arbitrage and does not realize profit. The
+``execute_flash_arbitrage`` entry point is disabled and returns a
+not-implemented result rather than submitting a transaction or booking a
+placeholder profit.
 
-Agent tool: execute_flash_arbitrage(market_a, market_b, amount) -> dict
+Kept for design reference only. Do not wire into the trading path.
 """
 
 from __future__ import annotations
