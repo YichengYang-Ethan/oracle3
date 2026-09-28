@@ -44,7 +44,8 @@ from oracle3.trader.types import TradeSide
 
 logger = logging.getLogger(__name__)
 
-# Conservative per-side fee estimate (0.5%)
+# Flat per-side fee per contract (0.005). This is below the venues' taker
+# fees at mid prices; oracle3.fees implements the published schedules.
 _FEE_PER_SIDE = Decimal('0.005')
 
 

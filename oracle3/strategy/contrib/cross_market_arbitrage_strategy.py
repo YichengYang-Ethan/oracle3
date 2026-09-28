@@ -3,12 +3,13 @@
 Detects same-event price discrepancies across prediction market platforms
 and trades when the spread exceeds a configurable threshold. Uses a
 position state machine to manage entries and exits, and applies
-conservative per-side fee modeling for accurate edge calculation.
+a flat per-side fee constant (below venue taker fees at mid prices; see oracle3.fees).
 
 Agent tool: find_arbitrage_opportunities() -> list[dict]
 
 v2 improvements over v1:
-- Per-side fee modeling (conservative 0.5% per side, net_edge = gross - 2*fee)
+- Per-side fee constant (0.005 per side, net_edge = gross - 2*fee); see oracle3.fees
+  for the venues' published schedules
 - Position state machine (flat -> long_a_short_b / long_b_short_a -> flat)
 - Exit logic when spread collapses (not just entry)
 - Best bid/ask from order books instead of just last price
@@ -33,7 +34,8 @@ from oracle3.trader.types import TradeSide
 
 logger = logging.getLogger(__name__)
 
-# Conservative fee estimate per side (buy + sell round-trip = 2x this)
+# Flat fee per side per contract (round trip = 2x this). Below the venues'
+# taker fees at mid prices; oracle3.fees implements the published schedules.
 _FEE_PER_SIDE = Decimal('0.005')
 
 _STOPWORDS = frozenset(
@@ -189,7 +191,7 @@ class CrossMarketArbitrageStrategy(QuantStrategy):
     similarity, and places arb trades when the spread exceeds ``min_edge``.
 
     v2 adds:
-    - Per-side fee modeling (conservative 0.5% per side default)
+    - Per-side fee constant (0.005 per side by default; see oracle3.fees)
     - Position state machine with proper entry and exit
     - Exit logic when spread collapses below ``exit_threshold``
     - Best bid/ask order book prices for accurate edge calculation
@@ -222,7 +224,8 @@ class CrossMarketArbitrageStrategy(QuantStrategy):
         cooldown_seconds:
             Minimum seconds between arb entries on the same pair.
         fee_per_side:
-            Conservative fee estimate per side (default 0.5% = 0.005).
+            Flat fee per side per contract (default 0.005). Venue taker fees are
+            higher at mid prices; see oracle3.fees.
             Total round-trip fee = 2 * fee_per_side.
         min_similarity:
             Minimum name similarity score (0-1) for cross-platform matching.
