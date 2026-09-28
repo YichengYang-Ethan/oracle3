@@ -4,6 +4,7 @@ from typing import Any
 
 import click
 
+from oracle3 import __version__
 from oracle3.cli.agent_commands import backtest, live, paper, strategy
 from oracle3.cli.data_commands import data
 from oracle3.cli.market_commands import market
@@ -14,7 +15,7 @@ from oracle3.cli.trade_commands import trade
 
 
 @click.group()
-@click.version_option(version='1.0.0')
+@click.version_option(version=__version__)
 def cli() -> None:
     """Oracle3 - paper-trading engine for prediction markets on Kalshi, Polymarket, and Solana."""
     pass

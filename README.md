@@ -104,6 +104,8 @@ For Claude Desktop, Cursor and other clients that read an `mcpServers` block:
 
 No tool can place a real order. The server imports no authenticated trader.
 
+If your client ran oracle3 1.2.0, which failed to start with mcp 2.x, refresh uv's cached copy once with `uvx --refresh oracle3 mcp`.
+
 ### Agent skills
 
 [`skills/`](skills/) (mirrored in `.claude/skills/` and `.agent/skills/`) holds step-by-step instructions for agents:

@@ -19,18 +19,21 @@ or over streamable HTTP::
 from __future__ import annotations
 
 import argparse
+import functools
+import inspect
 import logging
+from collections.abc import Callable
 from decimal import Decimal
 from typing import Any, Literal
 
-from mcp.server.fastmcp import FastMCP
+import httpx
 from mcp.types import ToolAnnotations
 from pydantic import BaseModel, Field
 
 from oracle3 import __version__
 from oracle3.arbitrage import RELATIONS, Quote
 from oracle3.arbitrage import check_constraint as _check
-from oracle3.fees import KalshiSchedule, PolymarketSchedule
+from oracle3.fees import KalshiSchedule, PolymarketSchedule, UnsupportedFeeSchedule
 from oracle3.mcp_server import venues
 from oracle3.mcp_server.paper import PaperLedger
 from oracle3.pricing.distortion import ProbitDistortion
@@ -61,16 +64,60 @@ Fees follow each market's own schedule from the venue API: Kalshi taker
 Polymarket taker rate*C*p*(1-p), Polymarket makers free.
 """
 
-mcp = FastMCP(
-    'oracle3',
-    instructions=INSTRUCTIONS,
-    website_url='https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/',
-)
-# FastMCP has no version argument; without this the SDK's own version is reported.
-mcp._mcp_server.version = __version__
+WEBSITE = 'https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/'
+
+try:  # mcp >= 2 renamed FastMCP to MCPServer and takes the version directly
+    from mcp.server.mcpserver import MCPServer
+    from mcp.server.mcpserver.exceptions import ToolError
+
+    mcp: Any = MCPServer(
+        'oracle3', instructions=INSTRUCTIONS, website_url=WEBSITE, version=__version__
+    )
+except ImportError:  # mcp 1.x
+    from mcp.server.fastmcp import FastMCP  # type: ignore[attr-defined]
+    from mcp.server.fastmcp.exceptions import ToolError  # type: ignore
+
+    mcp = FastMCP('oracle3', instructions=INSTRUCTIONS, website_url=WEBSITE)
+    # FastMCP has no version argument; without this the SDK's own version is reported.
+    mcp._mcp_server.version = __version__
 
 # One INFO line per venue request drowns out the protocol traffic on stderr.
 logging.getLogger('httpx').setLevel(logging.WARNING)
+
+# Errors an agent can act on: a venue call failed, an input was out of range, or a
+# market uses a fee schedule we cannot price. mcp 2.x hides the message of any
+# exception that is not a ToolError, so these are re-raised as ToolError.
+_USER_ERRORS = (
+    venues.VenueError,
+    UnsupportedFeeSchedule,
+    ValueError,
+    KeyError,
+    ArithmeticError,  # e.g. decimal.InvalidOperation for a NaN size
+    httpx.InvalidURL,  # a market id that cannot form a URL
+)
+
+
+def _agent_errors(fn: Callable[..., Any]) -> Callable[..., Any]:
+    if inspect.iscoroutinefunction(fn):
+
+        @functools.wraps(fn)
+        async def async_wrapper(*args: Any, **kwargs: Any) -> Any:
+            try:
+                return await fn(*args, **kwargs)
+            except _USER_ERRORS as exc:
+                raise ToolError(str(exc)) from exc
+
+        return async_wrapper
+
+    @functools.wraps(fn)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        try:
+            return fn(*args, **kwargs)
+        except _USER_ERRORS as exc:
+            raise ToolError(str(exc)) from exc
+
+    return wrapper
+
 
 READ = ToolAnnotations(readOnlyHint=True, openWorldHint=True)
 PURE = ToolAnnotations(readOnlyHint=True, idempotentHint=True, openWorldHint=False)
@@ -137,6 +184,7 @@ def _quote_dict(q: Quote) -> dict[str, Any]:
 
 
 @mcp.tool(annotations=READ)
+@_agent_errors
 async def search_markets(
     venue: Venue, query: str = '', limit: int = 20, series_ticker: str = ''
 ) -> dict[str, Any]:
@@ -146,12 +194,14 @@ async def search_markets(
 
 
 @mcp.tool(annotations=READ)
+@_agent_errors
 async def get_market(venue: Venue, market_id: str) -> dict[str, Any]:
     """Market details: title, best prices, volume, close time and (Polymarket) fee schedule and outcomes."""
     return await venues.market(venue, market_id)
 
 
 @mcp.tool(annotations=READ)
+@_agent_errors
 async def get_orderbook(
     venue: Venue, market_id: str, depth: int = 10
 ) -> dict[str, Any]:
@@ -160,12 +210,14 @@ async def get_orderbook(
 
 
 @mcp.tool(annotations=READ)
+@_agent_errors
 async def get_quote(venue: Venue, market_id: str) -> dict[str, Any]:
     """Best bid and ask on YES and NO plus the fee schedule the venue reports for this market."""
     return _quote_dict(await venues.quote(venue, market_id))
 
 
 @mcp.tool(annotations=PURE)
+@_agent_errors
 def trading_fee(
     venue: Venue,
     price: float,
@@ -194,6 +246,7 @@ def trading_fee(
 
 
 @mcp.tool(annotations=PURE)
+@_agent_errors
 def check_constraint(
     relation: Relation,
     quotes: list[QuoteInput],
@@ -221,6 +274,7 @@ def check_constraint(
 
 
 @mcp.tool(annotations=READ)
+@_agent_errors
 async def check_constraint_live(
     relation: Relation,
     markets: list[MarketRef],
@@ -235,12 +289,14 @@ async def check_constraint_live(
 
 
 @mcp.tool(annotations=PURE)
+@_agent_errors
 def list_relation_types() -> dict[str, Any]:
     """Supported relations and the probability bound each one enforces."""
     return {'relations': RELATIONS}
 
 
 @mcp.tool(annotations=PURE)
+@_agent_errors
 def fair_value(market_price: float, lam: float = 0.183) -> dict[str, Any]:
     """Probability implied by a market price under the Wang transform p_mkt = Phi(Phi^-1(p) + lam).
 
@@ -259,6 +315,7 @@ def fair_value(market_price: float, lam: float = 0.183) -> dict[str, Any]:
 
 
 @mcp.tool(annotations=LOCAL_READ)
+@_agent_errors
 def list_relations(
     market_id: str = '', spread_type: str = '', status: str = ''
 ) -> dict[str, Any]:
@@ -279,6 +336,7 @@ def list_relations(
 
 
 @mcp.tool(annotations=PAPER)
+@_agent_errors
 async def paper_order(
     venue: Venue,
     market_id: str,
@@ -301,12 +359,14 @@ async def paper_order(
 
 
 @mcp.tool(annotations=LOCAL_READ)
+@_agent_errors
 def paper_portfolio() -> dict[str, Any]:
     """Cash, positions and fill count in the local paper ledger."""
     return PaperLedger().portfolio()
 
 
 @mcp.tool(annotations=PAPER_RESET)
+@_agent_errors
 def paper_reset(confirm: bool = False) -> dict[str, Any]:
     """Erase the paper ledger and restore starting cash. Requires confirm=true."""
     if not confirm:

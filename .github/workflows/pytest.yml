@@ -41,3 +41,20 @@ jobs:
           fail_ci_if_error: false
           verbose: true
           token: ${{ secrets.CODECOV_TOKEN }}
+
+  MCP-latest-SDK:
+    # The locked environment pins mcp 1.x; fresh installs resolve the newest mcp.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install oracle3 with the newest mcp SDK
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e . "mcp>=2" pytest "pytest-asyncio<0.24" pytest-mock hypothesis
+      - name: Test the MCP server, fee schedules and arbitrage checks
+        run: |
+          pytest -o addopts="" tests/test_mcp_server.py tests/test_fees.py tests/test_arbitrage.py

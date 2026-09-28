@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2026-09-28
+
+### Fixed
+
+- The MCP server failed to start in fresh installs: `openai-agents` now allows `mcp` 2.x, where `FastMCP` was renamed `MCPServer`. The server supports both SDK versions and a CI job tests against the newest SDK.
+- Tool errors (venue failures, out-of-range inputs, unsupported fee schedules) are raised as `ToolError`, so their messages reach the agent under mcp 2.x instead of a generic "Error executing tool".
+- `oracle3 --version` printed a hard-coded 1.0.0; it now reports the package version.
+- `mcp` (>=1.19,<3) is now a core dependency instead of arriving only through `openai-agents`. The short-lived `mcp` extra is gone; `pip install oracle3` includes the server.
+- If a client cached 1.2.0, run `uvx --refresh oracle3 mcp` once to pick up the fix.
+
 ## [1.2.0] - 2026-09-28
 
 ### Added

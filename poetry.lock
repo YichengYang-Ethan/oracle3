@@ -5237,9 +5237,8 @@ type = ["pytest-mypy"]
 [extras]
 blinks = ["fastapi", "uvicorn"]
 llm = ["litellm"]
-mcp = ["mcp"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10, <4.0"
-content-hash = "92db337dfe13113f1d9b68405c7c9231e6fd2403a3746c3b07a8466d5f36f1b6"
+content-hash = "42a0a45d345a4437bc125b4edf151c3a5d6947177e85066ddf79a9318c011b2e"

@@ -132,13 +132,37 @@ def mocked_venues(tmp_path, monkeypatch):
     venues.set_transport(None)
 
 
-async def call(name, **arguments):
-    result = await mcp.call_tool(name, arguments)
-    content, structured = result if isinstance(result, tuple) else (result, None)
+def _unwrap(result):
+    """Normalize call_tool output across mcp 1.x (tuple) and 2.x (CallToolResult)."""
+    if isinstance(result, tuple):
+        content, structured = result
+        is_error = False
+    else:
+        # mcp 1.x uses camelCase attributes; mcp 2.x uses snake_case with aliases.
+        content = getattr(result, 'content', result)
+        structured = getattr(result, 'structuredContent', None)
+        if structured is None:
+            structured = getattr(result, 'structured_content', None)
+        is_error = bool(
+            getattr(result, 'isError', None) or getattr(result, 'is_error', False)
+        )
+    if is_error:
+        raise RuntimeError(content[0].text if content else 'tool error')
     data = structured if structured is not None else json.loads(content[0].text)
     if isinstance(data, dict) and set(data) == {'result'}:
         return data['result']
     return data
+
+
+async def call(name, **arguments):
+    return _unwrap(await mcp.call_tool(name, arguments))
+
+
+async def test_server_reports_package_version():
+    import oracle3
+
+    server = getattr(mcp, '_lowlevel_server', None) or mcp._mcp_server
+    assert server.version == oracle3.__version__
 
 
 async def test_tool_surface_has_no_live_trading():
@@ -161,7 +185,7 @@ async def test_tool_surface_has_no_live_trading():
     read_only = {
         t.name
         for t in await mcp.list_tools()
-        if t.annotations and t.annotations.readOnlyHint
+        if t.annotations and t.annotations.model_dump(by_alias=True).get('readOnlyHint')
     }
     assert {'paper_order', 'paper_reset'}.isdisjoint(read_only)
 
@@ -269,10 +293,9 @@ async def test_paper_order_respects_limit_and_reset_needs_confirmation():
 
 
 async def test_venue_errors_surface_as_tool_errors():
-    from mcp.server.fastmcp.exceptions import ToolError
-
-    with pytest.raises(ToolError):
-        await mcp.call_tool('get_market', {'venue': 'kalshi', 'market_id': 'MISSING'})
+    # The venue's message must reach the agent under both SDK versions.
+    with pytest.raises(Exception, match='HTTP 404'):
+        await call('get_market', venue='kalshi', market_id='MISSING')
 
 
 def test_registry_manifest_matches_package():
@@ -288,3 +311,8 @@ def test_registry_manifest_matches_package():
     assert len(manifest['description']) <= 100
     readme = (root / 'README.md').read_text()
     assert f"mcp-name: {manifest['name']}" in readme
+
+
+async def test_non_finite_size_is_a_readable_error():
+    with pytest.raises(Exception, match='quantity|Invalid|NaN|nan'):
+        await call('trading_fee', venue='kalshi', price=0.5, contracts=float('nan'))

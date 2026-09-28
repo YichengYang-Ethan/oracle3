@@ -9,7 +9,7 @@ Use this skill when the user asks whether related markets are mispriced relative
 
 ## Tools
 
-MCP server (`pip install "oracle3[mcp]"`, then run `oracle3-mcp`):
+MCP server (`pip install oracle3`, then run `oracle3-mcp`):
 
 - `search_markets`, `get_quote`, `get_orderbook` to find markets and read executable prices.
 - `check_constraint_live` to fetch quotes and fee schedules and evaluate a relation.
