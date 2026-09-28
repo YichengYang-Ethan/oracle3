@@ -5,17 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.2.0] - 2026-09-28
+
+### Added
+
+- **MCP server** (`oracle3 mcp`, `oracle3-mcp`) with 13 tools: market search, market details with resolution rules, order books, quotes with each market's fee schedule, offline and live no-arbitrage checks, fee calculator, Wang-transform fair value, local relation store, and a local paper-trading ledger. No tool can place a real order. Listed in the MCP Registry as `io.github.YichengYang-Ethan/oracle3` via `server.json`.
+- **`oracle3.fees`**: Kalshi (effective July 7, 2026) and Polymarket taker and maker fee schedules as published, with per-market schedules read from each venue's API.
+- **`oracle3.arbitrage`**: static checks for implication, exclusivity, complement, same-event and event-sum relations, returning the cheapest guaranteed-payoff basket with per-leg fees and the edge before and after fees.
+- **Research note** `docs/research/fee-frontier.md` and `scripts/fee_frontier.py`: break-even violations under the published fee schedules.
+- `AGENTS.md`, `llms.txt`, `codemeta.json`, a `pm-constraint-arbitrage` agent skill, and a docs page for the MCP server.
 
 ### Changed
 
+- Repository renamed to `oracle3-prediction-market-agent`; the PyPI package and import name stay `oracle3`.
+- Project description unified across the README, PyPI, GitHub, `CITATION.cff`, `.zenodo.json` and the docs site.
+- `oracle3 market list/search/info` read Kalshi's `*_dollars` price fields and Polymarket's search endpoint. Kalshi prices had been returning 0 since the move to dollar fields, and Polymarket search only scanned the top 100 events.
+- Agent skills translated to English and checked against the current CLI (`research features`, `research labels`, `research discover-alpha`, `trade get-state` and `trade swap-strategy` no longer exist).
+- `run_full_simulation.py` translated to English; its docstring now states which inputs are simulated.
+- Strategy comments no longer call the flat 0.005 per-side fee "conservative"; it is below the venues' taker fees at mid prices.
 - **Documentation accuracy pass** — corrected claims to match the code exactly:
   - "peer-reviewed pricing model" → the Wang Transform (Wang 2000) calibrated in the author's working paper (Yang 2026, SSRN). The calibration is an unrefereed working paper; only the transform itself is from the peer-reviewed Wang (2000).
   - Strategy count restated as **6 constraint-based + 2 statistical-arbitrage + 2 model-driven** (10 total), replacing the ambiguous "8 constraint-based arbitrage strategies" phrasing in the README, paper, `CITATION.cff`, and `.zenodo.json`.
   - Removed an inaccurate "vectorized NumPy/PyTorch module" description of the pricing engine from the preprint — the deployed path is dependency-light pure Python; NumPy/SciPy are used only by the optional batch MLE estimator.
   - Softened `SpreadExecutor` ("being wired into the multi-leg strategies") and MEV-protection ("best-effort, with public-RPC fallback") descriptions to match their implemented status.
   - Corrected the hierarchical `D` covariate description from "days remaining to expiry" to total contract duration (hours), matching the estimated model.
-- Added a **Status & Limitations** section to the README (paper-traded status, fee economics, roadmap to live).
+- Added a verified / not-demonstrated section to the README (paper-traded status, fee economics, roadmap).
 
 ### Fixed
 
@@ -98,4 +112,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **CI/CD**: pytest (553 tests), ruff, mypy, codespell, MkDocs documentation site
 - **Interactive demo script** (`demo.sh`)
 
-[1.0.0]: https://github.com/YichengYang-Ethan/oracle3/releases/tag/v1.0.0
+[1.0.0]: https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/releases/tag/v1.0.0

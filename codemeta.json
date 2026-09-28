@@ -1,0 +1,70 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Oracle3",
+  "description": "Open-source paper-trading engine and MCP server for prediction markets. Checks whether prices of related event contracts on Kalshi and Polymarket violate probability bounds after each venue's published fees, and paper-trades the baskets that survive under pre-trade risk limits.",
+  "version": "1.2.0",
+  "softwareVersion": "1.2.0",
+  "dateModified": "2026-09-28",
+  "license": "https://spdx.org/licenses/Apache-2.0",
+  "codeRepository": "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent",
+  "url": "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/",
+  "issueTracker": "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues",
+  "downloadUrl": "https://pypi.org/project/oracle3/",
+  "identifier": "https://doi.org/10.5281/zenodo.20062548",
+  "programmingLanguage": {
+    "@type": "ComputerLanguage",
+    "name": "Python",
+    "version": ">=3.10"
+  },
+  "runtimePlatform": "Python 3.10+",
+  "operatingSystem": [
+    "Linux",
+    "macOS",
+    "Windows"
+  ],
+  "developmentStatus": "active",
+  "applicationCategory": "Finance; Quantitative research; AI agent tooling",
+  "keywords": [
+    "prediction markets",
+    "Kalshi",
+    "Polymarket",
+    "arbitrage",
+    "no-arbitrage",
+    "event contracts",
+    "transaction costs",
+    "paper trading",
+    "Model Context Protocol",
+    "MCP server",
+    "AI agents",
+    "quantitative finance",
+    "market microstructure"
+  ],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Yicheng",
+      "familyName": "Yang",
+      "email": "yy85@illinois.edu",
+      "@id": "https://orcid.org/0009-0000-7973-6931",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "University of Illinois Urbana-Champaign"
+      }
+    }
+  ],
+  "copyrightHolder": [
+    {
+      "@type": "Person",
+      "givenName": "Haofei",
+      "familyName": "Yu",
+      "description": "Copyright holder of the original U Lab portions (MIT License); see NOTICE."
+    }
+  ],
+  "isBasedOn": [
+    "https://github.com/ulab-uiuc/prediction-market-cli"
+  ],
+  "referencePublication": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338",
+  "readme": "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/blob/main/README.md",
+  "softwareHelp": "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/"
+}

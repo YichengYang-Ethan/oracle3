@@ -133,6 +133,6 @@ echo -e "  ${C_PURPLE}Shareable${C_RESET}        Solana Blinks for URL-based tra
 echo ""
 echo -e "${C_BLUE}${C_BOLD}  ──────────────────────────────────────────────${C_RESET}"
 echo -e "${C_BLUE}${C_BOLD}   Exploring Crypto & Prediction Markets${C_RESET}"
-echo -e "${C_BLUE}${C_BOLD}   https://github.com/YichengYang-Ethan/oracle3${C_RESET}"
+echo -e "${C_BLUE}${C_BOLD}   https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent${C_RESET}"
 echo -e "${C_BLUE}${C_BOLD}  ──────────────────────────────────────────────${C_RESET}"
 echo ""

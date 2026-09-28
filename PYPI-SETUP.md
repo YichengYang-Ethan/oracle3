@@ -14,7 +14,7 @@ Reference: <https://docs.pypi.org/trusted-publishers/>
 
 - The PyPI project name `oracle3` is currently **available**
   (verified on 2026-05-06 via `https://pypi.org/simple/oracle3/` → 404).
-- Repo: <https://github.com/YichengYang-Ethan/oracle3>
+- Repo: <https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent> (renamed from `oracle3` on 2026-09-28)
 - Workflow: `.github/workflows/pypi-publish.yml`
 
 ---
@@ -48,7 +48,7 @@ will create the project on the first successful publish).
    | ----------------- | ---------------------------------- |
    | PyPI project name | `oracle3`                          |
    | Owner             | `YichengYang-Ethan`                |
-   | Repository name   | `oracle3`                          |
+   | Repository name   | `oracle3-prediction-market-agent`  |
    | Workflow filename | `pypi-publish.yml`                 |
    | Environment name  | `pypi`                             |
 
@@ -56,7 +56,7 @@ will create the project on the first successful publish).
 
 ## Step 4 — Create the matching `pypi` GitHub environment
 
-1. Open <https://github.com/YichengYang-Ethan/oracle3/settings/environments>.
+1. Open <https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/settings/environments>.
 2. Click **"New environment"** and name it **`pypi`** (case-sensitive,
    must match the workflow file).
 3. (Optional but recommended)
@@ -65,6 +65,15 @@ will create the project on the first successful publish).
    - Restrict deployment branches to `main` and tags `v*`.
 4. No secrets are needed in the environment — OIDC handles auth.
 
+## After renaming the repository
+
+PyPI matches the trusted publisher on the repository name. After the rename
+from `oracle3` to `oracle3-prediction-market-agent`, open
+<https://pypi.org/manage/project/oracle3/settings/publishing/>, add a GitHub
+publisher with repository name `oracle3-prediction-market-agent` (same owner,
+workflow `pypi-publish.yml` and environment `pypi`), and remove the old one.
+Releases fail with "invalid-publisher" until this is done.
+
 ## Step 5 — Cut a release
 
 After steps 1–4 are complete:
@@ -72,7 +81,7 @@ After steps 1–4 are complete:
 ```bash
 git checkout main
 git pull
-# bump the version (commitizen keeps pyproject.toml + oracle3/__init__.py in sync)
+# bump the version (commitizen keeps pyproject.toml, oracle3/__init__.py, server.json and CITATION.cff in sync)
 poetry run cz bump --increment patch  # or minor/major
 git push --follow-tags
 gh release create v1.1.2 --generate-notes

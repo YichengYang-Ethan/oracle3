@@ -95,14 +95,14 @@ Click **Start new submission**. Choose:
   > driven sizing, and a risk manager - all wired into an event-driven async
   > trading core with snapshot persistence, killswitch support, and on-chain
   > audit trails. Source code is available at
-  > https://github.com/YichengYang-Ethan/oracle3 under the Apache 2.0
+  > https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent under the Apache 2.0
   > license, with archived release at Zenodo
   > (DOI 10.5281/zenodo.20062549).
 
 - **Comments** (paste in the comments field exactly):
 
   ```
-  Code: https://github.com/YichengYang-Ethan/oracle3 (Apache 2.0); Zenodo DOI: 10.5281/zenodo.20062549
+  Code: https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent (Apache 2.0); Zenodo DOI: 10.5281/zenodo.20062549
   ```
 
 - **Report-no / DOI / Journal-ref**: leave blank.

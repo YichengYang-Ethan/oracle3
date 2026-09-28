@@ -1,0 +1,31 @@
+# Oracle3
+
+> Open-source paper-trading engine and MCP server for prediction markets (Kalshi, Polymarket). It checks whether prices of related event contracts violate probability bounds after each venue's published fees, and paper-trades the baskets that survive under pre-trade risk limits. Paper trading only: the MCP server cannot place real orders.
+
+Install with `pip install oracle3`. Run the MCP server with `uvx oracle3 mcp` (13 tools: market search, quotes, order books, fee-aware constraint checks, a local paper ledger). Python API: `oracle3.arbitrage.check_constraint` and `oracle3.fees`.
+
+## Docs
+
+- [Documentation home](https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/): overview and quick start
+- [MCP server](https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/mcp/): tools, client configuration, examples
+- [Do prediction-market arbitrage edges survive fees?](https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/research/fee-frontier/): break-even violations under Kalshi and Polymarket fees
+- [CLI quick start](https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/CLI_QUICK_START/)
+
+## Source
+
+- [Repository](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent)
+- [README](https://raw.githubusercontent.com/YichengYang-Ethan/oracle3-prediction-market-agent/main/README.md)
+- [AGENTS.md](https://raw.githubusercontent.com/YichengYang-Ethan/oracle3-prediction-market-agent/main/AGENTS.md): setup, checks and safety rules for coding agents
+- [Agent skills](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/tree/main/skills)
+- [server.json](https://raw.githubusercontent.com/YichengYang-Ethan/oracle3-prediction-market-agent/main/server.json): MCP Registry manifest
+- [PyPI package](https://pypi.org/project/oracle3/)
+
+## Research
+
+- [Pricing Prediction Markets: Incomplete Markets, Selection Rules, and Calibration Wedges](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338): the working paper behind the fair-value engine
+- [Replication package](https://github.com/YichengYang-Ethan/prediction-market-pricing)
+
+## Optional
+
+- [Open problems](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues?q=is%3Aissue+label%3Aopen-problem)
+- [Discussions](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/discussions)
