@@ -1,0 +1,38 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.YichengYang-Ethan/oracle3",
+  "title": "Oracle3 prediction-market arbitrage checks",
+  "description": "Kalshi and Polymarket data, venue fees, and no-arbitrage checks for related contracts. Paper only.",
+  "repository": {
+    "url": "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent",
+    "source": "github"
+  },
+  "websiteUrl": "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/",
+  "version": "1.2.0",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "oracle3",
+      "version": "1.2.0",
+      "runtimeHint": "uvx",
+      "transport": {
+        "type": "stdio"
+      },
+      "packageArguments": [
+        {
+          "type": "positional",
+          "value": "mcp"
+        }
+      ],
+      "environmentVariables": [
+        {
+          "name": "ORACLE3_MCP_LEDGER",
+          "description": "Path of the local paper-trading ledger (default ~/.oracle3/mcp_paper_ledger.json)",
+          "isRequired": false,
+          "isSecret": false,
+          "format": "filepath"
+        }
+      ]
+    }
+  ]
+}

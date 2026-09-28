@@ -16,7 +16,7 @@ from oracle3.cli.trade_commands import trade
 @click.group()
 @click.version_option(version='1.0.0')
 def cli() -> None:
-    """Oracle3 - AI-native prediction market trading agent on Solana, Polymarket, and Kalshi."""
+    """Oracle3 - paper-trading engine for prediction markets on Kalshi, Polymarket, and Solana."""
     pass
 
 
@@ -32,14 +32,18 @@ def blinks(host: str, port: int) -> None:
 
 
 @cli.command()
-@click.option('--port', default=3000, show_default=True, type=int, help='Dashboard server port')
+@click.option(
+    '--port', default=3000, show_default=True, type=int, help='Dashboard server port'
+)
 @click.option(
     '--exchange',
     type=click.Choice(['solana', 'polymarket', 'kalshi']),
     default='solana',
     show_default=True,
 )
-@click.option('--duration', type=float, default=None, help='Seconds to run (default: forever)')
+@click.option(
+    '--duration', type=float, default=None, help='Seconds to run (default: forever)'
+)
 @click.option('--initial-capital', default='10000', show_default=True)
 @click.option(
     '--strategy-ref',
@@ -47,7 +51,9 @@ def blinks(host: str, port: int) -> None:
     help='Strategy ref: module:Class or /path/file.py:Class. If omitted, run in idle mode.',
 )
 @click.option(
-    '--strategy-kwargs-json', default=None, help='JSON object for strategy constructor kwargs.'
+    '--strategy-kwargs-json',
+    default=None,
+    help='JSON object for strategy constructor kwargs.',
 )
 @click.option(
     '--episode-dir',
@@ -137,6 +143,7 @@ def dashboard(  # noqa: C901
         risk_manager: Any = NoRiskManager()
         try:
             from oracle3.risk.onchain_risk_manager import OnChainRiskManager
+
             risk_manager = OnChainRiskManager(
                 position_manager=position_manager,
                 market_data=market_data,
@@ -160,6 +167,7 @@ def dashboard(  # noqa: C901
         jito_submitter = None
         try:
             from oracle3.trader.jito_submitter import JitoSubmitter
+
             jito_submitter = JitoSubmitter(keypair=None)
             trader._jito_submitter = jito_submitter  # type: ignore[attr-defined]
             click.echo('  [✓] Jito MEV Protection loaded')
@@ -173,6 +181,7 @@ def dashboard(  # noqa: C901
                     OnChainSignalSource,
                     WatchedWallet,
                 )
+
                 signal_source = OnChainSignalSource(
                     watched_wallets=[
                         WatchedWallet(
@@ -189,15 +198,18 @@ def dashboard(  # noqa: C901
                 import time as _time
 
                 from oracle3.data.live.onchain_signal_source import OnChainSignal
-                signal_source._signals.append(OnChainSignal(
-                    signal_type='wallet_monitor',
-                    wallet='7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae',
-                    amount=0.0,
-                    direction='monitoring',
-                    token='USDC',
-                    timestamp=_time.time(),
-                    label='oracle3-agent',
-                ))
+
+                signal_source._signals.append(
+                    OnChainSignal(
+                        signal_type='wallet_monitor',
+                        wallet='7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae',
+                        amount=0.0,
+                        direction='monitoring',
+                        token='USDC',
+                        timestamp=_time.time(),
+                        label='oracle3-agent',
+                    )
+                )
                 click.echo('  [✓] On-Chain Signal Source loaded')
             except Exception as exc:
                 click.echo(f'  [–] On-Chain Signal Source skipped: {exc}')
@@ -216,17 +228,21 @@ def dashboard(  # noqa: C901
             if keypair_file.exists():
                 from oracle3.onchain.logger import OnChainLogger
                 from oracle3.trader.solana_trader import _load_keypair
+
                 kp = _load_keypair(keypair_path=str(keypair_file))
                 onchain_logger = OnChainLogger(
                     keypair=kp,
                     rpc_url='https://api.devnet.solana.com',
                 )
-                click.echo(f'  [✓] Solana keypair loaded ({str(kp.pubkey())[:8]}…, devnet)')
+                click.echo(
+                    f'  [✓] Solana keypair loaded ({str(kp.pubkey())[:8]}…, devnet)'
+                )
         except Exception as exc:
             click.echo(f'  [–] Solana keypair skipped: {exc}')
 
         try:
             from oracle3.onchain.reputation import ReputationManager
+
             rep_mgr = ReputationManager(on_chain_logger=onchain_logger)
             engine._reputation_manager = rep_mgr
             if hasattr(strategy_obj, 'reputation_manager'):
@@ -241,6 +257,7 @@ def dashboard(  # noqa: C901
         coordinator = None
         try:
             from oracle3.agent.coordinator import AgentCoordinator, RiskAgent
+
             coordinator = AgentCoordinator(
                 risk_agent=RiskAgent(risk_manager=risk_manager),
             )
@@ -253,6 +270,7 @@ def dashboard(  # noqa: C901
         # --- Feature 7: Flash Loan Arbitrage ---
         try:
             from oracle3.experimental.flash_loan import FlashLoanArbitrage
+
             kp_for_features = onchain_logger._keypair if onchain_logger else None
             flash_loan = FlashLoanArbitrage(
                 keypair=kp_for_features,
@@ -271,6 +289,7 @@ def dashboard(  # noqa: C901
         # --- Feature 8: Atomic Multi-Leg Trader ---
         try:
             from oracle3.trader.atomic_trader import AtomicTrader
+
             atomic_trader = AtomicTrader(
                 keypair=kp_for_features,
                 jito_submitter=jito_submitter,
@@ -327,9 +346,13 @@ def dashboard(  # noqa: C901
 
 
 @cli.command('trade-log')
-@click.option('--limit', default=20, show_default=True, type=int, help='Number of entries')
 @click.option(
-    '--keypair-path', default=None, help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)'
+    '--limit', default=20, show_default=True, type=int, help='Number of entries'
+)
+@click.option(
+    '--keypair-path',
+    default=None,
+    help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)',
 )
 @click.option(
     '--rpc-url',
@@ -338,7 +361,9 @@ def dashboard(  # noqa: C901
     help='Solana RPC URL',
 )
 @click.option('--json', 'as_json', is_flag=True, default=False, help='Output as JSON')
-def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool) -> None:
+def trade_log(
+    limit: int, keypair_path: str | None, rpc_url: str, as_json: bool
+) -> None:
     """Show on-chain trade log from Solana Memo transactions."""
     import asyncio
     import json as json_lib
@@ -370,13 +395,17 @@ def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool)
         qty = t.get('qty', '?')
         ts = t.get('ts', '')
         sig = t.get('signature', '')[:16]
-        click.echo(f'  [{i}] {market} {side.upper()} x{qty} @ {price}  {ts}  tx:{sig}...')
+        click.echo(
+            f'  [{i}] {market} {side.upper()} x{qty} @ {price}  {ts}  tx:{sig}...'
+        )
     click.echo()
 
 
 @cli.command()
 @click.option(
-    '--keypair-path', default=None, help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)'
+    '--keypair-path',
+    default=None,
+    help='Solana keypair JSON file (or SOLANA_KEYPAIR_PATH)',
 )
 @click.option(
     '--rpc-url',
@@ -384,9 +413,13 @@ def trade_log(limit: int, keypair_path: str | None, rpc_url: str, as_json: bool)
     show_default=True,
     help='Solana RPC URL',
 )
-@click.option('--wallet', default=None, help='Wallet address to check (defaults to own wallet)')
+@click.option(
+    '--wallet', default=None, help='Wallet address to check (defaults to own wallet)'
+)
 @click.option('--json', 'as_json', is_flag=True, default=False, help='Output as JSON')
-def reputation(keypair_path: str | None, rpc_url: str, wallet: str | None, as_json: bool) -> None:
+def reputation(
+    keypair_path: str | None, rpc_url: str, wallet: str | None, as_json: bool
+) -> None:
     """Show agent reputation score from on-chain trading history."""
     import json as json_lib
 
@@ -412,7 +445,9 @@ def reputation(keypair_path: str | None, rpc_url: str, wallet: str | None, as_js
 
     target_wallet = wallet or rep_mgr.wallet
     if not target_wallet:
-        raise click.ClickException('No wallet specified. Pass --wallet or configure a keypair.')
+        raise click.ClickException(
+            'No wallet specified. Pass --wallet or configure a keypair.'
+        )
 
     rep = rep_mgr.get_agent_reputation(target_wallet)
 
@@ -438,6 +473,20 @@ cli.add_command(news)
 cli.add_command(market)
 cli.add_command(data)
 cli.add_command(research)
+
+
+@cli.command('mcp')
+@click.option(
+    '--transport',
+    type=click.Choice(['stdio', 'streamable-http', 'sse']),
+    default='stdio',
+    show_default=True,
+)
+def mcp_server(transport: str) -> None:
+    """Run the MCP server: market data, fee-aware no-arbitrage checks, paper trading."""
+    from oracle3.mcp_server.server import main
+
+    main(['--transport', transport])
 
 
 if __name__ == '__main__':

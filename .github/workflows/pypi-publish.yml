@@ -1,10 +1,13 @@
 name: Publish to PyPI
 
 # Triggered when a GitHub Release is published.
-# Uses PyPI Trusted Publishing (OIDC) — no API token required once
-# the publisher is configured at https://pypi.org/manage/account/publishing/
-# (provider: GitHub, owner: YichengYang-Ethan, repo: oracle3,
-#  workflow: pypi-publish.yml, environment: pypi).
+# 1. Builds and publishes oracle3 to PyPI with Trusted Publishing (OIDC).
+#    The PyPI trusted publisher must name this repository, this workflow
+#    (pypi-publish.yml) and the "pypi" environment; if the repository is
+#    renamed, update the publisher at https://pypi.org/manage/account/publishing/
+# 2. Publishes server.json to the MCP Registry with GitHub OIDC, after the
+#    package is visible on PyPI (the registry verifies the mcp-name marker in
+#    the PyPI description).
 
 on:
   release:
@@ -54,3 +57,47 @@ jobs:
 
       - name: Publish to PyPI (trusted publishing)
         uses: pypa/gh-action-pypi-publish@release/v1
+
+  mcp-registry:
+    name: Publish server.json to the MCP Registry
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write   # required for MCP Registry GitHub OIDC login
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check server.json matches pyproject.toml
+        run: |
+          server_ver=$(python3 -c "import json; print(json.load(open('server.json'))['version'])")
+          pkg_ver=$(python3 -c "import json; print(json.load(open('server.json'))['packages'][0]['version'])")
+          pyproject_ver=$(python3 -c "import tomllib; print(tomllib.load(open('pyproject.toml','rb'))['tool']['poetry']['version'])")
+          echo "server.json ${server_ver} / package ${pkg_ver} / pyproject ${pyproject_ver}"
+          if [ "${server_ver}" != "${pyproject_ver}" ] || [ "${pkg_ver}" != "${pyproject_ver}" ]; then
+            echo "::error::server.json versions must equal the pyproject version"
+            exit 1
+          fi
+          echo "VERSION=${pyproject_ver}" >> "$GITHUB_ENV"
+
+      - name: Wait for the release to appear on PyPI
+        run: |
+          for i in $(seq 1 30); do
+            if curl -sf "https://pypi.org/pypi/oracle3/${VERSION}/json" > /dev/null; then
+              echo "oracle3 ${VERSION} is on PyPI"; exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::oracle3 ${VERSION} did not appear on PyPI"
+          exit 1
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Authenticate to the MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish server.json
+        run: ./mcp-publisher publish
