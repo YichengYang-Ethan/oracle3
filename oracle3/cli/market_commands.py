@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 from typing import Any
 
 import click
@@ -65,14 +64,27 @@ async def _polymarket_list_markets(limit: int) -> list[dict]:
 
 
 async def _polymarket_search_markets(query: str, limit: int) -> list[dict]:
-    all_markets = await _polymarket_list_markets(500)
-    q = query.lower()
-    filtered = [
-        m
-        for m in all_markets
-        if q in m.get('question', '').lower() or q in m.get('event_title', '').lower()
+    """Keyword search through Polymarket's public search endpoint."""
+    from oracle3.mcp_server.venues import VenueError, polymarket_search
+
+    try:
+        rows = await polymarket_search(query, limit)
+    except VenueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    return [
+        {
+            'id': r['market_id'],
+            'question': r['title'],
+            'event_id': r.get('event_id', ''),
+            'event_title': r.get('event_title', ''),
+            'token_id': r.get('yes_token_id', ''),
+            'best_bid': r.get('yes_bid') if r.get('yes_bid') is not None else '',
+            'best_ask': r.get('yes_ask') if r.get('yes_ask') is not None else '',
+            'volume': r.get('volume') if r.get('volume') is not None else '',
+            'end_date': r.get('end_date', ''),
+        }
+        for r in rows
     ]
-    return filtered[:limit]
 
 
 async def _polymarket_market_info(market_id: str) -> dict | None:
@@ -111,97 +123,65 @@ async def _polymarket_market_info(market_id: str) -> dict | None:
 
 KALSHI_API_URL = 'https://api.elections.kalshi.com/trade-api/v2'
 
+# Kalshi market data is public. The API-key arguments are accepted for
+# backwards compatibility and are not needed to read markets.
+
+
+def _cents(price: float | None) -> float:
+    """Dollar price to cents; Kalshi now quotes some markets in sub-cent ticks."""
+    return 0 if price is None else round(price * 100, 2)
+
+
+def _kalshi_row(r: dict) -> dict:
+    return {
+        'ticker': r.get('market_id', ''),
+        'title': r.get('title', ''),
+        'event_ticker': r.get('event_ticker', ''),
+        'series_ticker': r.get('series_ticker', ''),
+        'yes_bid': _cents(r.get('yes_bid')),
+        'yes_ask': _cents(r.get('yes_ask')),
+        'volume': r.get('volume') or 0,
+        'close_time': str(r.get('close_time', '')),
+        'status': r.get('status', ''),
+    }
+
 
 async def _kalshi_list_markets(
     limit: int, api_key_id: str | None, private_key_path: str | None
 ) -> list[dict]:
-    from kalshi_python import Configuration
-    from kalshi_python.api.markets_api import MarketsApi
-    from kalshi_python.api_client import ApiClient
+    from oracle3.mcp_server.venues import VenueError, kalshi_search
 
-    config = Configuration(host=KALSHI_API_URL)
-    key_id = api_key_id or os.environ.get('KALSHI_API_KEY_ID')
-    pk_path = private_key_path or os.environ.get('KALSHI_PRIVATE_KEY_PATH')
-    if key_id and pk_path:
-        with open(pk_path) as f:
-            config.private_key_pem = f.read()
-        config.api_key_id = key_id
-
-    api_client = ApiClient(configuration=config)
-    markets_api = MarketsApi(api_client)
-
-    kwargs: dict[str, Any] = {'status': 'open', 'limit': min(limit, 200)}
-    response = await asyncio.to_thread(lambda: markets_api.get_markets(**kwargs))
-    raw = response.markets if hasattr(response, 'markets') else []
-    markets = []
-    for m in (raw or [])[:limit]:
-        d = m.to_dict() if hasattr(m, 'to_dict') else dict(m)
-        markets.append(
-            {
-                'ticker': d.get('ticker', ''),
-                'title': d.get('title', ''),
-                'event_ticker': d.get('event_ticker', ''),
-                'series_ticker': d.get('series_ticker', ''),
-                'yes_bid': d.get('yes_bid', 0),
-                'yes_ask': d.get('yes_ask', 0),
-                'volume': d.get('volume', 0),
-                'close_time': str(d.get('close_time', '')),
-                'status': d.get('status', ''),
-            }
-        )
-    return markets
+    try:
+        rows = await kalshi_search('', limit)
+    except VenueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    return [_kalshi_row(r) for r in rows]
 
 
 async def _kalshi_search_markets(
     query: str, limit: int, api_key_id: str | None, private_key_path: str | None
 ) -> list[dict]:
-    all_markets = await _kalshi_list_markets(500, api_key_id, private_key_path)
-    q = query.lower()
-    filtered = [
-        m
-        for m in all_markets
-        if q in m.get('title', '').lower() or q in m.get('ticker', '').lower()
-    ]
-    return filtered[:limit]
+    from oracle3.mcp_server.venues import VenueError, kalshi_search
+
+    try:
+        rows = await kalshi_search(query, limit)
+    except VenueError as exc:
+        raise click.ClickException(str(exc)) from exc
+    return [_kalshi_row(r) for r in rows]
 
 
 async def _kalshi_market_info(
     market_ticker: str, api_key_id: str | None, private_key_path: str | None
 ) -> dict | None:
-    from kalshi_python import Configuration
-    from kalshi_python.api.markets_api import MarketsApi
-    from kalshi_python.api_client import ApiClient
+    from oracle3.mcp_server.venues import VenueError, kalshi_market
 
-    config = Configuration(host=KALSHI_API_URL)
-    key_id = api_key_id or os.environ.get('KALSHI_API_KEY_ID')
-    pk_path = private_key_path or os.environ.get('KALSHI_PRIVATE_KEY_PATH')
-    if key_id and pk_path:
-        with open(pk_path) as f:
-            config.private_key_pem = f.read()
-        config.api_key_id = key_id
-
-    api_client = ApiClient(configuration=config)
-    markets_api = MarketsApi(api_client)
-
-    response = await asyncio.to_thread(lambda: markets_api.get_market(market_ticker))
-    if not response:
+    try:
+        r = await kalshi_market(market_ticker)
+    except VenueError:
         return None
-    m = response.market if hasattr(response, 'market') else response
-    if m is None:
-        return None
-    d = m.to_dict() if hasattr(m, 'to_dict') else dict(m)
-    return {
-        'ticker': d.get('ticker', ''),
-        'title': d.get('title', ''),
-        'event_ticker': d.get('event_ticker', ''),
-        'series_ticker': d.get('series_ticker', ''),
-        'yes_bid': d.get('yes_bid', 0),
-        'yes_ask': d.get('yes_ask', 0),
-        'volume': d.get('volume', 0),
-        'close_time': str(d.get('close_time', '')),
-        'status': d.get('status', ''),
-        'rules_primary': d.get('rules_primary', ''),
-    }
+    row = _kalshi_row(r)
+    row['rules_primary'] = r.get('rules_primary', '')
+    return row
 
 
 # ---------------------------------------------------------------------------
@@ -222,23 +202,31 @@ async def _dflow_list_markets(limit: int) -> list[dict]:
             f'DFlow API returned HTTP {resp.status_code}: {resp.text[:200]}'
         )
     data = resp.json()
-    events = data if isinstance(data, list) else data.get('events', data.get('data', []))
+    events = (
+        data if isinstance(data, list) else data.get('events', data.get('data', []))
+    )
     markets: list[dict] = []
     for event in events:
         for mkt in event.get('markets', []):
             if len(markets) >= limit:
                 break
             ticker = mkt.get('ticker', mkt.get('marketTicker', ''))
-            markets.append({
-                'ticker': ticker,
-                'title': mkt.get('title', mkt.get('question', '')),
-                'event_ticker': event.get('eventTicker', event.get('event_ticker', '')),
-                'series_ticker': event.get('seriesTicker', event.get('series_ticker', '')),
-                'yes_bid': mkt.get('yesBid', mkt.get('yes_bid', 0)) or 0,
-                'yes_ask': mkt.get('yesAsk', mkt.get('yes_ask', 0)) or 0,
-                'volume': mkt.get('volume', 0),
-                'status': mkt.get('status', 'active'),
-            })
+            markets.append(
+                {
+                    'ticker': ticker,
+                    'title': mkt.get('title', mkt.get('question', '')),
+                    'event_ticker': event.get(
+                        'eventTicker', event.get('event_ticker', '')
+                    ),
+                    'series_ticker': event.get(
+                        'seriesTicker', event.get('series_ticker', '')
+                    ),
+                    'yes_bid': mkt.get('yesBid', mkt.get('yes_bid', 0)) or 0,
+                    'yes_ask': mkt.get('yesAsk', mkt.get('yes_ask', 0)) or 0,
+                    'volume': mkt.get('volume', 0),
+                    'status': mkt.get('status', 'active'),
+                }
+            )
         if len(markets) >= limit:
             break
     return markets[:limit]
@@ -248,7 +236,8 @@ async def _dflow_search_markets(query: str, limit: int) -> list[dict]:
     all_markets = await _dflow_list_markets(500)
     q = query.lower()
     filtered = [
-        m for m in all_markets
+        m
+        for m in all_markets
         if q in m.get('title', '').lower() or q in m.get('ticker', '').lower()
     ]
     return filtered[:limit]
