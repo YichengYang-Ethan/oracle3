@@ -174,7 +174,7 @@ oracle3 monitor > session_report.txt
 ## Next Steps
 
 - Read [Full CLI Documentation](CLI_MONITORING.md) for advanced features
-- Check [examples/monitor_example.py](../examples/monitor_example.py) for integration patterns
+- Check [examples/monitor_example.py](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/blob/main/examples/monitor_example.py) for integration patterns
 - Customize display by extending `TradingMonitor` class
 
 ## Support
@@ -182,4 +182,4 @@ oracle3 monitor > session_report.txt
 Issues? Questions? See:
 
 - [CLI Monitoring Documentation](CLI_MONITORING.md)
-- [GitHub Issues](https://github.com/YichengYang-Ethan/oracle3/issues)
+- [GitHub Issues](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues)

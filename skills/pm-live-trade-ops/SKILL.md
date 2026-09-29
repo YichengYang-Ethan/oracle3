@@ -1,20 +1,20 @@
 ---
 name: pm-live-trade-ops
-description: 用于在明确授权下执行 live trading，并严格执行风险与应急控制。
+description: Run live trading only with explicit user authorization, under strict risk and emergency controls.
 ---
 
 # PM Live Trade Ops
 
-仅在用户明确要求 live 且已完成 paper 验证后使用。
+Use this skill only when the user explicitly asks for live trading and paper validation is complete.
 
-## 前置门槛
+## Gates
 
-- `strategy validate` 通过
-- 最新 backtest/auto-tune 结果可接受
-- 最近 paper run 行为稳定
-- 用户明确批准 live 启动
+- `strategy validate` passes.
+- The latest backtest or auto-tune results are acceptable.
+- Recent paper runs behaved stably.
+- The user has explicitly approved starting live trading.
 
-## 启动命令
+## Start commands
 
 1. Polymarket
 
@@ -24,7 +24,7 @@ description: 用于在明确授权下执行 live trading，并严格执行风险
 
 - `oracle3 live run --exchange kalshi --kalshi-api-key-id "$KALSHI_API_KEY_ID" --kalshi-private-key-path "$KALSHI_PRIVATE_KEY_PATH" --strategy-ref <strategy_ref> --strategy-kwargs-json '<json>' --json`
 
-## 运行控制
+## Run control
 
 - `oracle3 trade status --json`
 - `oracle3 trade state --json`
@@ -33,15 +33,16 @@ description: 用于在明确授权下执行 live trading，并严格执行风险
 - `oracle3 trade killswitch --on --json`
 - `oracle3 trade stop --json`
 
-## 应急顺序
+## Emergency order
 
-1. 先 `pause`
-2. 评估持仓和订单状态
-3. 必要时 `killswitch --on`
-4. 最后 `stop`
+1. `pause` first.
+2. Assess positions and open orders.
+3. If needed, `killswitch --on`.
+4. Finally, `stop`.
 
-## Hard Rules
+## Hard rules
 
-- 无明确用户批准，不启动 live。
-- 不跳过 paper 阶段直接上 live。
-- 所有 live 运行必须保留可审计记录（时间、参数、状态快照、处置动作）。
+- Never start live trading without explicit user approval.
+- Never skip paper trading and go straight to live.
+- Every live run keeps an auditable record: time, parameters, state snapshots and every intervention.
+- The MCP server (`oracle3-mcp`) has no live-trading tools; live trading is only available through this CLI.

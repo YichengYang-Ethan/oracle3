@@ -1,22 +1,27 @@
 [tool.poetry]
 name = "oracle3"
-version = "1.1.2"
-description = "Autonomous on-chain trading agent for Solana prediction markets — LLM reasoning, quantitative signals, and atomic execution"
+version = "1.2.1"
+description = "Paper-trading engine and MCP server for prediction markets (Kalshi, Polymarket): no-arbitrage checks across related event contracts, net of venue fees, under pre-trade risk limits."
 authors = ["Yicheng Yang <yy85@illinois.edu>"]
 license = "Apache-2.0"
 readme = "README.md"
-repository = "https://github.com/YichengYang-Ethan/oracle3"
-homepage = "https://github.com/YichengYang-Ethan/oracle3"
+repository = "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent"
+homepage = "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/"
+documentation = "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/"
 keywords = [
-    "solana",
-    "dflow",
-    "polymarket",
+    "prediction-markets",
     "kalshi",
-    "prediction-market",
-    "trading",
-    "llm",
-    "ai-agent",
+    "polymarket",
+    "arbitrage",
+    "no-arbitrage",
+    "event-contracts",
+    "paper-trading",
+    "mcp-server",
+    "ai-agents",
     "algorithmic-trading",
+    "quantitative-finance",
+    "market-microstructure",
+    "risk-management",
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -24,14 +29,22 @@ classifiers = [
     "Intended Audience :: Financial and Insurance Industry",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Topic :: Office/Business :: Financial :: Investment",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Information Analysis",
     "Typing :: Typed",
 ]
 packages = [{include = "oracle3"}, {include = "coinjure"}]
+
+[tool.poetry.urls]
+"Changelog" = "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/blob/main/CHANGELOG.md"
+"Issues" = "https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues"
+"Paper" = "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338"
 
 
 [tool.poetry.dependencies]
@@ -56,6 +69,7 @@ solders = ">=0.21.0"
 litellm = {version = ">=1.0.0", optional = true}
 fastapi = {version = ">=0.100.0", optional = true}
 uvicorn = {version = ">=0.20.0", optional = true}
+mcp = ">=1.19,<3"
 
 [tool.poetry.extras]
 llm = ["litellm"]
@@ -79,6 +93,7 @@ hypothesis = "^6.98.0"
 
 [tool.poetry.scripts]
 oracle3 = "oracle3.cli.cli:cli"
+oracle3-mcp = "oracle3.mcp_server.server:main"
 
 [build-system]
 requires = ["poetry-core>=1.9.0"]
@@ -208,12 +223,15 @@ max-complexity = 10
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.1.2"
+version = "1.2.1"
 tag_format = "v$version"
 bump_message = "bump: version $current_version → $new_version"
 version_files = [
     "pyproject.toml:version",
-    "oracle3/__init__.py:__version__"
+    "oracle3/__init__.py:__version__",
+    "server.json:\"version\"",
+    "CITATION.cff:^version",
+    "codemeta.json:ersion\""
 ]
 
 [[tool.poetry.source]]

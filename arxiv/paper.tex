@@ -36,18 +36,18 @@ an empirical regularity known as the favorite--longshot bias
 \citep{thaler:1988}. Despite a long literature documenting this distortion,
 most open-source trading bots ignore it, treating market prices as unbiased
 estimates of probability. \texttt{Oracle3} is a Python framework that
-operationalizes a peer-reviewed risk-neutral pricing model for binary outcome
+operationalizes a risk-neutral pricing model for binary outcome
 contracts and uses it to drive automated trading across multiple venues
 (Kalshi, Polymarket, and Solana-based DFlow). At its core is a Wang Transform
 \citep{wang:2000,wang:2002} calibrated by maximum-likelihood estimation on
 291{,}309 resolved contracts spanning six platforms, with hierarchical
-covariates for volume, days-to-expiry, and contract moneyness. The library
-exposes the model as a fair-value engine and pairs it with eight
-constraint-based arbitrage strategies, statistical-arbitrage strategies,
-model-Greek-driven sizing, and a risk manager --- all wired into an
-event-driven async trading core with snapshot persistence, killswitch support,
-and on-chain audit trails. Source code is available at
-\url{https://github.com/YichengYang-Ethan/oracle3} under the Apache~2.0 license,
+covariates for volume, contract duration, and contract moneyness. The library
+exposes the model as a fair-value engine and pairs it with six
+constraint-based arbitrage strategies, two statistical-arbitrage strategies,
+two model-driven strategies, model-Greek-driven sizing, and a risk manager ---
+all wired into an event-driven async trading core with snapshot persistence,
+killswitch support, and on-chain audit trails. Source code is available at
+\url{https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent} under the Apache~2.0 license,
 with archived release at Zenodo (\href{https://doi.org/10.5281/zenodo.20062549}{10.5281/zenodo.20062549}).
 \end{abstract}
 
@@ -120,8 +120,8 @@ we additionally fit a hierarchical covariate specification:
   \label{eq:lambda}
 \end{equation}
 %
-where $V_i$ is daily traded volume, $D_i$ is days remaining to expiry, and
-$\lvert p_i - 0.5 \rvert$ is contract moneyness. All three covariates have
+where $V_i$ is daily traded volume, $D_i$ is the contract's total duration
+(hours), and $\lvert p_i - 0.5 \rvert$ is contract moneyness. All three covariates have
 signs consistent with the favorite--longshot literature
 \citep{thaler:1988,snowberg:2010,wolfers:2004,manski:2006,ottaviani:2007}: less
 liquid, longer-dated, and far-out-of-the-money contracts exhibit larger risk
@@ -149,27 +149,28 @@ all legs respects the agent's drawdown limits.
 \texttt{Oracle3} is organized as four layers.
 
 \paragraph{1. Pricing engine (\texttt{oracle3/pricing/}).}
-Implements equations \eqref{eq:wang} and \eqref{eq:lambda} as a vectorized
-NumPy/PyTorch module, with the global $\hat\lambda = 0.183$ available as a
+Implements equations \eqref{eq:wang} and \eqref{eq:lambda} as a
+dependency-light pure-Python module (with an optional NumPy/SciPy path for the
+batch MLE estimator), with the global $\hat\lambda = 0.183$ available as a
 fast path and the hierarchical covariate model used when contract metadata
 are present. The online recalibrator combines batch MLE with a streaming EWMA
 estimator and category shrinkage, so the model adapts to regime change
 without forgetting prior data.
 
 \paragraph{2. Strategy layer (\texttt{oracle3/strategy/}).}
-Eight constraint-based strategies each enforce a probability-axiom invariant
+Six constraint-based strategies each enforce a probability-axiom invariant
 (cross-market identity, exclusivity bound $P(A) + P(B) \le 1$, implication
 monotonicity, conditional bounds, event-sum unity, and structural
 relationships derived from the calibrated model) and emit signals when
 violations exceed configurable thresholds. Two model-driven strategies trade
 fair-value divergence and a ``premium decay'' lifecycle effect predicted by
-the $D$-coefficient in equation \eqref{eq:lambda}. Statistical-arbitrage
+the $D$-coefficient in equation \eqref{eq:lambda}. Two statistical-arbitrage
 strategies (cointegration spread, lead-lag) provide complementary signals.
 
 \paragraph{3. Trading core (\texttt{oracle3/core/}, \texttt{oracle3/trader/}).}
 An async event loop dispatches strategy signals to a \texttt{SpreadExecutor}
-that posts multi-leg orders atomically and unwinds via LIFO on partial fills,
-eliminating naked legs. A dual-layer risk manager enforces position,
+component that places multi-leg orders sequentially and unwinds via LIFO on
+partial fills to avoid naked legs. A dual-layer risk manager enforces position,
 drawdown, and exposure limits locally, and additionally calls the Solana
 \texttt{simulateTransaction} RPC for pre-flight on-chain checks before any
 DFlow submission.
@@ -192,10 +193,10 @@ package of \citet{yang:2026}.
 
 \texttt{Oracle3} narrows the gap between empirical prediction-market pricing
 research and deployable open-source trading software. By packaging a
-peer-reviewed Wang Transform calibration as a real-time engine, wiring it
-into multi-venue execution with on-chain settlement, and exposing every
-signal through an auditable strategy layer, the library provides a common
-substrate for both empirical research and live experimentation in
+Wang Transform calibration \citep{wang:2000,yang:2026} as a real-time engine,
+wiring it into multi-venue execution with on-chain settlement, and exposing
+every signal through an auditable strategy layer, the library provides a
+common substrate for both empirical research and live experimentation in
 prediction-market microstructure.
 
 \section*{Acknowledgements}
@@ -208,7 +209,7 @@ suggested strategies. Any errors are the author's own.
 \section*{Code and data availability}
 
 The complete source code is available at
-\url{https://github.com/YichengYang-Ethan/oracle3} under the Apache~2.0
+\url{https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent} under the Apache~2.0
 license. An archived release with persistent identifier is deposited at
 Zenodo, DOI \href{https://doi.org/10.5281/zenodo.20062549}{10.5281/zenodo.20062549}.
 The companion empirical paper is available as an SSRN working paper:

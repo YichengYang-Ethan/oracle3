@@ -1,26 +1,25 @@
 ---
 name: pm-paper-trade-ops
-description: 用于在策略通过回测后执行 paper trading、监控、干预和归档。
+description: Run, monitor, intervene in and archive paper trading after a strategy has passed backtesting.
 ---
 
 # PM Paper Trade Ops
 
-当用户要求跑 paper trading 或验证线上行为时，使用这个技能。
+Use this skill when the user asks to run paper trading or to check live behavior without real money.
 
-## 前置条件
+## Preconditions
 
-- 策略已能通过：
-- `oracle3 strategy validate ... --json`
-- 至少一次可解释 backtest/auto-tune 结果
+- The strategy passes `oracle3 strategy validate ... --json`.
+- There is at least one interpretable backtest or auto-tune result.
 
-## 启动流程
+## Steps
 
-1. 启动 paper
+1. Start paper trading
 
-- `oracle3 paper run --exchange <polymarket|kalshi|rss> --strategy-ref <strategy_ref> --strategy-kwargs-json '<json>' --duration <seconds> --json`
-- 需要可视化时加 `--monitor`
+- `oracle3 paper run --exchange <polymarket|kalshi|solana|rss> --strategy-ref <strategy_ref> --strategy-kwargs-json '<json>' --duration <seconds> --json`
+- Add `--monitor` for the live terminal view.
 
-2. 运行中控制
+2. Control the running engine
 
 - `oracle3 trade status --json`
 - `oracle3 trade state --json`
@@ -29,13 +28,13 @@ description: 用于在策略通过回测后执行 paper trading、监控、干�
 - `oracle3 trade swap --strategy-ref <strategy_ref> --strategy-kwargs-json '<json>' --json`
 - `oracle3 trade stop --json`
 
-3. 结果归档
+3. Archive the results
 
-- 保存关键输出到 `data/research/<run_id>/paper/`
-- 至少包含：配置、状态快照、结束摘要
+- Save the key outputs to `data/research/<run_id>/paper/`.
+- Include at least the configuration, a state snapshot and the end-of-run summary.
 
-## Hard Rules
+## Hard rules
 
-- 发现异常先 `pause`，确认后再 `resume` 或 `stop`。
-- paper 阶段不使用 live 凭证。
-- 每次运行都要能回放配置（策略 ref + kwargs + duration + exchange）。
+- On any anomaly, `pause` first; `resume` or `stop` only after checking.
+- Never use live credentials during paper trading.
+- Every run must be replayable from its configuration (strategy ref, kwargs, duration, exchange).

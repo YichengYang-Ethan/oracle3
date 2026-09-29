@@ -1,115 +1,218 @@
+<!-- mcp-name: io.github.YichengYang-Ethan/oracle3 -->
+
 # Oracle3
 
-**Autonomous prediction market trading agent across Kalshi, Polymarket, and Solana.**
+**Oracle3 is an open-source paper-trading engine and MCP server for prediction markets.** It maps logical relations between event contracts on Kalshi and Polymarket, checks whether quoted prices break the axioms of probability after each venue's fees, and paper-trades the baskets that survive under pre-trade risk limits.
 
-[![Tests](https://github.com/YichengYang-Ethan/oracle3/actions/workflows/pytest.yml/badge.svg)](https://github.com/YichengYang-Ethan/oracle3/actions)
-[![Lint](https://github.com/YichengYang-Ethan/oracle3/actions/workflows/ruff.yml/badge.svg)](https://github.com/YichengYang-Ethan/oracle3/actions)
-[![Type Check](https://github.com/YichengYang-Ethan/oracle3/actions/workflows/mypy.yml/badge.svg)](https://github.com/YichengYang-Ethan/oracle3/actions)
-[![codecov](https://codecov.io/gh/YichengYang-Ethan/oracle3/branch/main/graph/badge.svg)](https://codecov.io/gh/YichengYang-Ethan/oracle3)
-![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)
+[![Tests](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/actions/workflows/pytest.yml/badge.svg)](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/actions/workflows/pytest.yml)
+[![PyPI](https://img.shields.io/pypi/v/oracle3)](https://pypi.org/project/oracle3/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
-[![Discussions](https://img.shields.io/github/discussions/YichengYang-Ethan/oracle3)](https://github.com/YichengYang-Ethan/oracle3/discussions)
-[![Last Commit](https://img.shields.io/github/last-commit/YichengYang-Ethan/oracle3)](https://github.com/YichengYang-Ethan/oracle3/commits/main)
-[![Docs](https://img.shields.io/badge/docs-mkdocs-blue)](https://yichengyang-ethan.github.io/oracle3/)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20062548.svg)](https://doi.org/10.5281/zenodo.20062548)
 
-## Why this exists
+> **Status:** paper-traded research software with no live track record. The MCP server cannot place real orders. See [What is verified, and what is not?](#what-is-verified-and-what-is-not)
 
-Prediction markets price binary contracts at systematically biased levels — a true 50/50 contract typically trades around **0.57** (favorite-longshot bias, $\hat{\lambda} \approx 0.183$). Most trading bots ignore this distortion entirely. Oracle3 operationalizes a peer-reviewed pricing model, calibrated on **291,309 resolved contracts** across six venues, to systematically harvest the bias through arbitrage detection and Kelly-sized model trades.
+## At a glance
 
-This system deploys the exact $\lambda$ estimates and covariate model from [prediction-market-pricing](https://github.com/YichengYang-Ethan/prediction-market-pricing) (Yang, 2026) as its real-time pricing engine.
+| | |
+|---|---|
+| Venues | Kalshi and Polymarket; a Solana/DFlow execution layer is experimental |
+| Relations checked | implication, exclusivity, complement, same event across venues, event sum |
+| Costs | Each market's own fee schedule from the venue API (Kalshi taker 0.07·M·C·P·(1−P); Polymarket taker rate·C·p·(1−p)) |
+| Strategies | 6 constraint-based, 2 statistical-arbitrage, 2 model-driven |
+| Agent interfaces | MCP server with 13 tools, JSON CLI, 6 agent skills, Python API |
+| Tests | 600+, with ruff, mypy and codespell in CI |
+| Install | `pip install oracle3` |
+| License | Apache-2.0; the original U Lab portions are MIT (see [NOTICE](NOTICE)) |
 
-## How oracle3 differs from existing prediction-market tools
+## What problem does it solve?
 
-| | Oracle3 | polymarket-whales | prediction-market-maker | py-clob-client |
-|---|---------|-------------------|-------------------------|----------------|
-| Pricing model | Wang Transform (calibrated MLE) | None | Bid-ask MM | None |
-| Constraint-based arbitrage | 8 strategies | None | None | N/A |
-| Multi-venue | Kalshi + Polymarket + Solana | Polymarket only | Polymarket only | Polymarket only |
-| On-chain execution | Solana via DFlow + Jito | No | No | N/A (SDK) |
-| Working paper | Yang (2026), SSRN | No | No | No |
-| Tests | 633 | 0 | 0 | 50+ |
-| License | Apache 2.0 | MIT | MIT | MIT |
+Contracts on related outcomes are tied together by probability. If A implies B, then P(A) ≤ P(B). If A and B cannot both happen, P(A) + P(B) ≤ 1. The outcomes of one event sum to one. Quoted prices break these bounds, within a venue and across venues, and a basket of contracts that pays a known amount in every state can then be bought for less than that amount.
 
-## Architecture
+The gaps are small, and both venues charge taker fees that scale with p(1 − p). Whether a gap is worth anything depends on the fee on every leg of the basket. Oracle3 does three things with that:
+
+1. **Relations.** It records which markets are related and how (implication, exclusivity, complement, same event, event sum).
+2. **Checks.** For each relation it finds the cheapest basket at executable prices, prices every leg under that market's own fee schedule, and reports the edge before and after fees.
+3. **Paper trading.** It trades the baskets that survive in a paper account, under position, drawdown and exposure limits, with a kill switch.
+
+## How do I run it?
+
+```bash
+pip install oracle3
+
+# Find markets (JSON output for scripts and agents)
+oracle3 market search --exchange kalshi --query "fed" --json
+oracle3 market search --exchange polymarket --query "fed decision" --json
+
+# Start the MCP server over stdio
+oracle3 mcp
+```
+
+From Python:
+
+```python
+from oracle3.arbitrage import Quote, check_constraint
+from oracle3.fees import KalshiSchedule
+
+# A implies B, but A is bid at 0.60 while B is offered at 0.55.
+result = check_constraint(
+    "implication",
+    [Quote("A", yes_bid=0.60, schedule=KalshiSchedule()),
+     Quote("B", yes_ask=0.55, schedule=KalshiSchedule())],
+)
+best = result.best
+print(best.description, best.gross_edge, best.fees, best.net_edge)
+# NO on A + YES on B 0.05 0.0342 0.0158
+```
+
+Full CLI reference: [documentation](https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/).
+
+## How do AI agents use it?
+
+### MCP server
+
+Add it to any MCP client. For Claude Code:
+
+```bash
+claude mcp add oracle3 -- uvx oracle3 mcp
+```
+
+For Claude Desktop, Cursor and other clients that read an `mcpServers` block:
+
+```json
+{
+  "mcpServers": {
+    "oracle3": { "command": "uvx", "args": ["oracle3", "mcp"] }
+  }
+}
+```
+
+| Tool | What it does | Side effects |
+|---|---|---|
+| `search_markets` | Keyword search on Kalshi or Polymarket; Kalshi series listing | read-only |
+| `get_market` | Prices, volume, close time and resolution rules | read-only |
+| `get_orderbook` | Both sides of the book, best level first | read-only |
+| `get_quote` | Best bid and ask on YES and NO, with the market's fee schedule | read-only |
+| `check_constraint_live` | Fetch quotes and fee schedules, then check a relation | read-only |
+| `check_constraint` | Check a relation on quotes you supply | none |
+| `trading_fee` | Fee for one fill under a venue schedule | none |
+| `fair_value` | Probability implied by a price under the Wang transform | none |
+| `list_relation_types` | The supported relations and their bounds | none |
+| `list_relations` | Relations saved locally by the research CLI | reads a local file |
+| `paper_order` | Buy in a local paper ledger, filling against the live book with fees | writes a local file |
+| `paper_portfolio` | Cash, positions and fills in the paper ledger | reads a local file |
+| `paper_reset` | Erase the paper ledger (requires `confirm=true`) | writes a local file |
+
+No tool can place a real order. The server imports no authenticated trader.
+
+If your client ran oracle3 1.2.0, which failed to start with mcp 2.x, refresh uv's cached copy once with `uvx --refresh oracle3 mcp`.
+
+### Agent skills
+
+[`skills/`](skills/) (mirrored in `.claude/skills/` and `.agent/skills/`) holds step-by-step instructions for agents:
+
+| Skill | Use it to |
+|---|---|
+| `pm-constraint-arbitrage` | Check related markets for a fee-surviving violation with the MCP tools |
+| `pm-data-discovery` | Find markets and save research samples |
+| `pm-quant-strategy-authoring` | Write a tunable `QuantStrategy` |
+| `pm-agent-strategy-authoring` | Write an LLM- or tool-driven `AgentStrategy` |
+| `pm-paper-trade-ops` | Run, monitor and archive paper trading |
+| `pm-live-trade-ops` | Live trading, only with explicit user approval |
+
+### JSON CLI
+
+Every `market`, `paper` and `trade` command, and every `research` command except `research memory`, accepts `--json`. A running engine can be paused, resumed, inspected and stopped from another process with `oracle3 trade pause|resume|state|stop --json`. See [AGENTS.md](AGENTS.md) for which commands are read-only.
+
+## What do fees do to the edge?
+
+Both venues charge taker fees proportional to p(1 − p). A two-leg taker basket with both legs near 0.50 has to clear these violations per contract before any edge is left:
+
+| Venues | Break-even violation |
+|---|---:|
+| Kalshi + Kalshi | 3.50¢ |
+| Kalshi + Polymarket (rate 0.05) | 3.00¢ |
+| Kalshi + Polymarket (rate 0.04) | 2.75¢ |
+| Polymarket + Polymarket (rate 0.04) | 2.00¢ |
+
+Buying every outcome of an n-way event costs k(1 − Σp²) per contract, which approaches 7¢ on Kalshi as outcomes multiply. The derivation, the tables and the sources are in [Do prediction-market arbitrage edges survive fees?](docs/research/fee-frontier.md); `python scripts/fee_frontier.py` reproduces every number.
+
+## What is verified, and what is not?
+
+**Verified**
+
+- `oracle3.fees` reproduces Kalshi's published fee table and Polymarket's documented fee example (unit-tested).
+- The static checks in `oracle3.arbitrage` are unit-tested for every relation, including mixed-venue baskets and missing quotes.
+- The MCP server is tested with mocked venue APIs and was run against the live public APIs on 2026-09-28.
+- The pricing engine uses the coefficients from the companion working paper ([SSRN 6468338](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338)), checked against its [replication package](https://github.com/YichengYang-Ethan/prediction-market-pricing).
+
+**Not demonstrated**
+
+- **No live track record.** Performance figures are deliberately not published. The committed replay episodes are short smoke tests, not statistically powered backtests.
+- **How often violations exceed the fee hurdle.** The fee note gives the thresholds; it does not measure how often, for how long or at what depth prices cross them.
+- **Execution.** The checks assume every leg fills at the quoted price. `SpreadExecutor` (multi-leg execution with LIFO unwind on partial fills) is unit-tested but not yet wired into the multi-leg strategies. The strategies subtract a flat 0.005 per side per contract instead of the venue schedules in `oracle3.fees`, which understates taker fees at mid prices (a Kalshi leg bought at 0.50 pays 1.75¢).
+- **Experimental modules.** `oracle3/experimental/` (flash-loan arbitrage), the multi-agent pipeline and the on-chain reputation module are prototypes and are not on the trading path.
+
+**Roadmap**
+
+1. Wire `oracle3.fees` into the strategies so every signal is priced net of the venue schedule.
+2. Measure how often and how deeply live violations exceed the fee hurdle, per relation and venue pair.
+3. A pre-registered forward paper-trading record with timestamped daily snapshots.
+
+## How is it built?
 
 ```mermaid
 graph TD
-    A[Wang Transform Pricing Engine<br/>MLE coefficients from paper] --> B[Fair Value Estimator<br/>Model Greeks · Kelly Sizing]
-    B --> C[Strategy Layer]
-    C --> D[8 Constraint-Based Arbitrage]
-    C --> E[2 Model-Driven Strategies]
-    C --> F[LLM Agent Strategies]
-    D --> G[Trading Engine<br/>SpreadExecutor · Risk Manager · Position Tracker]
-    E --> G
-    F --> G
-    G --> H[Kalshi]
-    G --> I[Polymarket]
-    G --> J[Solana / DFlow]
+    R[Relation store<br/>implication · exclusivity · complement · same event · event sum] --> C[Constraint checker<br/>oracle3.arbitrage + oracle3.fees]
+    Q[Venue data<br/>Kalshi · Polymarket public APIs] --> C
+    C --> S[Strategy layer<br/>6 constraint-based · 2 statistical · 2 model-driven · LLM agents]
+    P[Pricing engine<br/>Wang transform, calibrated in Yang 2026] --> S
+    S --> E[Trading engine<br/>risk manager · position tracker · kill switch]
+    E --> T[Paper trader]
+    E --> L[Live traders<br/>CLI only]
+    C --> M[MCP server<br/>read-only tools + paper ledger]
+    Q --> M
 ```
 
-## Strategies
+Relations and venue quotes feed the constraint checker, which prices every basket under each market's fee schedule. Strategies consume those checks and the pricing engine's fair values and send orders through a trading engine that enforces risk limits. The MCP server exposes the data, the checker and a separate paper ledger to agents; live traders are reachable only from the CLI.
 
-**Constraint-based arbitrage** — each exploits a violated probability axiom:
+**Constraint-based strategies**, each enforcing one probability bound:
 
-| Strategy | Invariant |
-|----------|-----------|
-| Cross-Market | Same event, same price across exchanges |
-| Exclusivity | $P(A) + P(B) \leq 1$ for mutually exclusive events |
-| Implication | $P(A) \leq P(B)$ when A implies B |
-| Conditional | $P(A \mid B) \in [L, U]$ within derived bounds |
-| Event Sum | $\sum P(\text{outcome}_i) = 1$ within an event |
-| Structural | $P(A) = \beta \cdot P(B) + \alpha$ from calibrated model |
+| Strategy | Bound |
+|---|---|
+| Cross-market | Same event, same price across venues |
+| Exclusivity | P(A) + P(B) ≤ 1 for mutually exclusive events |
+| Implication | P(A) ≤ P(B) when A implies B |
+| Conditional | P(A \| B) within derived bounds |
+| Event sum | Σ P(outcome) = 1 within an event |
+| Structural | P(A) = β·P(B) + α from a fitted relation |
 
-**Statistical arbitrage**: cointegration spread (self-calibrating z-score), lead-lag (cross-correlation).
+**Statistical arbitrage:** cointegration spread, lead-lag. **Model-driven:** fair-value divergence and premium decay, using the pricing model below.
 
-**Model-driven**: fair value divergence (Wang-model edge), premium decay (rides predictable premium lifecycle).
+**Pricing model.** Fair values come from the Wang transform p_mkt = Φ(Φ⁻¹(p) + λ), with λ estimated on 291,309 resolved contracts in the companion working paper, Yang (2026), *Pricing Prediction Markets: Incomplete Markets, Selection Rules, and Calibration Wedges* ([SSRN 6468338](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338)). The model and its estimates are documented there.
 
-## Pricing Engine
+## Related projects
 
-Deploys the Wang Transform from Yang (2026), calibrated on 291,309 contracts across 6 platforms:
+- [ulab-uiuc/prediction-market-cli](https://github.com/ulab-uiuc/prediction-market-cli) (Coinjure): agent-native trading system for prediction markets; Oracle3 bundles its `coinjure` package.
+- [pmxt-dev/pmxt](https://github.com/pmxt-dev/pmxt): unified API across prediction-market venues.
+- [Jon-Becker/prediction-market-analysis](https://github.com/Jon-Becker/prediction-market-analysis): data collection and analysis framework with a large public dataset.
+- [YichengYang-Ethan/prediction-market-pricing](https://github.com/YichengYang-Ethan/prediction-market-pricing): replication package for the pricing model.
 
-$$p^{\text{mkt}} = \Phi\bigl(\Phi^{-1}(p^*) + \lambda\bigr), \quad \hat{\lambda} = 0.183 \; (p < 10^{-15})$$
+## How can I collaborate?
 
-- **Hierarchical model**: $\lambda_i = 0.259 - 0.072 \ln(1+V) + 0.143 \ln(1+D) - 0.477 |p-0.5|$
-- **Model Greeks**: $\partial p / \partial \lambda$, Kelly fraction, edge decay rate
-- **Online calibrator**: hybrid batch MLE + streaming EWMA with category shrinkage
-- **Correlation-aware risk**: EWMA correlation matrix, effective exposure limits
+- **Open problems** are tracked as [issues labeled `open-problem`](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues?q=is%3Aissue+label%3Aopen-problem): measuring violations against the fee hurdle, evaluating relation discovery, and comparing LLM and market calibration.
+- **Discussions** are open for questions and ideas: [GitHub Discussions](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/discussions).
+- **Contributions:** see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-> Yang, Y. (2026). *Pricing Prediction Markets: Risk Premiums, Incomplete Markets, and a Decomposition Framework.* Working Paper, UIUC. [[Replication package]](https://github.com/YichengYang-Ethan/prediction-market-pricing)
+## How do I cite it?
 
-## Quick Start
+Citation metadata is in [CITATION.cff](CITATION.cff), and every release is archived on Zenodo ([DOI 10.5281/zenodo.20062548](https://doi.org/10.5281/zenodo.20062548)). For the pricing model, cite the working paper ([SSRN 6468338](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338)).
 
-```bash
-git clone https://github.com/YichengYang-Ethan/oracle3.git && cd oracle3
-poetry install
+## Origin and attribution
 
-oracle3 market list --exchange polymarket --limit 10
-oracle3 dashboard --exchange solana --initial-capital 10000
-```
-
-See [docs](https://yichengyang-ethan.github.io/oracle3/) for full CLI reference.
-
-## Key Technical Choices
-
-- **Event-driven async engine** with snapshot persistence and Unix socket control (pause/resume/killswitch)
-- **SpreadExecutor** with automatic LIFO unwind on partial fills — no naked multi-leg positions
-- **Dual-layer risk**: local position/drawdown/exposure limits + Solana `simulateTransaction` pre-flight
-- **On-chain audit trail** via Solana Memo program; Jito bundle submission for MEV protection
-- **633 tests**, ruff, mypy, codespell CI on every push
-
-## Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=YichengYang-Ethan/oracle3&type=Date)](https://star-history.com/#YichengYang-Ethan/oracle3&Date)
-
-## Contributors
-
-[![Contributors](https://contrib.rocks/image?repo=YichengYang-Ethan/oracle3)](https://github.com/YichengYang-Ethan/oracle3/graphs/contributors)
-
-If oracle3 helps your research or trading, please ⭐ star the repo — it helps others find it.
+Oracle3 began as `ulab-uiuc/oracle3`, developed by Yicheng Yang and Haofei Yu at U Lab (University of Illinois Urbana-Champaign) under the MIT License, and it bundles the [`coinjure`](https://github.com/ulab-uiuc/prediction-market-cli) package from the same lab. The strategy, pricing, risk, dashboard, and test layers in this repository were added on top of that base; see [NOTICE](NOTICE) for the retained license text.
 
 ## License
 
-Apache 2.0 — see [LICENSE](LICENSE) for details.
+Apache 2.0; see [LICENSE](LICENSE). Portions from the original U Lab code remain under the MIT License reproduced in [NOTICE](NOTICE).
 
-*This software is for research and educational purposes. Trading involves financial risk.*
+*This software is for research and education. Trading involves financial risk.*

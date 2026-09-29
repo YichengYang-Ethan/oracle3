@@ -1,24 +1,30 @@
 #!/usr/bin/env python3
 # mypy: ignore-errors
-"""Oracle3 全功能端到端模拟交易 — 使用真实录制数据验证全部 8 项能力。
+"""Oracle3 end-to-end paper-trading demo of the on-chain feature set.
 
-数据源:
-- DFlow 真实 orderbook 数据 (parquet, 4534 events, 884 个活跃 ticker)
-- Solana Mainnet RPC (实时 slot 验证、钱包余额查询)
+This is a plumbing demo, not a performance test. It replays recorded DFlow
+order-book data, reads the live Solana slot and wallet balance, and exercises
+each on-chain component once. The Polymarket counterpart prices (a synthetic
+3-8% spread), the whale signals and the reputation P&L series are simulated,
+so the arbitrage counts and scores it prints say nothing about real edge.
 
-流程:
- 0. 环境检查 — Solana RPC 连通性 + 本地数据加载
- 1. Feature 1 — 跨市场套利检测 (CrossMarketArbitrageStrategy)
- 2. Feature 2 — 链上风控检查 (OnChainRiskManager)
- 3. Feature 3 — 链上数据信号 (OnChainSignalSource)
- 4. Feature 4 — MEV 防护 (JitoSubmitter)
- 5. Feature 5 — Agent 信誉系统 (ReputationManager)
- 6. Feature 6 — Multi-Agent 协作 (AgentCoordinator)
- 7. Feature 7 — 闪电贷套利 (FlashLoanArbitrage)
- 8. Feature 8 — 原子多腿交易 (AtomicTrader)
- 9. PaperTrader 真实数据回放交易 (50+ 笔)
-10. 套利策略 process_event 端到端
-11. 最终信誉评分汇总
+Data sources:
+- Recorded DFlow order-book data (parquet, 4,534 events, 884 active tickers)
+- Solana mainnet RPC (live slot check and wallet balance query)
+
+Steps:
+ 0. Environment check: Solana RPC connectivity and local data load
+ 1. Feature 1: cross-market arbitrage detection (CrossMarketArbitrageStrategy)
+ 2. Feature 2: on-chain risk checks (OnChainRiskManager)
+ 3. Feature 3: on-chain data signals (OnChainSignalSource)
+ 4. Feature 4: MEV protection (JitoSubmitter)
+ 5. Feature 5: agent reputation (ReputationManager)
+ 6. Feature 6: multi-agent coordination (AgentCoordinator)
+ 7. Feature 7: flash-loan arbitrage (experimental FlashLoanArbitrage; disabled, returns not-implemented)
+ 8. Feature 8: atomic multi-leg trades (AtomicTrader)
+ 9. PaperTrader replay on the recorded data (50+ orders)
+10. Arbitrage strategy process_event end to end
+11. Final reputation summary
 """
 
 from __future__ import annotations
@@ -33,14 +39,14 @@ import httpx
 import pandas as pd
 
 # ---------------------------------------------------------------------------
-# 常量
+# Constants
 # ---------------------------------------------------------------------------
 RPC_URL = 'https://api.mainnet-beta.solana.com'
 WALLET_ADDRESS = '7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae'
 PARQUET_PATH = Path('data/episodes/dflow_15min/dflow_events.parquet')
 
 # ---------------------------------------------------------------------------
-# 辅助
+# Helpers
 # ---------------------------------------------------------------------------
 
 _PASS = 0
@@ -70,71 +76,89 @@ def fail(msg: str) -> None:
 
 
 # ---------------------------------------------------------------------------
-# 真实 RPC 调用
+# Live RPC calls
 # ---------------------------------------------------------------------------
+
 
 async def fetch_solana_slot() -> int:
     async with httpx.AsyncClient(timeout=10.0) as client:
-        resp = await client.post(RPC_URL, json={
-            'jsonrpc': '2.0', 'id': 1, 'method': 'getSlot',
-        })
+        resp = await client.post(
+            RPC_URL,
+            json={
+                'jsonrpc': '2.0',
+                'id': 1,
+                'method': 'getSlot',
+            },
+        )
         return resp.json()['result']
 
 
 async def fetch_sol_balance(address: str) -> float:
     async with httpx.AsyncClient(timeout=10.0) as client:
-        resp = await client.post(RPC_URL, json={
-            'jsonrpc': '2.0', 'id': 1, 'method': 'getBalance',
-            'params': [address],
-        })
+        resp = await client.post(
+            RPC_URL,
+            json={
+                'jsonrpc': '2.0',
+                'id': 1,
+                'method': 'getBalance',
+                'params': [address],
+            },
+        )
         lamports = resp.json()['result']['value']
         return lamports / 1e9
 
 
 # ---------------------------------------------------------------------------
-# 主流程
+# Main flow
 # ---------------------------------------------------------------------------
+
 
 async def run_simulation() -> None:  # noqa: C901
     print('\n' + '=' * 72)
-    print('  Oracle3 全功能端到端模拟交易')
-    print(f'  钱包: {WALLET_ADDRESS}')
-    print('  模式: Paper Trading (无真实资金提交)')
-    print('  数据: DFlow 真实录制 + Solana Mainnet RPC')
+    print('  Oracle3 end-to-end paper-trading demo')
+    print(f'  Wallet: {WALLET_ADDRESS}')
+    print('  Mode: paper trading (no real funds submitted)')
+    print('  Data: recorded DFlow order books + Solana mainnet RPC')
     print('=' * 72)
 
     # ==================================================================
-    # Step 0: 环境检查
+    # Step 0: environment check
     # ==================================================================
-    section('Step 0: 环境与数据检查')
+    section('Step 0: environment and data check')
 
     # Solana RPC
     slot = await fetch_solana_slot()
-    ok(f'Solana RPC 连通 — slot: {slot}')
+    ok(f'Solana RPC reachable, slot: {slot}')
 
     sol_balance = await fetch_sol_balance(WALLET_ADDRESS)
-    ok(f'钱包余额: {sol_balance:.6f} SOL')
+    ok(f'Wallet balance: {sol_balance:.6f} SOL')
 
-    # 加载本地真实数据
+    # Load the recorded local data
     df = pd.read_parquet(PARQUET_PATH)
-    ok(f'加载 DFlow 录制数据: {len(df)} events, {df["ticker"].nunique()} tickers')
+    ok(
+        f'Loaded recorded DFlow data: {len(df)} events, {df["ticker"].nunique()} tickers'
+    )
 
-    # 筛选活跃 ticker（有价格变动）
+    # Keep active tickers (prices that moved)
     ticker_stats = df.groupby('ticker').agg(
-        min_p=('price', 'min'), max_p=('price', 'max'),
-        cnt=('price', 'count'), mean_p=('price', 'mean'),
+        min_p=('price', 'min'),
+        max_p=('price', 'max'),
+        cnt=('price', 'count'),
+        mean_p=('price', 'mean'),
     )
     varied = ticker_stats[ticker_stats['min_p'] != ticker_stats['max_p']]
     active_tickers = varied.sort_values('cnt', ascending=False).head(30)
-    ok(f'活跃 ticker (有价格变动): {len(varied)} 个, 选取 top {len(active_tickers)}')
+    ok(
+        f'Active tickers (prices moved): {len(varied)}, using the top {len(active_tickers)}'
+    )
 
     for t, row in active_tickers.head(5).iterrows():
         print(f'    {str(t):<45} [{row.min_p:.4f}, {row.max_p:.4f}]  n={int(row.cnt)}')
 
     # ==================================================================
-    # Step 1: Feature 1 — 跨市场套利检测
+    # Step 1: Feature 1, cross-market arbitrage detection
     # ==================================================================
-    section('Step 1: Feature 1 — 跨市场套利检测')
+    section('Step 1: Feature 1, cross-market arbitrage detection')
 
     from oracle3.strategy.contrib.cross_market_arbitrage_strategy import (
         CrossMarketArbitrageStrategy,
@@ -142,11 +166,13 @@ async def run_simulation() -> None:  # noqa: C901
     from oracle3.ticker.ticker import PolyMarketTicker, SolanaTicker
 
     arb_strategy = CrossMarketArbitrageStrategy(
-        min_edge=0.02, trade_size=50.0,
-        fee_rate=0.01, cooldown_seconds=5.0,
+        min_edge=0.02,
+        trade_size=50.0,
+        fee_rate=0.01,
+        cooldown_seconds=5.0,
     )
 
-    # 用真实 DFlow 数据构建 SolanaTicker
+    # Build SolanaTicker objects from the recorded DFlow data
     solana_tickers: list[SolanaTicker] = []
     for ticker_sym in active_tickers.index:
         row = active_tickers.loc[ticker_sym]
@@ -159,12 +185,12 @@ async def run_simulation() -> None:  # noqa: C901
         solana_tickers.append(st)
         arb_strategy.register_price('dflow', st, Decimal(str(round(row.mean_p, 4))))
 
-    ok(f'注册 {len(solana_tickers)} 个 DFlow SolanaTicker (真实均价)')
+    ok(f'Registered {len(solana_tickers)} DFlow SolanaTickers (recorded mean prices)')
 
-    # 模拟 Polymarket 侧 — 从同类事件的名称出发，制造 3-8% 价差
+    # Simulated Polymarket side: reuse the event names and add a synthetic 3-8% spread
     poly_tickers: list[PolyMarketTicker] = []
     for i, (ticker_sym, row) in enumerate(active_tickers.iterrows()):
-        # 用类似的名称让 SequenceMatcher 能匹配到
+        # Similar names so that SequenceMatcher pairs them
         name = str(ticker_sym).replace('-', ' ')
         pt = PolyMarketTicker(
             symbol=f'POLY_{str(ticker_sym)[:20]}',
@@ -178,20 +204,24 @@ async def run_simulation() -> None:  # noqa: C901
         poly_price = Decimal(str(round(row.mean_p + offset, 4)))
         arb_strategy.register_price('polymarket', pt, poly_price)
 
-    ok(f'注册 {len(poly_tickers)} 个模拟 Polymarket Ticker (价差 3%-8%)')
+    ok(
+        f'Registered {len(poly_tickers)} simulated Polymarket tickers (synthetic 3-8% spread)'
+    )
 
     opportunities = arb_strategy.find_arbitrage_opportunities()
-    ok(f'检测到 {len(opportunities)} 个套利机会')
+    ok(f'Detected {len(opportunities)} opportunities (on synthetic spreads)')
 
     for opp in opportunities[:5]:
         print(f'    {opp["label"][:50]}')
         print(f'      DFlow @ {opp["price_a"]:.4f}  vs  Poly @ {opp["price_b"]:.4f}')
-        print(f'      spread={opp["spread"]:.4f}  profit=${opp["expected_profit"]:.2f}  fees=${opp["fees"]:.2f}')
+        print(
+            f'      spread={opp["spread"]:.4f}  profit=${opp["expected_profit"]:.2f}  fees=${opp["fees"]:.2f}'
+        )
 
     # ==================================================================
-    # Step 2: Feature 2 — 链上风控
+    # Step 2: Feature 2, on-chain risk checks
     # ==================================================================
-    section('Step 2: Feature 2 — 链上风控检查')
+    section('Step 2: Feature 2, on-chain risk checks')
 
     from oracle3.data.market_data_manager import MarketDataManager
     from oracle3.position.position_manager import PositionManager
@@ -201,7 +231,9 @@ async def run_simulation() -> None:  # noqa: C901
     md = MarketDataManager()
     pm = PositionManager()
     onchain_risk = OnChainRiskManager(
-        position_manager=pm, market_data=md, rpc_url=RPC_URL,
+        position_manager=pm,
+        market_data=md,
+        rpc_url=RPC_URL,
         max_single_trade_size=Decimal('500'),
         max_position_size=Decimal('2000'),
         max_total_exposure=Decimal('10000'),
@@ -211,26 +243,36 @@ async def run_simulation() -> None:  # noqa: C901
 
     t0 = solana_tickers[0]
 
-    # 正常交易
-    allowed = await onchain_risk.check_trade(t0, TradeSide.BUY, Decimal('50'), Decimal('0.45'))
-    ok(f'正常风控 (50 @ 0.45): {"通过" if allowed else "拒绝"}')
+    # Within limits
+    allowed = await onchain_risk.check_trade(
+        t0, TradeSide.BUY, Decimal('50'), Decimal('0.45')
+    )
+    ok(f'Within-limit check (50 @ 0.45): {"allowed" if allowed else "rejected"}')
 
-    # 超限交易
-    blocked = await onchain_risk.check_trade(t0, TradeSide.BUY, Decimal('600'), Decimal('0.45'))
-    ok(f'超限风控 (600 @ 0.45): {"拒绝" if not blocked else "意外通过"}')
+    # Over the limit
+    blocked = await onchain_risk.check_trade(
+        t0, TradeSide.BUY, Decimal('600'), Decimal('0.45')
+    )
+    ok(
+        f'Over-limit check (600 @ 0.45): {"rejected" if not blocked else "unexpectedly allowed"}'
+    )
 
     # Agent tool
     risk_status = onchain_risk.get_risk_status()
-    ok(f'风控状态: daily_used={risk_status["daily_volume_used"]}, '
-       f'remaining={risk_status["daily_remaining"]}')
-    print(f'    限额: max_trade={risk_status["max_single_trade"]}, '
-          f'max_pos={risk_status["max_position_size"]}, '
-          f'exposure={risk_status["max_total_exposure"]}')
+    ok(
+        f'Risk state: daily_used={risk_status["daily_volume_used"]}, '
+        f'remaining={risk_status["daily_remaining"]}'
+    )
+    print(
+        f'    Limits: max_trade={risk_status["max_single_trade"]}, '
+        f'max_pos={risk_status["max_position_size"]}, '
+        f'exposure={risk_status["max_total_exposure"]}'
+    )
 
     # ==================================================================
-    # Step 3: Feature 3 — 链上数据信号
+    # Step 3: Feature 3, on-chain data signals
     # ==================================================================
-    section('Step 3: Feature 3 — 链上数据信号')
+    section('Step 3: Feature 3, on-chain data signals')
 
     from oracle3.data.live.onchain_signal_source import (
         OnChainSignal,
@@ -251,50 +293,65 @@ async def run_simulation() -> None:  # noqa: C901
         large_transfer_threshold=1000.0,
     )
 
-    info('执行链上信号扫描 (真实 RPC)...')
+    info('Scanning on-chain signals (live RPC)...')
     try:
         await signal_source._poll_wallet_balances()
         signals = signal_source.get_onchain_signals(limit=5)
-        ok(f'链上扫描完成 — {len(signals)} 个信号')
+        ok(f'On-chain scan finished: {len(signals)} signals')
         for sig in signals:
-            print(f'    {sig["signal_type"]}: wallet={sig.get("wallet","")[:16]}.. '
-                  f'amount={sig.get("amount",0):.2f} {sig.get("token","")} '
-                  f'dir={sig.get("direction","")}')
+            print(
+                f'    {sig["signal_type"]}: wallet={sig.get("wallet","")[:16]}.. '
+                f'amount={sig.get("amount",0):.2f} {sig.get("token","")} '
+                f'dir={sig.get("direction","")}'
+            )
     except Exception as e:
-        info(f'RPC 扫描部分异常: {type(e).__name__}: {str(e)[:60]}')
+        info(f'Partial RPC scan failure: {type(e).__name__}: {str(e)[:60]}')
 
-    # 注入模拟鲸鱼信号 (真实钱包地址)
+    # Inject simulated whale signals (real wallet addresses)
     whale_signals = [
         OnChainSignal(
-            signal_type='whale_transfer', wallet=WALLET_ADDRESS,
-            amount=50000.0, direction='outflow', token='SOL',
-            timestamp=time.time(), label='oracle3-agent large SOL outflow',
+            signal_type='whale_transfer',
+            wallet=WALLET_ADDRESS,
+            amount=50000.0,
+            direction='outflow',
+            token='SOL',
+            timestamp=time.time(),
+            label='oracle3-agent large SOL outflow',
         ),
         OnChainSignal(
             signal_type='large_transfer',
             wallet='9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM',
-            amount=120000.0, direction='inflow', token='USDC',
-            timestamp=time.time(), label='dflow-treasury USDC deposit',
+            amount=120000.0,
+            direction='inflow',
+            token='USDC',
+            timestamp=time.time(),
+            label='dflow-treasury USDC deposit',
         ),
         OnChainSignal(
-            signal_type='tvl_change', wallet='DFlow Protocol',
-            amount=2_500_000.0, direction='increase', token='TVL',
-            timestamp=time.time(), label='DFlow TVL +2.5M',
+            signal_type='tvl_change',
+            wallet='DFlow Protocol',
+            amount=2_500_000.0,
+            direction='increase',
+            token='TVL',
+            timestamp=time.time(),
+            label='DFlow TVL +2.5M',
         ),
     ]
     for ws in whale_signals:
         signal_source._signals.append(ws)
-    ok(f'注入 {len(whale_signals)} 个模拟链上信号')
+    ok(f'Injected {len(whale_signals)} simulated on-chain signals')
 
     all_signals = signal_source.get_onchain_signals(limit=10)
     for sig in all_signals:
-        print(f'    [{sig["signal_type"]}] {sig.get("label","")[:50]} '
-              f'({sig.get("amount",0):,.0f} {sig.get("token","")})')
+        print(
+            f'    [{sig["signal_type"]}] {sig.get("label","")[:50]} '
+            f'({sig.get("amount",0):,.0f} {sig.get("token","")})'
+        )
 
     # ==================================================================
-    # Step 4: Feature 4 — MEV 防护
+    # Step 4: Feature 4, MEV protection
     # ==================================================================
-    section('Step 4: Feature 4 — MEV 防护 (Jito)')
+    section('Step 4: Feature 4, MEV protection (Jito)')
 
     from oracle3.trader.jito_submitter import JitoSubmitter
 
@@ -302,47 +359,84 @@ async def run_simulation() -> None:  # noqa: C901
     mock_kp.pubkey.return_value = MagicMock(__str__=lambda s: WALLET_ADDRESS)
 
     jito = JitoSubmitter(
-        keypair=mock_kp, rpc_url=RPC_URL, tip_lamports=10_000,
+        keypair=mock_kp,
+        rpc_url=RPC_URL,
+        tip_lamports=10_000,
     )
 
     mev = jito.get_mev_protection_status()
-    ok(f'Jito MEV 防护: enabled={mev["enabled"]}, tip={mev["tip_lamports"]} lamports')
-    print(f'    total_submitted={mev["total_submitted"]}, fallbacks={mev["fallback_count"]}')
+    ok(
+        f'Jito MEV protection: enabled={mev["enabled"]}, tip={mev["tip_lamports"]} lamports'
+    )
+    print(
+        f'    total_submitted={mev["total_submitted"]}, fallbacks={mev["fallback_count"]}'
+    )
     print(f'    jito_url={mev["jito_url"][:40]}...')
 
     # ==================================================================
-    # Step 5: Feature 5 — Agent 信誉系统
+    # Step 5: Feature 5, agent reputation
     # ==================================================================
-    section('Step 5: Feature 5 — Agent 信誉评分')
+    section('Step 5: Feature 5, agent reputation score')
 
     from oracle3.onchain.reputation import ReputationManager
 
     rep_mgr = ReputationManager(write_interval=5)
     rep_mgr._wallet = WALLET_ADDRESS
 
-    # 模拟 30 笔交易结果（混合盈亏，用真实数据分布）
+    # 30 simulated trade results (a fixed mixed win/loss series, not real P&L)
     simulated_pnl = [
-        0.05, 0.03, -0.01, 0.08, -0.02, 0.04, 0.06, -0.03, 0.02, 0.07,
-        -0.01, 0.05, 0.04, -0.02, 0.03, 0.06, -0.04, 0.08, 0.01, 0.05,
-        0.03, -0.01, 0.09, -0.03, 0.04, 0.02, 0.07, -0.02, 0.06, 0.05,
+        0.05,
+        0.03,
+        -0.01,
+        0.08,
+        -0.02,
+        0.04,
+        0.06,
+        -0.03,
+        0.02,
+        0.07,
+        -0.01,
+        0.05,
+        0.04,
+        -0.02,
+        0.03,
+        0.06,
+        -0.04,
+        0.08,
+        0.01,
+        0.05,
+        0.03,
+        -0.01,
+        0.09,
+        -0.03,
+        0.04,
+        0.02,
+        0.07,
+        -0.02,
+        0.06,
+        0.05,
     ]
     for pnl in simulated_pnl:
         rep_mgr.record_trade_result(pnl)
 
-    ok(f'录入 {len(simulated_pnl)} 笔模拟 PnL')
+    ok(f'Recorded {len(simulated_pnl)} simulated P&L values')
 
     my_rep = rep_mgr.get_my_reputation()
-    ok(f'信誉评分: {my_rep["score"]:.1f}/100')
-    print(f'    胜率={my_rep["win_rate"]:.1%}, Sharpe={my_rep["sharpe"]:.3f}, '
-          f'一致性={my_rep["consistency"]:.3f}, 交易数={my_rep["total_trades"]}')
+    ok(f'Reputation score: {my_rep["score"]:.1f}/100')
+    print(
+        f'    win_rate={my_rep["win_rate"]:.1%}, Sharpe={my_rep["sharpe"]:.3f}, '
+        f'consistency={my_rep["consistency"]:.3f}, trades={my_rep["total_trades"]}'
+    )
 
     other_rep = rep_mgr.get_agent_reputation('unknown_agent_xyz')
-    ok(f'查询未知 Agent: score={other_rep["score"]}, trades={other_rep["total_trades"]}')
+    ok(
+        f'Unknown agent lookup: score={other_rep["score"]}, trades={other_rep["total_trades"]}'
+    )
 
     # ==================================================================
-    # Step 6: Feature 6 — Multi-Agent 协作
+    # Step 6: Feature 6, multi-agent coordination
     # ==================================================================
-    section('Step 6: Feature 6 — Multi-Agent 协作流水线')
+    section('Step 6: Feature 6, multi-agent pipeline')
 
     from oracle3.agent.coordinator import (
         AgentCoordinator,
@@ -357,7 +451,7 @@ async def run_simulation() -> None:  # noqa: C901
         execution_agent=ExecutionAgent(),
     )
 
-    # 从套利检测结果构造 pipeline 任务
+    # Build a pipeline task from the arbitrage detection output
     if opportunities:
         best = opportunities[0]
         task = {
@@ -376,9 +470,9 @@ async def run_simulation() -> None:  # noqa: C901
             'action': 'evaluate',
         }
 
-    info(f'启动流水线: {task["type"]}')
+    info(f'Starting pipeline: {task["type"]}')
     pipeline_result = await coordinator.run_pipeline(task)
-    ok(f'流水线完成: success={pipeline_result.success}')
+    ok(f'Pipeline finished: success={pipeline_result.success}')
     print(f'    ticker={pipeline_result.ticker}, side={pipeline_result.side}')
     print(f'    qty={pipeline_result.quantity}, price={pipeline_result.price}')
     if pipeline_result.error:
@@ -386,78 +480,107 @@ async def run_simulation() -> None:  # noqa: C901
 
     # delegate_to_specialist
     for agent_type, task_desc in [
-        ('signal', 'Analyze whale SOL outflow correlation with DFlow prediction markets'),
-        ('risk', 'Evaluate portfolio exposure after 20 long positions on sports events'),
+        (
+            'signal',
+            'Analyze whale SOL outflow correlation with DFlow prediction markets',
+        ),
+        (
+            'risk',
+            'Evaluate portfolio exposure after 20 long positions on sports events',
+        ),
         ('execution', 'Execute hedged buy on KXATPCHALLENGERMATCH-26MAR01SCHPIR-SCH'),
     ]:
         result = await coordinator.delegate_to_specialist(agent_type, task_desc)
-        ok(f'[{agent_type}] 专家委托: {result[:60]}{"..." if len(result)>60 else ""}')
+        ok(f'[{agent_type}] delegated: {result[:60]}{"..." if len(result)>60 else ""}')
 
     # ==================================================================
-    # Step 7: Feature 7 — 闪电贷套利
+    # Step 7: Feature 7, flash-loan arbitrage (experimental)
     # ==================================================================
-    section('Step 7: Feature 7 — 闪电贷套利')
+    section('Step 7: Feature 7, flash-loan arbitrage (experimental, disabled)')
 
-    from oracle3.trader.flash_loan import FlashLoanArbitrage
+    from oracle3.experimental.flash_loan import FlashLoanArbitrage
 
     flash_loan = FlashLoanArbitrage(
-        keypair=None, rpc_url=RPC_URL,
-        protocol='marginfi', max_borrow=10_000.0, min_profit_bps=50,
+        keypair=None,
+        rpc_url=RPC_URL,
+        protocol='marginfi',
+        max_borrow=10_000.0,
+        min_profit_bps=50,
     )
 
     mkt_a = solana_tickers[0].symbol
     mkt_b = solana_tickers[1].symbol
 
-    # 超限测试
+    # Over the borrow limit
     over = await flash_loan.execute_flash_arbitrage(mkt_a, mkt_b, 20_000.0)
-    ok(f'超限 (20k > 10k max): success={over["success"]}  error={over["error"][:40]}')
+    ok(
+        f'Over limit (20k > 10k max): success={over["success"]}  error={over["error"][:40]}'
+    )
 
-    # 正常范围（无 keypair → build 失败，验证流程完整性）
+    # Within the limit (the prototype is disabled and returns not-implemented)
     normal = await flash_loan.execute_flash_arbitrage(mkt_a, mkt_b, 5_000.0)
-    ok(f'正常范围 (5k): success={normal["success"]}, protocol={normal["protocol"]}')
+    ok(f'Within limit (5k): success={normal["success"]}, protocol={normal["protocol"]}')
 
-    # 多组不同金额测试
+    # Several amounts
     for amount in [1_000, 3_000, 8_000]:
         r = await flash_loan.execute_flash_arbitrage(mkt_a, mkt_b, float(amount))
         info(f'  {amount:,} USDC: success={r["success"]}, protocol={r["protocol"]}')
 
     stats = flash_loan.stats
-    ok(f'闪电贷统计: attempts={stats["total_attempts"]}, '
-       f'successes={stats["successes"]}, profit={stats["total_profit"]}')
+    ok(
+        f'Flash-loan stats: attempts={stats["total_attempts"]}, '
+        f'successes={stats["successes"]}, profit={stats["total_profit"]}'
+    )
 
     # ==================================================================
-    # Step 8: Feature 8 — 原子多腿交易
+    # Step 8: Feature 8, atomic multi-leg trades
     # ==================================================================
-    section('Step 8: Feature 8 — 原子多腿交易')
+    section('Step 8: Feature 8, atomic multi-leg trades')
 
     from oracle3.trader.atomic_trader import AtomicTrader
 
     atomic = AtomicTrader(keypair=None, rpc_url=RPC_URL)
 
-    # 预测市场 + Jupiter 对冲
+    # Prediction market leg + Jupiter hedge
     jup_result = await atomic.place_hedged_order(
         prediction_market_symbol=solana_tickers[0].symbol,
-        prediction_side='buy', prediction_qty=100.0, prediction_price=0.28,
+        prediction_side='buy',
+        prediction_qty=100.0,
+        prediction_price=0.28,
         hedge_instrument='jupiter_swap',
-        hedge_ticker='SOL/USDC', hedge_side='sell',
-        hedge_qty=2.0, hedge_price=180.0,
+        hedge_ticker='SOL/USDC',
+        hedge_side='sell',
+        hedge_qty=2.0,
+        hedge_price=180.0,
     )
-    ok(f'Jupiter 对冲: success={jup_result["success"]}, legs={len(jup_result["legs"])}')
+    ok(
+        f'Jupiter hedge: success={jup_result["success"]}, legs={len(jup_result["legs"])}'
+    )
     for leg in jup_result['legs']:
-        print(f'    {leg["instrument_type"]}: {leg["side"]} {leg["qty"]} {leg["ticker"][:30]} @ {leg["price"]}')
-    print(f'    总成本: ${jup_result["total_cost"]}')
+        print(
+            f'    {leg["instrument_type"]}: {leg["side"]} {leg["qty"]} {leg["ticker"][:30]} @ {leg["price"]}'
+        )
+    print(f'    Total cost: ${jup_result["total_cost"]}')
 
-    # 预测市场 + Drift 永续对冲
+    # Prediction market leg + Drift perpetual hedge
     drift_result = await atomic.place_hedged_order(
-        prediction_market_symbol=solana_tickers[2].symbol if len(solana_tickers) > 2 else 'ETH_5K',
-        prediction_side='buy', prediction_qty=200.0, prediction_price=0.15,
+        prediction_market_symbol=solana_tickers[2].symbol
+        if len(solana_tickers) > 2
+        else 'ETH_5K',
+        prediction_side='buy',
+        prediction_qty=200.0,
+        prediction_price=0.15,
         hedge_instrument='drift_perp',
-        hedge_ticker='SOL-PERP', hedge_side='sell',
-        hedge_qty=5.0, hedge_price=175.0,
+        hedge_ticker='SOL-PERP',
+        hedge_side='sell',
+        hedge_qty=5.0,
+        hedge_price=175.0,
     )
-    ok(f'Drift 永续对冲: success={drift_result["success"]}, cost=${drift_result["total_cost"]}')
+    ok(
+        f'Drift perpetual hedge: success={drift_result["success"]}, cost=${drift_result["total_cost"]}'
+    )
 
-    # 多笔原子交易
+    # Several atomic trades
     for i in range(3):
         t = solana_tickers[3 + i] if len(solana_tickers) > 3 + i else solana_tickers[0]
         r = await atomic.place_hedged_order(
@@ -471,15 +594,17 @@ async def run_simulation() -> None:  # noqa: C901
             hedge_qty=1.0 + i * 0.5,
             hedge_price=170.0 + i * 5,
         )
-        info(f'  原子交易 #{i+3}: {t.symbol[:30]}, cost=${r["total_cost"]}')
+        info(f'  Atomic trade #{i+3}: {t.symbol[:30]}, cost=${r["total_cost"]}')
 
     a_stats = atomic.stats
-    ok(f'原子交易统计: attempts={a_stats["total_attempts"]}, successes={a_stats["successes"]}')
+    ok(
+        f'Atomic trade stats: attempts={a_stats["total_attempts"]}, successes={a_stats["successes"]}'
+    )
 
     # ==================================================================
-    # Step 9: PaperTrader 真实数据回放
+    # Step 9: PaperTrader replay on recorded data
     # ==================================================================
-    section('Step 9: PaperTrader 真实数据回放交易')
+    section('Step 9: PaperTrader replay on recorded data')
 
     from oracle3.events.events import PriceChangeEvent
     from oracle3.position.position_manager import Position
@@ -490,36 +615,42 @@ async def run_simulation() -> None:  # noqa: C901
     sim_md = MarketDataManager()
     sim_pm = PositionManager()
 
-    # 注入 $10,000 初始 USDC 余额
-    sim_pm.update_position(Position(
-        ticker=CashTicker.DFLOW_USDC,
-        quantity=Decimal('10000'),
-        average_cost=Decimal('1'),
-        realized_pnl=Decimal('0'),
-    ))
-    ok('注入初始资金: $10,000 USDC')
+    # Seed $10,000 of paper USDC
+    sim_pm.update_position(
+        Position(
+            ticker=CashTicker.DFLOW_USDC,
+            quantity=Decimal('10000'),
+            average_cost=Decimal('1'),
+            realized_pnl=Decimal('0'),
+        )
+    )
+    ok('Seeded paper balance: $10,000 USDC')
 
     sim_risk = StandardRiskManager(
-        position_manager=sim_pm, market_data=sim_md,
+        position_manager=sim_pm,
+        market_data=sim_md,
         max_single_trade_size=Decimal('500'),
         max_position_size=Decimal('2000'),
         max_total_exposure=Decimal('10000'),
         initial_capital=Decimal('10000'),
     )
     paper = PaperTrader(
-        market_data=sim_md, risk_manager=sim_risk, position_manager=sim_pm,
-        min_fill_rate=Decimal('0.95'), max_fill_rate=Decimal('1.0'),
+        market_data=sim_md,
+        risk_manager=sim_risk,
+        position_manager=sim_pm,
+        min_fill_rate=Decimal('0.95'),
+        max_fill_rate=Decimal('1.0'),
         commission_rate=Decimal('0.001'),
     )
 
-    # 用真实 parquet 数据回放
+    # Replay the recorded parquet data
     trade_log: list[dict] = []
     filled_count = 0
     rejected_count = 0
 
-    # 按时间排序, 取前 100 个有价格变动的 events
+    # Sort by time and take the first 100 events with price changes
     replay_df = df[df['ticker'].isin(active_tickers.index)].sort_values('ts').head(100)
-    ok(f'准备回放 {len(replay_df)} 个真实事件')
+    ok(f'Replaying {len(replay_df)} recorded events')
 
     prev_prices: dict[str, float] = {}
 
@@ -535,22 +666,25 @@ async def run_simulation() -> None:  # noqa: C901
             event_ticker=ticker_sym.split('-')[0],
         )
 
-        # 注入市场数据
-        sim_md.process_price_change_event(PriceChangeEvent(
-            ticker=ticker, price=Decimal(str(price)),
-        ))
+        # Feed market data
+        sim_md.process_price_change_event(
+            PriceChangeEvent(
+                ticker=ticker,
+                price=Decimal(str(price)),
+            )
+        )
 
-        # 交易策略: 价格变动时交易
+        # Toy rule: trade on price changes
         prev = prev_prices.get(ticker_sym)
         prev_prices[ticker_sym] = price
 
         if prev is None:
-            continue  # 第一次看到，跳过
+            continue  # First observation, skip
 
         if price == prev:
-            continue  # 价格没变，跳过
+            continue  # No price change, skip
 
-        # 价格上涨 → 买入; 价格下跌 → 卖出
+        # Price up -> buy; price down -> sell
         if price > prev:
             trade_side = TradeSide.BUY
             limit = Decimal(str(round(price + 0.01, 4)))
@@ -561,38 +695,57 @@ async def run_simulation() -> None:  # noqa: C901
             qty = Decimal('15')
 
         result = await paper.place_order(
-            side=trade_side, ticker=ticker,
-            limit_price=limit, quantity=qty,
+            side=trade_side,
+            ticker=ticker,
+            limit_price=limit,
+            quantity=qty,
         )
 
-        status = 'FILLED' if not result.failure_reason else f'REJ({str(result.failure_reason)[:20]})'
+        status = (
+            'FILLED'
+            if not result.failure_reason
+            else f'REJ({str(result.failure_reason)[:20]})'
+        )
         if not result.failure_reason:
             filled_count += 1
-            # 记录到信誉系统
-            pnl = float(price - prev) * float(qty) if trade_side == TradeSide.BUY else float(prev - price) * float(qty)
+            # Record in the reputation system
+            pnl = (
+                float(price - prev) * float(qty)
+                if trade_side == TradeSide.BUY
+                else float(prev - price) * float(qty)
+            )
             rep_mgr.record_trade_result(pnl)
         else:
             rejected_count += 1
 
-        trade_log.append({
-            'ticker': ticker_sym[:30], 'side': trade_side.value,
-            'qty': float(qty), 'price': float(limit), 'status': status,
-        })
+        trade_log.append(
+            {
+                'ticker': ticker_sym[:30],
+                'side': trade_side.value,
+                'qty': float(qty),
+                'price': float(limit),
+                'status': status,
+            }
+        )
 
         if len(trade_log) <= 10 or len(trade_log) % 10 == 0:
-            print(f'    #{len(trade_log):>3} {trade_side.value:4s} {qty:>5} x '
-                  f'{ticker_sym[:28]:<28} @ {limit:<8} → {status}')
+            print(
+                f'    #{len(trade_log):>3} {trade_side.value:4s} {qty:>5} x '
+                f'{ticker_sym[:28]:<28} @ {limit:<8} → {status}'
+            )
 
-    ok(f'回放完成: {len(trade_log)} 笔交易, {filled_count} 成交, {rejected_count} 拒绝')
+    ok(
+        f'Replay finished: {len(trade_log)} orders, {filled_count} filled, {rejected_count} rejected'
+    )
 
-    # 投资组合
+    # Portfolio
     portfolio = sim_pm.get_portfolio_value(sim_md)
-    print(f'    投资组合价值: {portfolio}')
+    print(f'    Portfolio value: {portfolio}')
 
     # ==================================================================
-    # Step 10: 套利策略 process_event 端到端
+    # Step 10: arbitrage strategy process_event end to end
     # ==================================================================
-    section('Step 10: 套利策略 process_event 端到端')
+    section('Step 10: arbitrage strategy process_event end to end')
 
     t_arb = solana_tickers[0]
     arb_event = PriceChangeEvent(
@@ -601,13 +754,15 @@ async def run_simulation() -> None:  # noqa: C901
     )
     arb_strategy.bind_context(arb_event, paper)
     await arb_strategy.process_event(arb_event, paper)
-    ok(f'process_event 完成 — 当前机会数: {len(arb_strategy.opportunities)}')
+    ok(
+        f'process_event finished, current opportunities: {len(arb_strategy.opportunities)}'
+    )
 
-    # 连续价格事件触发
+    # A sequence of price events
     for i in range(min(5, len(solana_tickers))):
         t = solana_tickers[i]
         row = active_tickers.iloc[i]
-        # 模拟价格波动
+        # Simulated price moves
         for delta in [0.01, -0.02, 0.03]:
             ev = PriceChangeEvent(
                 ticker=t,
@@ -615,43 +770,69 @@ async def run_simulation() -> None:  # noqa: C901
             )
             await arb_strategy.process_event(ev, paper)
 
-    ok(f'连续事件处理完成 — 最终机会数: {len(arb_strategy.opportunities)}')
+    ok(
+        f'Event sequence finished, final opportunities: {len(arb_strategy.opportunities)}'
+    )
 
     # ==================================================================
-    # Step 11: 最终信誉汇总
+    # Step 11: final reputation summary
     # ==================================================================
-    section('Step 11: 最终信誉评分汇总')
+    section('Step 11: final reputation summary')
 
     final = rep_mgr.get_my_reputation()
-    ok(f'最终信誉评分: {final["score"]:.1f}/100')
-    print(f'    总交易: {final["total_trades"]}')
-    print(f'    胜率: {final["win_rate"]:.1%}')
+    ok(f'Final reputation score: {final["score"]:.1f}/100')
+    print(f'    Trades: {final["total_trades"]}')
+    print(f'    Win rate: {final["win_rate"]:.1%}')
     print(f'    Sharpe: {final["sharpe"]:.3f}')
-    print(f'    一致性: {final["consistency"]:.3f}')
-    print(f'    钱包: {final["wallet"][:20]}...')
+    print(f'    Consistency: {final["consistency"]:.3f}')
+    print(f'    Wallet: {final["wallet"][:20]}...')
 
     # ==================================================================
-    # 总结
+    # Summary
     # ==================================================================
-    section('模拟交易完成 — 功能验证总结')
+    section('Demo finished: component check summary')
 
     features = [
-        ('Feature 1: 跨市场套利检测', len(opportunities) > 0,
-         f'{len(opportunities)} 个机会'),
-        ('Feature 2: 链上风控检查', risk_status is not None,
-         f'daily_used={risk_status["daily_volume_used"]}'),
-        ('Feature 3: 链上数据信号', len(all_signals) > 0,
-         f'{len(all_signals)} 个信号'),
-        ('Feature 4: MEV 防护 (Jito)', mev['enabled'],
-         f'tip={mev["tip_lamports"]}'),
-        ('Feature 5: Agent 信誉系统', final['score'] > 0,
-         f'score={final["score"]:.1f}'),
-        ('Feature 6: Multi-Agent 协作', True,
-         f'pipeline ran, success={pipeline_result.success}'),
-        ('Feature 7: 闪电贷套利', stats['total_attempts'] > 0,
-         f'{stats["total_attempts"]} attempts'),
-        ('Feature 8: 原子多腿交易', a_stats['total_attempts'] > 0,
-         f'{a_stats["total_attempts"]} attempts'),
+        (
+            'Feature 1: cross-market arbitrage detection',
+            len(opportunities) > 0,
+            f'{len(opportunities)} opportunities',
+        ),
+        (
+            'Feature 2: on-chain risk checks',
+            risk_status is not None,
+            f'daily_used={risk_status["daily_volume_used"]}',
+        ),
+        (
+            'Feature 3: on-chain data signals',
+            len(all_signals) > 0,
+            f'{len(all_signals)} signals',
+        ),
+        (
+            'Feature 4: MEV protection (Jito)',
+            mev['enabled'],
+            f'tip={mev["tip_lamports"]}',
+        ),
+        (
+            'Feature 5: agent reputation',
+            final['score'] > 0,
+            f'score={final["score"]:.1f}',
+        ),
+        (
+            'Feature 6: multi-agent coordination',
+            True,
+            f'pipeline ran, success={pipeline_result.success}',
+        ),
+        (
+            'Feature 7: flash-loan arbitrage (experimental)',
+            stats['total_attempts'] > 0,
+            f'{stats["total_attempts"]} attempts',
+        ),
+        (
+            'Feature 8: atomic multi-leg trades',
+            a_stats['total_attempts'] > 0,
+            f'{a_stats["total_attempts"]} attempts',
+        ),
     ]
 
     passed = sum(1 for _, s, _ in features if s)
@@ -660,12 +841,12 @@ async def run_simulation() -> None:  # noqa: C901
         print(f'  [{icon}] {name}  ({detail})')
 
     print(f'\n  {"=" * 50}')
-    print(f'  结果: {passed}/{len(features)} 项功能验证通过')
-    print(f'  模拟交易数: {len(trade_log)} 笔 ({filled_count} 成交)')
-    print(f'  Agent 信誉: {final["score"]:.1f}/100')
-    print(f'  套利机会: {len(opportunities)} 个')
+    print(f'  Result: {passed}/{len(features)} components ran')
+    print(f'  Paper orders: {len(trade_log)} ({filled_count} filled)')
+    print(f'  Agent reputation: {final["score"]:.1f}/100')
+    print(f'  Opportunities (synthetic spreads): {len(opportunities)}')
     print(f'  Solana slot: {slot}')
-    print(f'  钱包 SOL: {sol_balance:.6f}')
+    print(f'  Wallet SOL: {sol_balance:.6f}')
     print(f'  {"=" * 50}')
     print()
 
