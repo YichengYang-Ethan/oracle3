@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `oracle3 calibrate --csv FILE`: offline Wang Transform MLE from a resolved-contract CSV, with platform warm starts, optional hierarchical covariates and JSON output (#53, thanks @xyjk0511).
+- `oracle3 dashboard --snapshot-json PATH --snapshot-interval SECONDS`: periodic, atomically written JSON snapshots of positions, cash and last prices (#55, thanks @MayurK-cmd).
+- Documentation of the Solana pre-flight risk flow: local limits, `simulateTransaction`, Jito fallback and failure modes (#56, thanks @lntutor).
+
 ## [1.2.1] - 2026-09-28
 
 ### Fixed
