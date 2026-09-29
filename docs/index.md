@@ -47,4 +47,5 @@ The [MCP server](mcp.md) exposes 13 tools: market search, quotes, order books, f
 - [MCP server](mcp.md): tools, client configuration and a worked example
 - [Do prediction-market arbitrage edges survive fees?](research/fee-frontier.md): break-even violations under the published fee schedules
 - [CLI quick start](CLI_QUICK_START.md) and [monitoring](CLI_MONITORING.md)
+- [Solana pre-flight risk and submission](architecture.md): local limits, transaction simulation, Jito fallback and failure handling
 - [Project specification](PROJECT_SPECIFICATION.md): module reference
