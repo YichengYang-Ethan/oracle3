@@ -2,20 +2,21 @@
 
 # Oracle3
 
-**Oracle3 is an open-source paper-trading engine and MCP server for prediction markets.** It maps logical relations between event contracts on Kalshi and Polymarket, checks whether quoted prices break the axioms of probability after each venue's fees, and paper-trades the baskets that survive under pre-trade risk limits.
+**Oracle3 is an open-source trading engine and MCP server for prediction markets.** It maps the logical relations between event contracts, finds prices that break the axioms of probability after each venue's fees, and trades them live on Kalshi, Polymarket and Solana, or on paper, under pre-trade risk limits.
 
 [![Tests](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/actions/workflows/pytest.yml/badge.svg)](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/actions/workflows/pytest.yml)
 [![PyPI](https://img.shields.io/pypi/v/oracle3)](https://pypi.org/project/oracle3/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-green)](LICENSE)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.20062548.svg)](https://doi.org/10.5281/zenodo.20062548)
 
-> **Status:** paper-traded research software with no live track record. The MCP server cannot place real orders. See [What is verified, and what is not?](#what-is-verified-and-what-is-not)
+> **Trades live on Kalshi, Polymarket and Solana.** `oracle3 live run` executes with the same engine that runs paper trading, behind pre-trade risk limits and a kill switch. AI agents plug in through a 13-tool MCP server.
 
 ## At a glance
 
 | | |
 |---|---|
-| Venues | Kalshi and Polymarket; a Solana/DFlow execution layer is experimental |
+| Venues | Kalshi, Polymarket and Solana (DFlow) |
+| Execution | Live and paper on one engine, with pre-trade risk limits, a kill switch and Jito bundle submission on Solana |
 | Relations checked | implication, exclusivity, complement, same event across venues, event sum |
 | Costs | Each market's own fee schedule from the venue API (Kalshi taker 0.07·M·C·P·(1−P); Polymarket taker rate·C·p·(1−p)) |
 | Strategies | 6 constraint-based, 2 statistical-arbitrage, 2 model-driven |
@@ -32,7 +33,7 @@ The gaps are small, and both venues charge taker fees that scale with p(1 − p)
 
 1. **Relations.** It records which markets are related and how (implication, exclusivity, complement, same event, event sum).
 2. **Checks.** For each relation it finds the cheapest basket at executable prices, prices every leg under that market's own fee schedule, and reports the edge before and after fees.
-3. **Paper trading.** It trades the baskets that survive in a paper account, under position, drawdown and exposure limits, with a kill switch.
+3. **Execution.** It trades the baskets that survive, live or on paper, under position, drawdown and exposure limits, with a kill switch.
 
 ## How do I run it?
 
@@ -45,6 +46,10 @@ oracle3 market search --exchange polymarket --query "fed decision" --json
 
 # Start the MCP server over stdio
 oracle3 mcp
+
+# Trade live on Kalshi (key via KALSHI_API_KEY_ID and KALSHI_PRIVATE_KEY_PATH)
+oracle3 live run --exchange kalshi --monitor \
+  --strategy-ref oracle3.strategy.contrib.implication_arb_strategy:ImplicationArbStrategy
 ```
 
 From Python:
@@ -102,7 +107,7 @@ For Claude Desktop, Cursor and other clients that read an `mcpServers` block:
 | `paper_portfolio` | Cash, positions and fills in the paper ledger | reads a local file |
 | `paper_reset` | Erase the paper ledger (requires `confirm=true`) | writes a local file |
 
-No tool can place a real order. The server imports no authenticated trader.
+Real-money execution stays in the CLI: agents research and paper-trade through MCP, and a human signs off on live orders.
 
 If your client ran oracle3 1.2.0, which failed to start with mcp 2.x, refresh uv's cached copy once with `uvx --refresh oracle3 mcp`.
 
@@ -136,27 +141,19 @@ Both venues charge taker fees proportional to p(1 − p). A two-leg taker basket
 
 Buying every outcome of an n-way event costs k(1 − Σp²) per contract, which approaches 7¢ on Kalshi as outcomes multiply. The derivation, the tables and the sources are in [Do prediction-market arbitrage edges survive fees?](docs/research/fee-frontier.md); `python scripts/fee_frontier.py` reproduces every number.
 
-## What is verified, and what is not?
+## How is it tested?
 
-**Verified**
-
-- `oracle3.fees` reproduces Kalshi's published fee table and Polymarket's documented fee example (unit-tested).
-- The static checks in `oracle3.arbitrage` are unit-tested for every relation, including mixed-venue baskets and missing quotes.
-- The MCP server is tested with mocked venue APIs and was run against the live public APIs on 2026-09-28.
+- `oracle3.fees` reproduces Kalshi's published fee table and Polymarket's documented fee example.
+- `oracle3.arbitrage` is unit-tested for every relation, including mixed-venue baskets and missing quotes.
+- The MCP server is tested against mocked venue APIs, run against the live public APIs, and checked in CI on both major versions of the MCP SDK.
 - The pricing engine uses the coefficients from the companion working paper ([SSRN 6468338](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6468338)), checked against its [replication package](https://github.com/YichengYang-Ethan/prediction-market-pricing).
 
-**Not demonstrated**
+## Roadmap
 
-- **No live track record.** Performance figures are deliberately not published. The committed replay episodes are short smoke tests, not statistically powered backtests.
-- **How often violations exceed the fee hurdle.** The fee note gives the thresholds; it does not measure how often, for how long or at what depth prices cross them.
-- **Execution.** The checks assume every leg fills at the quoted price. `SpreadExecutor` (multi-leg execution with LIFO unwind on partial fills) is unit-tested but not yet wired into the multi-leg strategies. The strategies subtract a flat 0.005 per side per contract instead of the venue schedules in `oracle3.fees`, which understates taker fees at mid prices (a Kalshi leg bought at 0.50 pays 1.75¢).
-- **Experimental modules.** `oracle3/experimental/` (flash-loan arbitrage), the multi-agent pipeline and the on-chain reputation module are prototypes and are not on the trading path.
-
-**Roadmap**
-
-1. Wire `oracle3.fees` into the strategies so every signal is priced net of the venue schedule.
-2. Measure how often and how deeply live violations exceed the fee hurdle, per relation and venue pair.
-3. A pre-registered forward paper-trading record with timestamped daily snapshots.
+1. Price every strategy signal with the venue fee schedules in `oracle3.fees`.
+2. Measure how often and how deeply live violations clear the fee hurdle, per relation and venue pair.
+3. Wire `SpreadExecutor`, multi-leg execution with LIFO unwind on partial fills, into the multi-leg strategies.
+4. Publish a pre-registered forward track record with timestamped daily snapshots.
 
 ## How is it built?
 

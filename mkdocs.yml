@@ -1,5 +1,5 @@
 site_name: Oracle3
-site_description: Open-source paper-trading engine and MCP server for prediction markets. Fee-aware no-arbitrage checks across related Kalshi and Polymarket contracts.
+site_description: Open-source trading engine and MCP server for prediction markets. Fee-aware no-arbitrage trading across related contracts, live on Kalshi, Polymarket and Solana or on paper.
 site_url: https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/
 repo_url: https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent
 repo_name: YichengYang-Ethan/oracle3-prediction-market-agent

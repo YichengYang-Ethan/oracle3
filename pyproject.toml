@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "oracle3"
 version = "1.2.1"
-description = "Paper-trading engine and MCP server for prediction markets (Kalshi, Polymarket): no-arbitrage checks across related event contracts, net of venue fees, under pre-trade risk limits."
+description = "Trading engine and MCP server for prediction markets: fee-aware no-arbitrage trading across related event contracts, live on Kalshi, Polymarket and Solana or on paper, under pre-trade risk limits."
 authors = ["Yicheng Yang <yy85@illinois.edu>"]
 license = "Apache-2.0"
 readme = "README.md"

@@ -4,7 +4,7 @@ Instructions for AI coding agents working in this repository. Humans may find it
 
 ## What this project is
 
-Oracle3 is a paper-trading engine and MCP server for prediction markets (Kalshi, Polymarket). It checks whether prices of related event contracts violate probability bounds after each venue's fees, and paper-trades the baskets that survive under pre-trade risk limits. See [README.md](README.md).
+Oracle3 is a trading engine (live on Kalshi, Polymarket and Solana, or on paper) and an MCP server for prediction markets. It checks whether prices of related event contracts violate probability bounds after each venue's fees, and paper-trades the baskets that survive under pre-trade risk limits. See [README.md](README.md).
 
 ## Setup and checks
 

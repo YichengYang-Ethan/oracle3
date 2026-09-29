@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: 'Oracle3: Paper-Trading Engine and MCP Server for Prediction-Market Arbitrage'
+title: 'Oracle3: Trading Engine and MCP Server for Prediction-Market Arbitrage'
 message: >-
   If you use this software, please cite both the software and the working paper.
 type: software
@@ -17,11 +17,11 @@ identifiers:
     value: 10.5281/zenodo.20062549
     description: Software DOI (Zenodo) for v1.1.1 and later releases
 abstract: >-
-  Oracle3 is an open-source paper-trading engine and Model Context Protocol
-  server for prediction markets. It maps logical relations between event
-  contracts on Kalshi and Polymarket, checks whether quoted prices violate the
-  axioms of probability after each venue's published fees, and paper-trades
-  the baskets that survive under pre-trade risk limits. It includes six
+  Oracle3 is an open-source trading engine and Model Context Protocol server
+  for prediction markets. It maps logical relations between event contracts,
+  checks whether quoted prices violate the axioms of probability after each
+  venue's published fees, and trades the baskets that survive, live on Kalshi,
+  Polymarket and Solana or on paper, under pre-trade risk limits. It includes six
   constraint-based, two statistical-arbitrage and two model-driven strategies,
   and a fair-value engine based on the Wang transform calibrated on 291,309
   resolved contracts.

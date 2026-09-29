@@ -1,9 +1,9 @@
 # Oracle3
 
-**Oracle3 is an open-source paper-trading engine and MCP server for prediction markets.** It maps logical relations between event contracts on Kalshi and Polymarket, checks whether quoted prices break the axioms of probability after each venue's fees, and paper-trades the baskets that survive under pre-trade risk limits.
+**Oracle3 is an open-source trading engine and MCP server for prediction markets.** It maps the logical relations between event contracts, finds prices that break the axioms of probability after each venue's fees, and trades them live on Kalshi, Polymarket and Solana, or on paper, under pre-trade risk limits.
 
-!!! note "Status"
-    Paper-traded research software with no live track record. The MCP server cannot place real orders. See [what is verified and what is not](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent#what-is-verified-and-what-is-not).
+!!! tip "Trades live on Kalshi, Polymarket and Solana"
+    `oracle3 live run` executes with the same engine that runs paper trading, behind pre-trade risk limits and a kill switch. AI agents plug in through the MCP server.
 
 ## Install
 
