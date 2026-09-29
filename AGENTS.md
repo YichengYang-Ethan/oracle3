@@ -32,7 +32,7 @@ CI runs all four on every push to `main`. New code needs tests; venue APIs must 
 | `oracle3/cli/` | Click CLI (`oracle3 ...`) |
 | `oracle3/experimental/` | Prototypes that are not on the trading path |
 | `coinjure/` | Bundled package from the original U Lab codebase (MIT; see NOTICE) |
-| `skills/` | Agent skills, mirrored to `.claude/skills/` and `.agent/skills/` |
+| `skills/` | Agent skills, mirrored to `.claude/skills/` |
 | `docs/` | MkDocs site, including `docs/research/fee-frontier.md` |
 
 ## Safety rules

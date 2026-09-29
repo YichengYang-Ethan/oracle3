@@ -42,7 +42,7 @@ RPC_URL = 'https://api.mainnet-beta.solana.com'
 WALLET_ADDRESS = '7RQ3YL4cLNbQbwAUHBP6GzdRbG6NRng8qBcHbiDrf8Ae'
 PARQUET_PATH = Path('data/episodes/dflow_15min/dflow_events.parquet')
 BACKTEST_FILE = Path('data/backtest_solana_results.json')
-DEMO_HTML = Path(__file__).parent / 'oracle3' / 'dashboard' / 'static' / 'demo.html'
+DEMO_HTML = Path(__file__).resolve().parents[1] / 'oracle3' / 'dashboard' / 'static' / 'demo.html'
 
 # ---------------------------------------------------------------------------
 # Async helpers

@@ -113,7 +113,7 @@ If your client ran oracle3 1.2.0, which failed to start with mcp 2.x, refresh uv
 
 ### Agent skills
 
-[`skills/`](skills/) (mirrored in `.claude/skills/` and `.agent/skills/`) holds step-by-step instructions for agents:
+[`skills/`](skills/) (mirrored in `.claude/skills/` for Claude Code) holds step-by-step instructions for agents:
 
 | Skill | Use it to |
 |---|---|
@@ -198,7 +198,7 @@ Relations and venue quotes feed the constraint checker, which prices every baske
 
 - **Open problems** are tracked as [issues labeled `open-problem`](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/issues?q=is%3Aissue+label%3Aopen-problem): measuring violations against the fee hurdle, evaluating relation discovery, and comparing LLM and market calibration.
 - **Discussions** are open for questions and ideas: [GitHub Discussions](https://github.com/YichengYang-Ethan/oracle3-prediction-market-agent/discussions).
-- **Contributions:** see [CONTRIBUTING.md](CONTRIBUTING.md).
+- **Contributions:** see [CONTRIBUTING.md](.github/CONTRIBUTING.md).
 
 ## How do I cite it?
 

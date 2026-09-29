@@ -3,8 +3,8 @@ name: JOSS Paper Draft
 on:
   push:
     paths:
-      - paper.md
-      - paper.bib
+      - paper/paper.md
+      - paper/paper.bib
       - .github/workflows/paper-draft.yml
   workflow_dispatch:
 
@@ -19,10 +19,10 @@ jobs:
         uses: openjournals/openjournals-draft-action@master
         with:
           journal: joss
-          paper-path: paper.md
+          paper-path: paper/paper.md
 
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
         with:
           name: paper-pdf
-          path: paper.pdf
+          path: paper/paper.pdf

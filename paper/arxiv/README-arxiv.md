@@ -9,13 +9,13 @@ must perform the upload manually.
 | File             | Purpose                                            |
 |------------------|----------------------------------------------------|
 | `paper.tex`      | Main LaTeX source (article class, ~4 pages)        |
-| `paper.bib`      | BibTeX bibliography (11 entries, copied from root) |
+| `paper.bib`      | BibTeX bibliography (11 entries, copied from ../paper.bib) |
 | `README-arxiv.md`| This document                                      |
 
 ## Local compile test (sanity check)
 
 ```bash
-cd arxiv/
+cd paper/arxiv/
 pdflatex paper.tex
 bibtex   paper
 pdflatex paper.tex
@@ -142,7 +142,7 @@ becomes publicly searchable.
 - arXiv does not accept the JOSS-flavored Markdown directly; this `paper.tex`
   reformats the same content as a standalone preprint with explicit numbered
   sections (Introduction, Methodology, Implementation, Conclusion).
-- The `paper.bib` here is identical to the repository root's `paper.bib`. If
+- The `paper.bib` here is identical to `paper/paper.bib`. If
   the root bibliography is updated, copy the new file over.
 - License compatibility: arXiv `CC BY 4.0` is compatible with the Apache 2.0
   code license. The companion code stays Apache 2.0; only the preprint

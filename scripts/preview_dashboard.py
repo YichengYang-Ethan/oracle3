@@ -13,8 +13,8 @@ import time
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
 
-STATIC_DIR = Path(__file__).parent / 'oracle3' / 'dashboard' / 'static'
-RESULTS_FILE = Path(__file__).parent / 'data' / 'backtest_solana_results.json'
+STATIC_DIR = Path(__file__).resolve().parents[1] / 'oracle3' / 'dashboard' / 'static'
+RESULTS_FILE = Path(__file__).resolve().parents[1] / 'data' / 'backtest_solana_results.json'
 PORT = 3456
 
 # ---- Load backtest results ----
