@@ -59,7 +59,13 @@ def blinks(host: str, port: int) -> None:
     '--max-events', default=None, type=int, help='Limit events for episode replay.'
 )
 @click.option('--snapshot-json', default=None, type=str, help='Write periodic JSON state snapshot to PATH')
-@click.option('--snapshot-interval', default=5, type=int, show_default=True, help='Seconds between snapshot writes')
+@click.option(
+    '--snapshot-interval',
+    default=5,
+    type=click.IntRange(min=1),
+    show_default=True,
+    help='Seconds between snapshot writes',
+)
 def dashboard(  # noqa: C901
     port: int,
     exchange: str,
