@@ -405,7 +405,7 @@ def _parse_calibration_row(row: dict[str, str], row_number: int) -> dict[str, fl
     parsed = {'price': price, 'outcome': float(outcome)}
     for optional in ('volume', 'duration_hours', 'spread'):
         value = row.get(optional)
-        if value not in (None, ''):
+        if value:
             try:
                 parsed[optional] = float(value)
             except ValueError as exc:
@@ -512,6 +512,15 @@ def calibrate(
         'manifold': LAMBDA_MANIFOLD,
         'default': LAMBDA_POOLED,
     }
+    import importlib.util
+
+    missing = [m for m in ('numpy', 'scipy') if importlib.util.find_spec(m) is None]
+    if missing:
+        raise click.ClickException(
+            f'oracle3 calibrate needs {" and ".join(missing)}: '
+            f'pip install {" ".join(missing)}'
+        )
+
     rows = _load_calibration_csv(csv_path)
     mle = WangMLE()
 
@@ -540,7 +549,7 @@ def calibrate(
             '|p-0.5|',
             'spread',
         ]
-        initial_beta.extend([0.0] * (covariates.shape[1] - 1))
+        initial_beta.extend([0.0] * (len(covariate_names) - 1))
 
     result = mle.fit(
         prices=rows['price'],

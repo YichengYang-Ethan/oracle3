@@ -3,9 +3,14 @@ from __future__ import annotations
 import csv
 import json
 
+import pytest
 from click.testing import CliRunner
 
 from oracle3.cli.cli import cli
+
+# WangMLE needs numpy and scipy, which are optional dependencies.
+pytest.importorskip('numpy')
+pytest.importorskip('scipy')
 
 
 def _write_calibration_csv(
