@@ -356,3 +356,39 @@ async def test_strategy_records_signals(no_env_key: None) -> None:
     actions = [d.action for d in strategy.get_decisions()]
     assert actions == ['ARB_SIGNAL', 'ARB_SIGNAL', 'HOLD', 'HOLD', 'HOLD']
     assert all(not d.executed for d in strategy.get_decisions())
+
+
+class _StaticScanner:
+    def __init__(self, opportunities: list) -> None:
+        self.opportunities = opportunities
+
+    def scan(self, **kwargs: object) -> dict:
+        return {'opportunities': self.opportunities}
+
+
+async def _titles(opportunities: list) -> list[str]:
+    source = KalshiPredictItArbDataSource(scanner=_StaticScanner(opportunities))  # type: ignore[arg-type]
+    return [e.title for e in await source.poll_once()]
+
+
+async def test_data_source_prefers_event() -> None:
+    assert await _titles([{'event': 'E', 'pair': 'P'}]) == ['E']
+
+
+async def test_data_source_falls_back_to_pair() -> None:
+    assert await _titles([{'pair': 'P'}]) == ['P']
+
+
+async def test_data_source_skips_rows_without_event_or_pair() -> None:
+    rows = [{'executable': True}, {'event': '', 'pair': None}, {'event': ' '}]
+    assert await _titles(rows) == []
+
+
+async def test_sample_fixture_uses_event_shape(no_env_key: None) -> None:
+    rows = _offline_scanner().scan(mode='all')['opportunities']
+    assert all(row['event'].startswith('SAMPLE') for row in rows)
+    assert rows[0]['kalshi']['ticker'] == 'SAMPLE-SENATEXX-26-D'
+    events = await KalshiPredictItArbDataSource(
+        scanner=_offline_scanner(), mode='all'
+    ).poll_once()
+    assert [e.event_id for e in events] == [row['event'] for row in rows]
