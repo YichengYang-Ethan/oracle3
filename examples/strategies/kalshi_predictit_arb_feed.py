@@ -415,7 +415,10 @@ class KalshiPredictItArbDataSource(DataSource):
         sample = bool(response.get('sample_data'))
         events = []
         for opportunity in response['opportunities']:
-            pair = str(opportunity.get('pair') or '')
+            # live feed rows carry 'event', older rows 'pair'; skip rows with neither
+            pair = str(
+                opportunity.get('event') or opportunity.get('pair') or ''
+            ).strip()
             if not pair:
                 continue
             yield_c = net_yield(opportunity)
