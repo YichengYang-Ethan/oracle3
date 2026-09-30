@@ -312,6 +312,9 @@ def test_b64_decode_accepts_standard_and_urlsafe() -> None:
 
 def test_normalise_response_tolerates_garbage() -> None:
     assert feed.normalise_response(None) == {'opportunities': []}
+    assert feed.normalise_response({'opportunities': [1, {'a': 1}]}) == {
+        'opportunities': [{'a': 1}]
+    }
     assert feed.net_yield({'best_direction': None}) is None
     assert feed.net_yield({'best_direction': {'net_yield_c': 'x'}}) is None
 
