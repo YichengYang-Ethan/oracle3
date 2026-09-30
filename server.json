@@ -8,12 +8,12 @@
     "source": "github"
   },
   "websiteUrl": "https://yichengyang-ethan.github.io/oracle3-prediction-market-agent/",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "oracle3",
-      "version": "1.2.1",
+      "version": "1.2.2",
       "runtimeHint": "uvx",
       "transport": {
         "type": "stdio"

@@ -24,7 +24,7 @@ import inspect
 import logging
 from collections.abc import Callable
 from decimal import Decimal
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 import httpx
 from mcp.types import ToolAnnotations
@@ -41,6 +41,44 @@ from oracle3.pricing.distortion import ProbitDistortion
 Venue = Literal['kalshi', 'polymarket']
 Relation = Literal[
     'implication', 'exclusivity', 'complement', 'same_event', 'event_sum'
+]
+
+# Parameter types shared by several tools; the descriptions reach the tool schemas.
+VenueArg = Annotated[Venue, Field(description="Venue: 'kalshi' or 'polymarket'.")]
+MarketIdArg = Annotated[
+    str,
+    Field(
+        description=(
+            'Kalshi market ticker (e.g. KXFEDDECISION-28JAN-H0) or Polymarket market '
+            'id (e.g. 2589812), as returned by search_markets.'
+        )
+    ),
+]
+RelationArg = Annotated[
+    Relation,
+    Field(
+        description=(
+            'Bound to test: implication (A implies B, so P(A) <= P(B)), exclusivity '
+            '(at most one outcome happens), complement (exactly one of two), '
+            'same_event (one event quoted on two venues) or event_sum (exactly one '
+            'of n). See list_relation_types.'
+        )
+    ),
+]
+ContractsArg = Annotated[
+    float,
+    Field(
+        description='Contracts bought on every leg (default 1). Fees scale with size.'
+    ),
+]
+MakerArg = Annotated[
+    bool,
+    Field(
+        description=(
+            'Price fees as resting maker orders instead of taker orders (default '
+            'false). Maker fees are lower or zero, but a resting order may not fill.'
+        )
+    ),
 ]
 
 INSTRUCTIONS = """\
@@ -129,19 +167,36 @@ PAPER_RESET = ToolAnnotations(
 
 
 class QuoteInput(BaseModel):
-    """Quotes for one contract, in dollars. A missing ask is derived from the other side's bid."""
+    """One contract's prices in dollars per contract. A missing ask is derived from the opposite side's bid."""
 
-    market_id: str
-    venue: Venue = 'kalshi'
-    yes_bid: float | None = None
-    yes_ask: float | None = None
-    no_bid: float | None = None
-    no_ask: float | None = None
+    market_id: str = Field(
+        description='Label for this contract in the result, such as its ticker or market id.'
+    )
+    venue: Venue = Field(
+        default='kalshi',
+        description="Venue whose fee schedule applies: 'kalshi' (default) or 'polymarket'.",
+    )
+    yes_bid: float | None = Field(
+        default=None, description='Best YES bid in dollars (0-1).'
+    )
+    yes_ask: float | None = Field(
+        default=None,
+        description='Best YES ask in dollars (0-1). If omitted, 1 - no_bid is used.',
+    )
+    no_bid: float | None = Field(
+        default=None, description='Best NO bid in dollars (0-1).'
+    )
+    no_ask: float | None = Field(
+        default=None,
+        description='Best NO ask in dollars (0-1). If omitted, 1 - yes_bid is used.',
+    )
     kalshi_multiplier: float | None = Field(
-        default=None, description='Kalshi series fee multiplier M (default 1).'
+        default=None,
+        description='Kalshi series fee multiplier M, from get_quote (default 1).',
     )
     kalshi_maker_fees: bool = Field(
-        default=False, description='Whether the Kalshi series charges maker fees.'
+        default=False,
+        description='Whether the Kalshi series charges maker fees, from get_quote.',
     )
     polymarket_rate: float | None = Field(
         default=None,
@@ -150,8 +205,12 @@ class QuoteInput(BaseModel):
 
 
 class MarketRef(BaseModel):
-    venue: Venue
-    market_id: str
+    """A live market to check, identified by venue and market id."""
+
+    venue: Venue = Field(description="'kalshi' or 'polymarket'.")
+    market_id: str = Field(
+        description='Kalshi ticker or Polymarket market id, as returned by search_markets.'
+    )
 
 
 def _schedule(q: QuoteInput) -> KalshiSchedule | PolymarketSchedule:
@@ -186,48 +245,147 @@ def _quote_dict(q: Quote) -> dict[str, Any]:
 @mcp.tool(annotations=READ)
 @_agent_errors
 async def search_markets(
-    venue: Venue, query: str = '', limit: int = 20, series_ticker: str = ''
+    venue: VenueArg,
+    query: Annotated[
+        str,
+        Field(
+            description=(
+                'Case-insensitive keywords matched against event titles, market titles '
+                'and (on Kalshi) tickers. Empty lists open markets without a keyword filter.'
+            )
+        ),
+    ] = '',
+    limit: Annotated[
+        int,
+        Field(description='Maximum markets to return, 1-100 (clamped). Default 20.'),
+    ] = 20,
+    series_ticker: Annotated[
+        str,
+        Field(
+            description=(
+                'Kalshi only: list the open markets of this series (e.g. KXFEDDECISION) '
+                'instead of searching by keyword; query is then ignored. Ignored on Polymarket.'
+            )
+        ),
+    ] = '',
 ) -> dict[str, Any]:
-    """Find open markets by keyword. On Kalshi, series_ticker (e.g. KXFEDDECISION) lists one series."""
+    """Search open Kalshi or Polymarket markets and return candidates with their best prices.
+
+    Start here to find market ids, then call get_quote or get_orderbook for live
+    prices, or get_market for resolution details. Reads the venues' public APIs,
+    so no account or API key is needed; Kalshi keyword search scans up to 1,000
+    open events. Returns {venue, query, count, markets}; each market has
+    market_id, title, best bid and ask in dollars, volume and closing date.
+    """
     markets = await venues.search(venue, query, max(1, min(limit, 100)), series_ticker)
     return {'venue': venue, 'query': query, 'count': len(markets), 'markets': markets}
 
 
 @mcp.tool(annotations=READ)
 @_agent_errors
-async def get_market(venue: Venue, market_id: str) -> dict[str, Any]:
-    """Market details: title, best prices, volume, close time and (Polymarket) fee schedule and outcomes."""
+async def get_market(venue: VenueArg, market_id: MarketIdArg) -> dict[str, Any]:
+    """Get one market's details: title, best bid and ask, volume and closing date.
+
+    Kalshi results include the resolution rules (rules_primary, rules_secondary);
+    Polymarket results include the outcomes, token ids, neg-risk flag and the
+    market's fee schedule. Read the rules of every leg here before trusting a
+    relation in check_constraint_live. For prices plus fee terms only, use
+    get_quote; for depth, use get_orderbook. Public data, no API key.
+    """
     return await venues.market(venue, market_id)
 
 
 @mcp.tool(annotations=READ)
 @_agent_errors
 async def get_orderbook(
-    venue: Venue, market_id: str, depth: int = 10
+    venue: VenueArg,
+    market_id: MarketIdArg,
+    depth: Annotated[
+        int, Field(description='Price levels per side, 1-50 (clamped). Default 10.')
+    ] = 10,
 ) -> dict[str, Any]:
-    """Order book for both sides as [price, size] levels, best first."""
+    """Get the displayed order book for YES and NO as [price, size] levels, best first.
+
+    Prices are dollars per contract and sizes are contracts. Use it to see how
+    much of a basket can fill near the quoted price before paper_order; use
+    get_quote when only the top of book matters. Kalshi publishes bids only, so
+    each side's asks are derived from the other side's bids (a YES ask of p is a
+    NO bid of 1 - p). Public data, no API key.
+    """
     return await venues.orderbook(venue, market_id, max(1, min(depth, 50)))
 
 
 @mcp.tool(annotations=READ)
 @_agent_errors
-async def get_quote(venue: Venue, market_id: str) -> dict[str, Any]:
-    """Best bid and ask on YES and NO plus the fee schedule the venue reports for this market."""
+async def get_quote(venue: VenueArg, market_id: MarketIdArg) -> dict[str, Any]:
+    """Get the best bid and ask on YES and NO, in dollars, plus the market's fee schedule.
+
+    Use it to collect prices for check_constraint, or to read the fee terms
+    (Kalshi multiplier and maker fees, Polymarket taker rate) that trading_fee
+    takes. check_constraint_live fetches quotes itself, so this is not needed
+    before calling it. A missing ask is derived from the opposite side's bid.
+    Returns {venue, market_id, title, yes_bid, yes_ask, no_bid, no_ask,
+    fee_schedule}. Public data, no API key.
+    """
     return _quote_dict(await venues.quote(venue, market_id))
 
 
 @mcp.tool(annotations=PURE)
 @_agent_errors
 def trading_fee(
-    venue: Venue,
-    price: float,
-    contracts: float,
-    maker: bool = False,
-    kalshi_multiplier: float = 1.0,
-    kalshi_maker_fees: bool = False,
-    polymarket_rate: float | None = None,
+    venue: VenueArg,
+    price: Annotated[
+        float,
+        Field(
+            description='Fill price in dollars per contract, strictly between 0 and 1.'
+        ),
+    ],
+    contracts: Annotated[
+        float, Field(description='Contracts in the fill; must be positive.')
+    ],
+    maker: Annotated[
+        bool,
+        Field(
+            description='Price a resting maker order instead of a taker order (default false).'
+        ),
+    ] = False,
+    kalshi_multiplier: Annotated[
+        float,
+        Field(
+            description=(
+                "Kalshi series fee multiplier M, from get_quote's fee_schedule "
+                '(default 1). Ignored for Polymarket.'
+            )
+        ),
+    ] = 1.0,
+    kalshi_maker_fees: Annotated[
+        bool,
+        Field(
+            description=(
+                'Whether the Kalshi series charges maker fees, from get_quote '
+                '(default false). Ignored for Polymarket.'
+            )
+        ),
+    ] = False,
+    polymarket_rate: Annotated[
+        float | None,
+        Field(
+            description=(
+                'Polymarket taker fee rate for the market, from get_quote. Defaults to '
+                '0.07, the highest documented rate. Ignored for Kalshi.'
+            )
+        ),
+    ] = None,
 ) -> dict[str, Any]:
-    """Fee for one fill under the venue's published schedule."""
+    """Compute the venue fee for one fill at a given price and size; a pure calculation with no network calls.
+
+    Kalshi charges round_up(0.07 x M x C x P x (1 - P)) on taker fills, and
+    0.0175 x M x C x P x (1 - P) on maker fills where the series has maker fees;
+    Polymarket charges takers rate x C x p x (1 - p) and makers nothing. Use it
+    to price a single leg or a hypothetical fill; take a live market's fee terms
+    from get_quote, and use check_constraint to price a whole basket. Returns
+    fee, fee_per_contract, order_type and the schedule used.
+    """
     q = QuoteInput(
         market_id='-',
         venue=venue,
@@ -248,15 +406,28 @@ def trading_fee(
 @mcp.tool(annotations=PURE)
 @_agent_errors
 def check_constraint(
-    relation: Relation,
-    quotes: list[QuoteInput],
-    contracts: float = 1.0,
-    maker: bool = False,
+    relation: RelationArg,
+    quotes: Annotated[
+        list[QuoteInput],
+        Field(
+            description=(
+                'One quote per contract, in the order the relation expects: '
+                'implication (A, B) where A implies B; complement and same_event (A, B); '
+                'exclusivity and event_sum every outcome.'
+            )
+        ),
+    ],
+    contracts: ContractsArg = 1.0,
+    maker: MakerArg = False,
 ) -> dict[str, Any]:
-    """Check a no-arbitrage relation on quotes you supply (offline).
+    """Check offline whether prices you supply violate a no-arbitrage relation, and price the cheapest exploiting basket after fees.
 
-    Quote order: implication (A, B) means A implies B; complement and same_event take (A, B);
-    exclusivity and event_sum take every outcome.
+    A pure calculation with no network calls: use it for hypothetical or
+    historical prices, and use check_constraint_live to fetch current quotes
+    instead. Returns violated, profitable_after_fees, the best basket (legs,
+    cost, guaranteed payoff, fees, gross and net edge), every candidate basket,
+    any missing quotes, and the assumptions behind the check (full fills at the
+    quoted prices, a correctly specified relation).
     """
     parsed = [
         Quote(
@@ -276,12 +447,29 @@ def check_constraint(
 @mcp.tool(annotations=READ)
 @_agent_errors
 async def check_constraint_live(
-    relation: Relation,
-    markets: list[MarketRef],
-    contracts: float = 1.0,
-    maker: bool = False,
+    relation: RelationArg,
+    markets: Annotated[
+        list[MarketRef],
+        Field(
+            description=(
+                'Markets to check, each {venue, market_id}, in the order the relation '
+                'expects: two for implication (A then B), complement and same_event; '
+                'every outcome for exclusivity and event_sum. Venues may be mixed.'
+            )
+        ),
+    ],
+    contracts: ContractsArg = 1.0,
+    maker: MakerArg = False,
 ) -> dict[str, Any]:
-    """Fetch current quotes and fee schedules for the markets, then check the relation."""
+    """Fetch live quotes and fee schedules for related markets, then check whether their prices violate a no-arbitrage relation after fees.
+
+    This is the main research call: find related contracts with search_markets,
+    confirm with get_market that their resolution rules really satisfy the
+    relation, then pass them here. Read-only: it calls the venues' public APIs
+    and places no orders. Returns the check_constraint result (violated,
+    profitable_after_fees, best basket with net edge) plus the quotes it used;
+    to simulate the trade, call paper_order for each leg of the best basket.
+    """
     quotes = [await venues.quote(m.venue, m.market_id) for m in markets]
     result = _check(relation, quotes, contracts=contracts, maker=maker).to_dict()
     result['quotes'] = [_quote_dict(q) for q in quotes]
@@ -291,17 +479,43 @@ async def check_constraint_live(
 @mcp.tool(annotations=PURE)
 @_agent_errors
 def list_relation_types() -> dict[str, Any]:
-    """Supported relations and the probability bound each one enforces."""
+    """List the relation types the constraint checks support and the probability bound each enforces.
+
+    Static reference data with no network or file access, for example
+    implication: P(A) <= P(B). Use it to choose the relation argument of
+    check_constraint or check_constraint_live; to see concrete market pairs
+    saved on this machine, use list_relations instead. Returns
+    {relations: {name: bound}}.
+    """
     return {'relations': RELATIONS}
 
 
 @mcp.tool(annotations=PURE)
 @_agent_errors
-def fair_value(market_price: float, lam: float = 0.183) -> dict[str, Any]:
-    """Probability implied by a market price under the Wang transform p_mkt = Phi(Phi^-1(p) + lam).
+def fair_value(
+    market_price: Annotated[
+        float,
+        Field(description='Observed YES price in dollars, strictly between 0 and 1.'),
+    ],
+    lam: Annotated[
+        float,
+        Field(
+            description=(
+                'Pricing-wedge parameter lambda of the Wang transform. Positive values '
+                'mean prices sit above the true probability, most of all for longshots. '
+                'Default 0.183.'
+            )
+        ),
+    ] = 0.183,
+) -> dict[str, Any]:
+    """Convert a market price into the probability it implies under the Wang transform, and report the premium.
 
-    The default lam = 0.183 is the pooled estimate in Yang (2026), SSRN 6468338; it pools
-    real-money and play-money venues, so treat it as illustrative.
+    Solves p_mkt = Phi(Phi^-1(p) + lam) for p; a pure calculation with no network
+    calls. Use it to strip the favourite-longshot premium from a quoted price
+    before comparing it with your own forecast. The default lam = 0.183 is the
+    pooled estimate in Yang (2026), SSRN 6468338; it pools real-money and
+    play-money venues, so treat it as illustrative. Returns market_price,
+    lambda, implied_probability and premium (price minus implied probability).
     """
     if not 0.0 < market_price < 1.0:
         raise ValueError('market_price must be strictly between 0 and 1')
@@ -317,9 +531,44 @@ def fair_value(market_price: float, lam: float = 0.183) -> dict[str, Any]:
 @mcp.tool(annotations=LOCAL_READ)
 @_agent_errors
 def list_relations(
-    market_id: str = '', spread_type: str = '', status: str = ''
+    market_id: Annotated[
+        str,
+        Field(
+            description=(
+                'Only relations that include this market id (Kalshi ticker or '
+                'Polymarket id). Empty returns all.'
+            )
+        ),
+    ] = '',
+    spread_type: Annotated[
+        str,
+        Field(
+            description=(
+                'Only this relation type: same_event, cross_platform, implication, '
+                'exclusivity, conditional, structural, cointegration or complement. '
+                'Empty returns all.'
+            )
+        ),
+    ] = '',
+    status: Annotated[
+        str,
+        Field(
+            description=(
+                'Only this lifecycle status: discovered, validated, deployed, retired '
+                'or invalidated. Empty returns all.'
+            )
+        ),
+    ] = '',
 ) -> dict[str, Any]:
-    """Relations saved locally by the oracle3 research CLI (~/.oracle3/relations.json)."""
+    """List the market relations saved on this machine by the oracle3 research CLI, optionally filtered.
+
+    Reads ~/.oracle3/relations.json with no network calls. Use it to reuse pairs
+    already discovered or validated offline, then pass a pair to
+    check_constraint_live. For the abstract relation kinds and their bounds,
+    call list_relation_types instead. Returns the store path, a count and the
+    matching relations (markets, type, status and validation details); the list
+    is empty if the CLI has saved none.
+    """
     from oracle3.market.relations import RelationStore
 
     store = RelationStore()
@@ -338,13 +587,35 @@ def list_relations(
 @mcp.tool(annotations=PAPER)
 @_agent_errors
 async def paper_order(
-    venue: Venue,
-    market_id: str,
-    side: Literal['yes', 'no'],
-    contracts: float,
-    limit_price: float,
+    venue: VenueArg,
+    market_id: MarketIdArg,
+    side: Annotated[
+        Literal['yes', 'no'],
+        Field(description="Side of the binary contract to buy: 'yes' or 'no'."),
+    ],
+    contracts: Annotated[
+        float, Field(description='Contracts to buy; must be positive.')
+    ],
+    limit_price: Annotated[
+        float,
+        Field(
+            description=(
+                'Highest price per contract to pay, in dollars, strictly between 0 '
+                'and 1; ask levels above it are skipped.'
+            )
+        ),
+    ],
 ) -> dict[str, Any]:
-    """Buy in the local paper ledger, filling against the live displayed book with venue fees. Never trades for real."""
+    """Simulate buying YES or NO contracts in the local paper ledger, filling against the live order book with venue fees. Never sends an order to a venue.
+
+    Walks the displayed asks from the best price up to limit_price and charges
+    the venue fee on each level. Use it to test the legs of a basket found by
+    check_constraint_live. Writes ~/.oracle3/mcp_paper_ledger.json (or the path
+    in ORACLE3_MCP_LEDGER); only buys are supported and positions are held at
+    cost. Returns status (filled, partially_filled, unfilled, or rejected when
+    paper cash is short), requested and filled contracts, average price, cost,
+    fees and the per-level fills.
+    """
     book = await venues.orderbook(venue, market_id, depth=50)
     schedule = await venues.fee_schedule(venue, market_id)
     return PaperLedger().buy(
@@ -361,14 +632,34 @@ async def paper_order(
 @mcp.tool(annotations=LOCAL_READ)
 @_agent_errors
 def paper_portfolio() -> dict[str, Any]:
-    """Cash, positions and fill count in the local paper ledger."""
+    """Show the local paper ledger: cash, open positions and the number of fills.
+
+    Reads ~/.oracle3/mcp_paper_ledger.json (or ORACLE3_MCP_LEDGER) with no
+    network calls. Use it after paper_order to confirm fills and remaining cash.
+    Starting cash is $10,000; positions are carried at cost, and the ledger does
+    not mark to market or track resolution. Returns the ledger path,
+    initial_cash, cash, positions and fills.
+    """
     return PaperLedger().portfolio()
 
 
 @mcp.tool(annotations=PAPER_RESET)
 @_agent_errors
-def paper_reset(confirm: bool = False) -> dict[str, Any]:
-    """Erase the paper ledger and restore starting cash. Requires confirm=true."""
+def paper_reset(
+    confirm: Annotated[
+        bool,
+        Field(
+            description='Must be true to erase the ledger; otherwise nothing changes.'
+        ),
+    ] = False,
+) -> dict[str, Any]:
+    """Erase the local paper ledger and restore the $10,000 starting cash.
+
+    Deletes all paper positions and fill history; no venue is contacted and real
+    accounts are never touched. Without confirm=true it returns status
+    not_reset and changes nothing. Use it to start a fresh paper-trading
+    session.
+    """
     if not confirm:
         return {
             'status': 'not_reset',

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "oracle3"
-version = "1.2.1"
+version = "1.2.2"
 description = "Trading engine and MCP server for prediction markets: fee-aware no-arbitrage trading across related event contracts, live on Kalshi, Polymarket and Solana or on paper, under pre-trade risk limits."
 authors = ["Yicheng Yang <yy85@illinois.edu>"]
 license = "Apache-2.0"
@@ -223,7 +223,7 @@ max-complexity = 10
 
 [tool.commitizen]
 name = "cz_conventional_commits"
-version = "1.2.1"
+version = "1.2.2"
 tag_format = "v$version"
 bump_message = "bump: version $current_version → $new_version"
 version_files = [

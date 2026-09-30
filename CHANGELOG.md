@@ -7,8 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.2] - 2026-09-30
+
+### Changed
+
+- Every MCP tool now documents each of its parameters in the input schema (37 of 37, previously none) and says what it does, when to use it instead of a similar tool, whether it calls the network or writes local files, and what it returns. Tool behavior is unchanged.
+
 ### Added
 
+- `glama.json` maintainer metadata for the Glama MCP directory.
 - `oracle3 calibrate --csv FILE`: offline Wang Transform MLE from a resolved-contract CSV, with platform warm starts, optional hierarchical covariates and JSON output (#53, thanks @xyjk0511).
 - `oracle3 dashboard --snapshot-json PATH --snapshot-interval SECONDS`: periodic, atomically written JSON snapshots of positions, cash and last prices (#55, thanks @MayurK-cmd).
 - Documentation of the Solana pre-flight risk flow: local limits, `simulateTransaction`, Jito fallback and failure modes (#56, thanks @lntutor).
